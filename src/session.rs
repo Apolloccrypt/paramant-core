@@ -2,7 +2,7 @@
 // Volledige chat sessie: sleuteluitwisseling + ratchet + berichten
 
 use crate::crypto::{kem, ecdh::EcdhKeyPair, kdf::derive_master};
-use crate::identity::{Identity, PeerPublicKeys};
+use crate::identity::Identity;
 use crate::ratchet::RatchetState;
 use crate::crypto::aead::EncryptedMessage;
 use crate::{Result, ParamantError};

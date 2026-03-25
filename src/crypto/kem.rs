@@ -7,7 +7,7 @@ use crate::{Result, ParamantError};
 #[derive(Zeroize, ZeroizeOnDrop)]
 pub struct KemKeyPair {
     pub public_key: Vec<u8>,
-    secret_key_bytes: Vec<u8>,
+    pub secret_key_bytes: Vec<u8>,
 }
 
 impl KemKeyPair {
