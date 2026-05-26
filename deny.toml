@@ -13,6 +13,8 @@ allow = [
   "MIT",
   "Apache-2.0",
   "Unicode-3.0",
+  "BSD-3-Clause", # bindgen/oqs-sys build tree (M1)
+  "ISC",          # bindgen/oqs-sys build tree (M1)
 ]
 confidence-threshold = 0.9
 # paramant-core itself is BUSL-1.1 and unpublished (publish = false); skip the

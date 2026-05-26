@@ -18,9 +18,10 @@ jobs:
       # Installs the toolchain pinned in rust-toolchain.toml (1.80 + clippy + rustfmt).
       - name: Install pinned toolchain
         run: rustup show
-      # The `oqs` crate (from M1) builds liboqs from source via CMake.
+      # The `oqs` crate (from M1) builds liboqs from source via CMake and runs
+      # bindgen (needs libclang) to generate the FFI bindings.
       - name: Install liboqs build deps
-        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang libclang-dev
       - uses: Swatinem/rust-cache@v2
       - name: Format
         run: cargo fmt --all -- --check

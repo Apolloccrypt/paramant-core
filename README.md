@@ -37,7 +37,7 @@ cargo doc --open # read the API docs
 ```
 
 Requires the toolchain pinned in [`rust-toolchain.toml`](rust-toolchain.toml)
-(Rust 1.80, installed automatically by rustup).
+(Rust 1.95, installed automatically by rustup).
 
 ## Compile targets
 

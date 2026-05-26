@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- M1 (First Light): `kem` module — ML-KEM-768 (FIPS 203) `keygen`/`encaps`/`decaps`
+  via liboqs (`oqs`), with zeroizing secret types and no `unsafe`. KAT strategy
+  (deterministic decaps vectors + cross-impl interop) in
+  [ADR-0005](docs/adrs/0005-kem-kat-strategy.md); `error` module (`CoreError`).
 - M0 bootstrap: Cargo workspace with the `paramant-core` crate (empty shell),
   pinned dependency catalogue, and `rust-toolchain.toml` (Rust 1.80).
 - Documentation set: `README`, `SECURITY`, `CONTRIBUTING`, `LICENSE` (BUSL-1.1),
@@ -21,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Repository restructured from the March 2026 single-crate prototype to the
   blueprint v3.1 workspace layout. The prototype is preserved at the
   `archive/march-2026-prototype` tag.
+- MSRV bumped 1.80 → **1.95** (pinned `1.95.0`). `oqs` 0.10, needed at M1 for
+  seed-based keygen, pulls an edition-2024 dependency requiring rustc ≥ 1.85; we
+  pinned latest stable. See [ADR-0001](docs/adrs/0001-rust-edition-msrv.md).
+- Dependabot ignores cargo major bumps (deliberate, manual review per ADR-0004).
 
 ## [0.1.0] - TBD
 

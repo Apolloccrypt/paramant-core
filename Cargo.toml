@@ -5,7 +5,7 @@ resolver = "2"
 [workspace.package]
 version      = "0.1.0"
 edition      = "2021"
-rust-version = "1.80"
+rust-version = "1.95"
 license      = "BUSL-1.1"
 authors      = ["Mick Beer <mick@paramant.app>"]
 repository   = "https://github.com/Apolloccrypt/paramant-core"
@@ -14,8 +14,10 @@ repository   = "https://github.com/Apolloccrypt/paramant-core"
 # Members opt in with `dep.workspace = true`; entries no member uses are not
 # built or locked. See docs/adrs/0004-code-minimization.md and blueprint §4.
 [workspace.dependencies]
-# Post-quantum crypto via liboqs (NIST FIPS 203/204/205/206)
-oqs        = "0.10"
+# Post-quantum crypto via liboqs. M1 enables only ML-KEM (FIPS 203);
+# signature families (FIPS 204/205/206) are switched on at M2. No OpenSSL
+# backend — liboqs builds its own symmetric primitives.
+oqs        = { version = "0.10", default-features = false, features = ["ml_kem", "std"] }
 
 # Classical crypto (FIPS-validated AWS-LC)
 aws-lc-rs  = "1.13"
