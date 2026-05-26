@@ -15,6 +15,7 @@ allow = [
   "Unicode-3.0",
   "BSD-3-Clause", # bindgen/oqs-sys build tree (M1)
   "ISC",          # bindgen/oqs-sys build tree (M1)
+  "CC0-1.0",      # bip39 / bitcoin_hashes / hex-conservative (M3 BIP-0039 tree)
 ]
 confidence-threshold = 0.9
 # paramant-core itself is BUSL-1.1 and unpublished (publish = false); skip the

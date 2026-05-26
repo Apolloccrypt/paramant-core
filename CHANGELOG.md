@@ -8,10 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- M3 (in progress): `aead` module — AES-256-GCM (FIPS 197 + SP 800-38D) via
+- **M3 complete** (Symmetric Layer): `aead` + `kdf` + `mnemonic` +
+  constant-time tests. KAT corpus now **190 vectors**.
+- M3: `kdf` module — Argon2id password hashing at OWASP-2024 params
+  (`m=19456` KiB, `t=2`, `p=1`; [ADR-0011](docs/adrs/0011-argon2id-parameters.md))
+  with constant-time `verify_password` (`subtle`), and HKDF-SHA256
+  (`extract`/`expand`). 35 KAT vectors: 20 HKDF (RFC 5869 Appendix A + generated,
+  pure HMAC) and 15 Argon2id (`@noble/hashes` validated against the RFC 9106
+  Appendix A vector before emitting at our params).
+- M3: `mnemonic` module — BIP-0039 12-word English mnemonics via the `bip39`
+  crate (`generate`/`generate_from_entropy`/`parse`/`to_seed`). 15 KAT vectors
+  from trezor/python-mnemonic canonical vectors (phrase + seed cross-checked).
+- M3: constant-time policy ([ADR-0012](docs/adrs/0012-constant-time-policy.md)) —
+  `tests/constant_time.rs` asserts the structural property (whole-input
+  comparison via `subtle::ConstantTimeEq`, no early return) for `aead::decrypt`
+  and `kdf::argon2id::verify_password`; threat model lists the must-be-CT
+  functions.
+- M3: `aead` module — AES-256-GCM (FIPS 197 + SP 800-38D) via
   `aws-lc-rs`. 40 KAT vectors byte-equivalent with `@noble/ciphers` (encrypt =
   `ct‖tag`) + decrypt + tamper rejection + a 256-case round-trip/AAD-binding
-  property. KAT corpus now 140 vectors.
+  property.
 - M2 (in progress): `sig` module — ML-DSA-65 (FIPS 204) `keygen`/`sign`/`verify`
   via liboqs, per-algorithm types ([ADR-0007](docs/adrs/0007-signature-type-pattern.md)),
   default scheme ([ADR-0008](docs/adrs/0008-default-signature.md)). 30 KAT vectors
