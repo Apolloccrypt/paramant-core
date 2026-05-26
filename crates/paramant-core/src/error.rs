@@ -25,6 +25,10 @@ pub enum CoreError {
     #[error("signature operation failed: {0}")]
     Sig(&'static str),
 
+    /// An AEAD (AES-256-GCM) operation failed.
+    #[error("AEAD operation failed: {0}")]
+    Aead(&'static str),
+
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]
     InvalidLength {

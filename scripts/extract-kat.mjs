@@ -16,8 +16,11 @@ import { dirname, join } from 'node:path';
 
 const mlkemSpec = process.env.NOBLE_PQ_MLKEM ?? '@noble/post-quantum/ml-kem.js';
 const mldsaSpec = process.env.NOBLE_PQ_MLDSA ?? mlkemSpec.replace('ml-kem.js', 'ml-dsa.js');
+const ciphersSpec =
+  process.env.NOBLE_CIPHERS ?? mlkemSpec.replace('post-quantum/ml-kem.js', 'ciphers/aes.js');
 const { ml_kem768 } = await import(mlkemSpec);
 const { ml_dsa65 } = await import(mldsaSpec);
+const { gcm } = await import(ciphersSpec);
 // SLH-DSA is intentionally not extracted: liboqs 0.12 ships SPHINCS+ round-3
 // (not FIPS 205), so it is round-trip tested only, not cross-impl KAT'd against
 // @noble. See docs/adrs/0009-sphincs-vs-slh-dsa.md.
@@ -92,6 +95,38 @@ function write(name, doc) {
     primitive: 'ml-dsa-65',
     source: '@noble/post-quantum (FIPS 204) — paramant-relay build 2.5.0',
     note: 'paramant-core verifies verify(public_key, msg, signature) == true byte-for-byte; deterministic signing (extraEntropy:false).',
+    count: vectors.length,
+    vectors,
+  });
+}
+
+// ── AES-256-GCM (FIPS 197 + SP 800-38D): encrypt(key,nonce,aad,pt) == ct‖tag ──
+// AES-GCM is deterministic given (key, nonce, aad, pt), so this is a true
+// byte-equal cross-implementation KAT. Varies aad/pt lengths, including empty.
+{
+  const N = 40;
+  const vectors = [];
+  for (let i = 0; i < N; i++) {
+    const key = bytesFrom(`paramant/aes-256-gcm/key/${i}`, 32);
+    const nonce = bytesFrom(`paramant/aes-256-gcm/nonce/${i}`, 12);
+    const aad = bytesFrom(`paramant/aes-256-gcm/aad/${i}`, i % 5 === 0 ? 0 : (i * 3) % 61);
+    const pt = bytesFrom(`paramant/aes-256-gcm/pt/${i}`, i % 7 === 0 ? 0 : (i * 11) % 197);
+    const ct = gcm(key, nonce, aad).encrypt(pt); // ciphertext ‖ 16-byte tag
+    vectors.push({
+      test_id: `gcm-${String(i).padStart(3, '0')}`,
+      input: {
+        key_hex: hex(key),
+        nonce_hex: hex(nonce),
+        aad_hex: hex(aad),
+        plaintext_hex: hex(pt),
+      },
+      expected: { ciphertext_hex: hex(ct) },
+    });
+  }
+  write('aes-256-gcm', {
+    primitive: 'aes-256-gcm',
+    source: '@noble/ciphers',
+    note: 'ciphertext_hex = ciphertext ‖ tag; encrypt(key, nonce, aad, plaintext) must equal it byte-for-byte.',
     count: vectors.length,
     vectors,
   });

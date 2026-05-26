@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- M3 (in progress): `aead` module — AES-256-GCM (FIPS 197 + SP 800-38D) via
+  `aws-lc-rs`. 40 KAT vectors byte-equivalent with `@noble/ciphers` (encrypt =
+  `ct‖tag`) + decrypt + tamper rejection + a 256-case round-trip/AAD-binding
+  property. KAT corpus now 140 vectors.
 - M2 (in progress): `sig` module — ML-DSA-65 (FIPS 204) `keygen`/`sign`/`verify`
   via liboqs, per-algorithm types ([ADR-0007](docs/adrs/0007-signature-type-pattern.md)),
   default scheme ([ADR-0008](docs/adrs/0008-default-signature.md)). 30 KAT vectors

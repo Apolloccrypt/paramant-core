@@ -1,0 +1,488 @@
+{
+  "primitive": "aes-256-gcm",
+  "source": "@noble/ciphers",
+  "note": "ciphertext_hex = ciphertext ‖ tag; encrypt(key, nonce, aad, plaintext) must equal it byte-for-byte.",
+  "count": 40,
+  "vectors": [
+    {
+      "test_id": "gcm-000",
+      "input": {
+        "key_hex": "f3ed31cefe834cb6b0906bb0e1130c5512d9b710c41919457e77d88bd8daa027",
+        "nonce_hex": "653d7f1229934ff9293cb8b8",
+        "aad_hex": "",
+        "plaintext_hex": ""
+      },
+      "expected": {
+        "ciphertext_hex": "f1923ffbeb00ecbb996243bb7d63060a"
+      }
+    },
+    {
+      "test_id": "gcm-001",
+      "input": {
+        "key_hex": "c2ef6dff3d4f69376c2f6aeaffa1c44c4b6b1686e05c0f81dd6136d319c53844",
+        "nonce_hex": "47a9f43c0f15e8d4fa343d17",
+        "aad_hex": "0ec9ca",
+        "plaintext_hex": "f40007258130a7b7c30495"
+      },
+      "expected": {
+        "ciphertext_hex": "2959182b6b09cc167e9a7e7c5cf8b0537b200ddee6fb917212e828"
+      }
+    },
+    {
+      "test_id": "gcm-002",
+      "input": {
+        "key_hex": "d5e6b8dd71280996b0904e7d9eb43170c34f76d99ba968509a08c0f395ca40fe",
+        "nonce_hex": "cfad481a6895aa38eccca650",
+        "aad_hex": "4a428fd21305",
+        "plaintext_hex": "7eb899d5cf444420db33b291c1aa4a86b5abdd92ee80"
+      },
+      "expected": {
+        "ciphertext_hex": "84fac965d1e7c8bdf65b32491cf4a33f3d10a1f9515390ef01524d9cfb87b2668a689dae877a"
+      }
+    },
+    {
+      "test_id": "gcm-003",
+      "input": {
+        "key_hex": "9272b0e5b669cb47d5820b6534725f449e3d7dd094a0923849a011102b37193e",
+        "nonce_hex": "fd49457a7a660bc5d04c0312",
+        "aad_hex": "6de1081405e592bb94",
+        "plaintext_hex": "feb8678f3d9f3e04c50abc08525c54a7cf1753732279e2560a688ff66287f8a9dc"
+      },
+      "expected": {
+        "ciphertext_hex": "70417ea71b95e48c2637df99b659f08240d1aeea7fb4893914e51e6828a8493a5f6432015abf9a0a5d67598c16ba5fc59d"
+      }
+    },
+    {
+      "test_id": "gcm-004",
+      "input": {
+        "key_hex": "e49532983fb104b3e2de18dd816579ef22376dc9642944fb623ad1bbba37501e",
+        "nonce_hex": "f24e82d96e382ab2fe075bb5",
+        "aad_hex": "d567b619a98f6ae535c55919",
+        "plaintext_hex": "cf74f99288271db565936b152b6adbb7103a6b71f367ec9b866cec21280105ed04f7b8ec7bbcbf41b1d88401"
+      },
+      "expected": {
+        "ciphertext_hex": "3eb9e67a50ec70d909d1609e366cb5a6213f618d12482359aff2a560f2fd0377ce354ad17d13e707d4175a7cd3073e7b40447803d6904856720f5bee"
+      }
+    },
+    {
+      "test_id": "gcm-005",
+      "input": {
+        "key_hex": "a8df552a05d2db8b4daff5075dc57e72ab8a7fad58dceba7a99c0fdfed268064",
+        "nonce_hex": "22303d62060879533f161514",
+        "aad_hex": "",
+        "plaintext_hex": "37a8892c145171ead7746182581a65d3c82830d57a62a00584fd14d37abc5b92e4fd58f066048fa9fad185402dcdfd4f0edc46994720ce"
+      },
+      "expected": {
+        "ciphertext_hex": "89324bb54992cd086eab0ccc941b013d40247132c7aba2308ab4ca2e4bcc8b0e2e26938410e97b3b272e7bf68b43fd019f33b4218ea7fab3b7fb384b9f18326853036bf6f0c88a"
+      }
+    },
+    {
+      "test_id": "gcm-006",
+      "input": {
+        "key_hex": "d00841679bf6035d6ed0ba5f92444be63904a132b260d41b26bbca1638a8e3a1",
+        "nonce_hex": "b53a4ef380e2ef321d32bbb5",
+        "aad_hex": "9029cd23eaa82886025a56bb778d5fa57e66",
+        "plaintext_hex": "5cc7e6ee5a957b096496325d26d35cec46e8dea5bf7b59a798029cd2094189b301da050f482f8717b65c6549129bbd0e0ceeab081c71610f7623bd92c373d597484a"
+      },
+      "expected": {
+        "ciphertext_hex": "86f688f58eab507bf6a5e909774284e38c102a14b9dbedd5ac26025b0d20ff3f76d6b7112f830830bab497e6119fd348d6f5367880a5dcbff5e0130a2f215c03e57620ad1845b1a0e6b3b54e3f66f55aa80e"
+      }
+    },
+    {
+      "test_id": "gcm-007",
+      "input": {
+        "key_hex": "a941f1dd736b57b78ccd64d956bb405861bb3fb172e3f4601796557fd9d1a45b",
+        "nonce_hex": "2c140a8dc1d743558de2c212",
+        "aad_hex": "cd7921176927ad183089b96c8ff22d586edc119fd0",
+        "plaintext_hex": ""
+      },
+      "expected": {
+        "ciphertext_hex": "a10d203614c431cf3fa5a23fd4e649ae"
+      }
+    },
+    {
+      "test_id": "gcm-008",
+      "input": {
+        "key_hex": "1cdd6b3dca6e7c7deecf033bb00d649ffb35079093bc4def0d1d82b2bc9da4be",
+        "nonce_hex": "9355606c3173e20de24cf375",
+        "aad_hex": "6f8dfd1a678c9a9a18e0d8faaf0ddd8bfa588957ce018767",
+        "plaintext_hex": "1fbb231b5e7d6e6c7e77b33ec78710eee2d0578abf77dc4b620ae77c63060784ce2321ba86ec4cdd574e4c543c76b5841983eb8a14d788c0a32e90b83665028e6aeb6294cf38dba960cdba2e96eb546c45a6802ad853cd8f"
+      },
+      "expected": {
+        "ciphertext_hex": "5a0458eaee1043458bbe54f86404418f1db27bdba32ee253de7182ec074cd499adcd91c528839a8f2698e10eafb9620d6d3fad0c39942ce65b87eb3c3cce4f2f08c293ed6a5ff320c705ccbd036eddc787b125e76d75bfcdea186ced6141c4557afae5082f9773c6"
+      }
+    },
+    {
+      "test_id": "gcm-009",
+      "input": {
+        "key_hex": "234769fb212cab2fd549c2809d6d74fc83d3bd9dbcd1af2e6c6297a74363fd27",
+        "nonce_hex": "8b71720a2f191c7b8348d021",
+        "aad_hex": "c1829ebcabb7e4c49f713c96367828ebd4bb1cd3c8b994ea3e3cf5",
+        "plaintext_hex": "b9794946e113439af4c7f4c284063592e3afe48ef8987a03d7ea5280de04d27e450bfef77aa996cb492e96c9dae7d1f87111d64652cfcfe89a1473c54b27baae034d3c1c759bb28c7c497d6fbf37d2ecc288eed902de8a71b1201a1b6fcdb935c734d8"
+      },
+      "expected": {
+        "ciphertext_hex": "497e8a2a712e6ec15d01370e5443e1e2dadd7aedd7dc99a85804d39c179df988d60986ae3b826bcb65477fe765ad0b7d03f5aba43b3bb931e41332d8fc14d973ed22432459dbf5b9c591b9c65d15acd83cc61b8740a5f84516cc4ec71c2b4e1996e0a06d0b434b1a635c10015eb0dc0412e80c"
+      }
+    },
+    {
+      "test_id": "gcm-010",
+      "input": {
+        "key_hex": "54ea59d64ef8ead6c073103ef622dd5f2a27b1034c8ba7b870275e8eb5a41d5f",
+        "nonce_hex": "8c1265e151d53244bd93aed9",
+        "aad_hex": "",
+        "plaintext_hex": "1242cb24c3e5d7ae074c80e43b681ed3b715c9eb1f2e153392269213bd886c724875c0819d67b74f0e6d5c2bf4119833bfb915dee935136a88f40084008dd192056495b1712a70d49cc7833e7ff2cd5457cfcc85a94c9c9991405e05e2111addc7d5c35220dd58f29643bf23be7c"
+      },
+      "expected": {
+        "ciphertext_hex": "f971aae04e3e7a41eedea24493963ce2e4569c4ebb87213838c5c4b1664ada7f377d3e314b11792d4f6c0ade7c1ef1541b4d428cf021c5b53155234d5b8eb7e85ad10fa0dcb3e533a0a4ff2ec5300fae12f12cb18147deb02cf3a0d14e1bbcb4d66651f251c0789fe1da9a08487d874a378b00df371529b208060e74335b"
+      }
+    },
+    {
+      "test_id": "gcm-011",
+      "input": {
+        "key_hex": "89b649a54d43b84e68793a5c35ee67a6c185ec3cf11e70deecd0e847d013f1cb",
+        "nonce_hex": "5bd41d6d888facff677de40c",
+        "aad_hex": "22156b76f2fb05adbb2d79fc7ded7feb9f644ff1f38fa8be48b3970b73956dfcda",
+        "plaintext_hex": "49a63230cf407d1fd62408d5ab98b62634c6f81f018cd34e8f8d1e4cb54de659c4b34de3d814b94c8b3a62fe5295efaf81f4bacede10f64099e72be263a88d24ea96065c2716220c8bcb66b07afa56f803681bcc1bfce9ebff77029e133f07c0b3cfd022886f286d8b3fc2ab0acff1d94619bcc5930287924e"
+      },
+      "expected": {
+        "ciphertext_hex": "6af78c8451112176a80a0b69b33452363834813ecc7de93286fec09fe3136fa7218e98ca3208230d19b3f4e3aebfce2167b1fb65b3dffcb9983e6cc98fee167811fb8694b2e576b0460cdcffb3d6cfc1229bdb041313195a67ab793fe4efaae8fe24cdff08ded3a5d36d509d36910d6223c7dee5f82601bc7f329430f23bbe5f36e6654a379e9b0b12"
+      }
+    },
+    {
+      "test_id": "gcm-012",
+      "input": {
+        "key_hex": "e4238893d2614f05c0cbace8b3d11ec1251df3c9531b4e17e466118bd7f1a23e",
+        "nonce_hex": "8f62afa9991b521a8a2a9555",
+        "aad_hex": "41bee4b73480ce2a1bcdaa1d149535f185ede476221d91bf8a1bbb6efe401f7c5f5e87d6",
+        "plaintext_hex": "249d098686a4715551086dd3a427fcb49bcb3b8f2a883668a0fb2a75f97a174512215871ec3892916f761fa9735193b508268d1834142cefa46463b376bfabd15a357b252aa258adc1dbba94c3acec95d0e2cc363340e4cc6d84b2d663faf2d452411848093a69608584c815d0316e0d108033a91c4558c4b4862a497476853ecdaf3611"
+      },
+      "expected": {
+        "ciphertext_hex": "a6e0dc2d4996d003b401d53be96c422a0e9d52dd451b45442619a5da3b75074786d540af858b57ca9db5f6b69b3e6152f9096a7f9bf5a9d3aa6acc0c528ff95ee986cb6513f9048a27e6fad88fa0ec916294e546dde1a91349192b72fbc5b98e36264d43d4684b014a7a8dbd225b7ad2770f6ec01503b998ba77747aafd0b4b8880a09d5e31a78b19e283b2ad77dd22d704b82c4"
+      }
+    },
+    {
+      "test_id": "gcm-013",
+      "input": {
+        "key_hex": "68075ea397d80fa4243da6599fae6b22748ee1a44baa040abc8a01fc41a9b690",
+        "nonce_hex": "bad2242b674454edc7cc2c42",
+        "aad_hex": "3eb47a26005f0769c2489103f91d9e80c65e3d8b356ab53ba22413270868ac8d294a32e9fef3b4",
+        "plaintext_hex": "a390ce4c093ce519dbb6f544600ff43913137b0475d5a4851449ad1f9f75685f62913068a00086a3ce9fd264e55b2f86843453176825226b71562efe4faea77a09f0d8246f1f3b0e1d7142a36d32e49235583a2ae8e6b7549fced5a0a6c1989af51e04246c7560867bb51765636bdaf4a9d2ff2818bfc50cfa0c0d1149a82112f554816515ff0fe110ac3aea34b997"
+      },
+      "expected": {
+        "ciphertext_hex": "8084882bff5bcf1b9f19697ee5cce3e4a86fd7ee00c462a39beceb33eb1c008ca25fd22ce50fd54fbf2adcabc6de89715f990423e2a1b4ae7a117486b417413ce4ebdd03a4cc674dce66a3381a05179b3551b88a539e00b16bcb6aeabeac67831e364078f368ce3ee32963e7d0193baf08fde071f321f2a712fc77dcbcd46b0e4fe730ddd8d011b45165acd56fbc6cd1cee2670c46aa30d639775d7610da46"
+      }
+    },
+    {
+      "test_id": "gcm-014",
+      "input": {
+        "key_hex": "78317687514fdf9c0643202bdb529214209fb8ac08466b1b91492accf91a919f",
+        "nonce_hex": "e9222ded0d8015512812b5e7",
+        "aad_hex": "5a2774e9559ff89f9e1bbf6aa3e6b11baf2d4b5b634f4540d59da96a89cb2412a51e45a9015886bb4e56",
+        "plaintext_hex": ""
+      },
+      "expected": {
+        "ciphertext_hex": "e909676aa48c28a3b41084aaf386ee7a"
+      }
+    },
+    {
+      "test_id": "gcm-015",
+      "input": {
+        "key_hex": "de18c2902dbffac5b2c8225d12c647bf654bc4d38187f2f10378bb7b1920ad47",
+        "nonce_hex": "b676993f9fc61d627d86b306",
+        "aad_hex": "",
+        "plaintext_hex": "331f7ee7b7b063cc838c86c0129c8029dbe7b8bd13bcbab38d394a379f255657f4d8fcc3245ad651879e2c6b4a3d52f4c98f8dac0b255fb6982b6e54d58da3b38ddb9c21c04d3f4162151a104876c62002fe771aceb20599652868d96bb72edf611ef907fa63a56a54a04fab4d4ce4c52363d8afff43cc65f5626908e94a4c19fdf2e530bf96166cf924ed773bb10c0c57ede8395f5917801ccaace447d465c80d3713afc8"
+      },
+      "expected": {
+        "ciphertext_hex": "54e8f0cce1d622642a85432a56b4b80d632365b24757dc072c25a92eec5ccb3c12ca69b80a69a7cd4af52a9e6c4c0e3711171ff6df0383288d02b28b639e8afb775a663f03a14cc55886f8ed7e2e70b216fbcc73143c48fc5157fe5b12b6c82b2eea0da53c8a80d05ea64d6823c0a2d7c55a9d1a1450cae330d116f52604b4e5cf99313171656f13152a149c997a30c809d00de3ea2c2c1e075b6ef7997cc6dacbcf001492efdd69df5d23cddd5b9525e948ac9a36"
+      }
+    },
+    {
+      "test_id": "gcm-016",
+      "input": {
+        "key_hex": "9cf2277ad40930fc731770312dc39a860a9985f40c776db22f7244c36480f789",
+        "nonce_hex": "d6dd1d3cb9d835167fa9bd1d",
+        "aad_hex": "4654a5821bb5f0ca98b4a75c2d50eea878ecd70856ffc521af97f194ca268cf0496e49ee589010ad024f9b9fa84c5c0e",
+        "plaintext_hex": "c786709a5b5a5b064a86d00cbb618fc83cd54b2b14d3430236d936f22ba23b7dccda3cc2d057add71f64b6464ba9b49e06227656af9ba344566430bc57942f2a59ab47ca9b0e81be665fdaf8fa641fb87c98f46fdef440a6e912306a8e5e85bbc7ada3b40f90efd4367e50c3a05970dfe0bf1d67f637d7876adac773ed60726d87d8ab33b8b7a3017f7d712df9d78945963d30b26f1843ee6a6b9fb26ffb5fcd438a73b4dcbe64504be0533b4247a260"
+      },
+      "expected": {
+        "ciphertext_hex": "8eb0afd6daf498adcd1bdbc559fbd270ac8dd7a0d0db6f48317d9368a730d373800e473e7e4e1718cb42d8fddcb7eff2c3822a08d5252826b29045446df9446a450814764a7772d376dfed87e1055c22b3f78990dfc9fb3de653bffac261528efc3854903a34bcb62fbf2dc695a3891e3c3da847a429fbb07fde7387701250f23ff3cd08350c4dc2f1cc33af3c6d57c8e8e94e29d23ac024b3d99a01dec74e22b0aa006128cc21b927ec7734bbe9d709bc17e7dbc34a9e268326a728d52c5c26"
+      }
+    },
+    {
+      "test_id": "gcm-017",
+      "input": {
+        "key_hex": "8e93a9b997469db7b8d4922e428ca4d1823cae8c5f6205c83310a16b06e09003",
+        "nonce_hex": "5f27db761dd7c99cc862b591",
+        "aad_hex": "72c892c2f913cd8fb04fc2e101b842276051eb7b6b5b0c3aee90d21d76e7a0fbbde50dcaaccbae3c48ded200d2ab45f979093d",
+        "plaintext_hex": "60a3a4120c65a2710d6cb2f6943fb5327931f0fac59cbf5ccec1611e565de3cf3922c7a62c50f9c8dd5291b95f4b3433404a55eda8702c065dcc8ab5b37c8f13be15acb3370e94860df4c58faf95e280b248df797db64424fdc581b6725fd489d74345c2bc549b44ad355febe3e71673383ae0ba63b9e60742f835280eb763b2d0082509f49834470b1cabbf43e3ec8c8a0e6574da3aacd677851b6f69cd7aa42b1eaaa20b90adb0ce7706d07a97bb14ae6183e8adce03286f918c"
+      },
+      "expected": {
+        "ciphertext_hex": "e338fcbb715dba0aafa6ee9e95be763494d10d5271b6973b6748c8f97d2f11f83a55a032c79bcdd414dc1a0e5a185deddf60e1358c347b75a3e371b55b993d907a5f9e616eba35609efbd9e64d5d573bb69063285a66ad5e066e34b2a1897ffcdef12c438d019ceb515f9e4409e10448bf1c0c9b340d56fd4f30043293320734e43d61e0c0178dd5216a38088a668ebc9ecff73cc491d7391da10b03e37414ab36eb70245ec4084531deb8791a2775549b424858cbd95e68b13576c27be971ddf109247a2cf85730ed45fc"
+      }
+    },
+    {
+      "test_id": "gcm-018",
+      "input": {
+        "key_hex": "3ce410e551466256963b1ac6ce090afbf35b5277878a601c6bba3887a30a35ca",
+        "nonce_hex": "ec1007501b439249df05210c",
+        "aad_hex": "c65ac3d0ca8cffcb56823f8421ce0420b8fb4a03812c299dadcc84f0c925bf2913a650c5ba603f9ea563b3a6a95dcf031d0c93657166",
+        "plaintext_hex": "a6"
+      },
+      "expected": {
+        "ciphertext_hex": "7a44509f0b6ef900f408a41c2aae41defb"
+      }
+    },
+    {
+      "test_id": "gcm-019",
+      "input": {
+        "key_hex": "129ffbc575ba710efe2271ade4e0babe61afa918a1cae6bac1bf0db344e7a418",
+        "nonce_hex": "d6268ecc57ca2d6e15431a08",
+        "aad_hex": "3b04bb5565f0079dfd576eae723730c20cd80117d50f0fc3cb1b383ebce4ab98a54e4d35a02993a795afce5175d8acb970bc3bfb80a140473f",
+        "plaintext_hex": "832c4993a915d1b1ab2a476a"
+      },
+      "expected": {
+        "ciphertext_hex": "d6f5a9b01430146b07c24715ba41f9cdf7cc626836e9ab7ede246ba6"
+      }
+    },
+    {
+      "test_id": "gcm-020",
+      "input": {
+        "key_hex": "48c1d270c336eb59418ace1582a54a6be33686ea6f8e378945ebdc1c5f0f6e9f",
+        "nonce_hex": "72485be94278bc7592643889",
+        "aad_hex": "",
+        "plaintext_hex": "5886033dcaf9cd1a3be5ba785e51435122c084f6c67b52"
+      },
+      "expected": {
+        "ciphertext_hex": "f9a3dcc92df3720dba408368ddb1ad364e493695aff8ea62c8b70de851e0866053e1118ff9d08d"
+      }
+    },
+    {
+      "test_id": "gcm-021",
+      "input": {
+        "key_hex": "87f611af8464112ed14bce2cb6b86efc690ddac98bd44b8a559db5495367cc7d",
+        "nonce_hex": "35fff73e5e1fd9713890a822",
+        "aad_hex": "8d10",
+        "plaintext_hex": ""
+      },
+      "expected": {
+        "ciphertext_hex": "5a98a7a3b4da1b78320911878f0e798b"
+      }
+    },
+    {
+      "test_id": "gcm-022",
+      "input": {
+        "key_hex": "44e1d4c712350bb9550bc1e8522aabbf4cbf69887a57d58f55e396d1e0a33370",
+        "nonce_hex": "2b6497c376ffcbcc33fa0e12",
+        "aad_hex": "c6fb7733c0",
+        "plaintext_hex": "52363c5005c22710f953a9710801e41dd831dccf1c089fa32b06f95c7aa1ae000c1d6d636015a663142b3f34de"
+      },
+      "expected": {
+        "ciphertext_hex": "33e9ce3f69235e858578c3be8d829edfb976ce40a2d43a5302c4c582d41478e982addf928082a33a92ad9cdbbac8250ce11a0c771332302d899bfdea13"
+      }
+    },
+    {
+      "test_id": "gcm-023",
+      "input": {
+        "key_hex": "f99230d7a9b7f61702366578486d812a5c7e4d2d73185ecb2cf03736c739d3e5",
+        "nonce_hex": "67c9243f32d9bc7e52524a3c",
+        "aad_hex": "d66ca9d97ad8707d",
+        "plaintext_hex": "4aed76a2e7a2d686f6cff3eb55bc7a7a55479617de6b9f45e92d9babbfd2a153ab3aba7b09fe7c204b6f8449885e9e3aeb6d5c702ce61eff"
+      },
+      "expected": {
+        "ciphertext_hex": "5272a08182ce994da6d78510e5385cc5babdad9ff4c94e911f1103554e614fc0413e99cef30a59aeec9660a16ae1606598925dd9719271a3bd82e3021fe3529a1af4d03a0ca1b700"
+      }
+    },
+    {
+      "test_id": "gcm-024",
+      "input": {
+        "key_hex": "41e3630f202d366515e58f12ae739ba3fa5001f59cc56dbead4c41ae87cd594f",
+        "nonce_hex": "193cf78df217da0b4c3e277f",
+        "aad_hex": "9bcb7bfe04c391c51974c3",
+        "plaintext_hex": "6a3e06b45d28215d1b09f9c233489ed0b971f15b7315eb116d808d8b91c5796117f6527dce4852bb7c51d92400307de323d65d3e1e0a607814ede24f74350726ee6969"
+      },
+      "expected": {
+        "ciphertext_hex": "2b4507c275877e2f29df0c113abc325f777c234c1964cc23e494df482378369ef06fa1f9d0bc04d03dcc0d3670dc8a4a4101174808b1d67d64710045e8b1ebf7f45ebc0f42e485273381a20b721bb2ee4eb452"
+      }
+    },
+    {
+      "test_id": "gcm-025",
+      "input": {
+        "key_hex": "c8863c437826ce3c4edf3f34ea8015cbb35ad82d20153aba87108b6db2b142c4",
+        "nonce_hex": "32352f1a12884ad376a15f22",
+        "aad_hex": "",
+        "plaintext_hex": "11e980883779d13a3dfea8286e77f123e17ccbe7c8d4b1680b9017f741714e74d0f47a5b82b74e19956e6cbda41cd12725a3df1b53f2f41587b4a60c1b1a2c9d1b34deb179f11434620f52dcd334"
+      },
+      "expected": {
+        "ciphertext_hex": "9031ba79da0928d0ff23b824ef1a1312472d7ff7bca4af3faec652a94e4a859f0a8a400aaba42c4b0bd2a0bbb706399eade64264475da3e6d47bcc06dbc92b8f401934b49ba198e5957bc877baa83ea5300838c981ef6061d84ef453e5b3"
+      }
+    },
+    {
+      "test_id": "gcm-026",
+      "input": {
+        "key_hex": "29020bc6999715c282dc8cb0223bfd4fcb01f9b8627623b26cfdffc51c19e192",
+        "nonce_hex": "7ac66f96094b03ed81d040c9",
+        "aad_hex": "0195ec79e0d7df2a025952144003a45811",
+        "plaintext_hex": "af9ef088e25a76985b7951cfdf5d3cf0285e10db9f3f7ba78612229a8e70c8d70ad42473b5be63d76cca86b038526a32fb44906ba22b004a6b5f0021e13c76b61d7392f05e648b93723b49c5710afe90aec44e37ed7578a73b"
+      },
+      "expected": {
+        "ciphertext_hex": "879a62584d722a8d3cd8ebd2bf46ba153eca8c7ed752abb8235a0403cf17a012f64cc7be60acf8e8fc61f09376c5c245e35a4e7a6ab6a8f4676dd8079f4b4e04f2b924366df766c999301db50c1e0ab7b7f87ae255b1c54b828aaf5a588baf946b853ebf0168dee66b"
+      }
+    },
+    {
+      "test_id": "gcm-027",
+      "input": {
+        "key_hex": "ebcf6ee9465023611f8dd8cb1d05ffcca0d4fbd17a896244e694dd9b08fd0ea7",
+        "nonce_hex": "eaa98d55231d277265c9a2ab",
+        "aad_hex": "fe9c567c0b6726b4b360676aa828c925cd92680b",
+        "plaintext_hex": "067cc50a8c9760c8d40800de7d50f5996669eb818bb6e19eec4a7890f7770ebed0e70b78d77925c77ce1a83049feca8eac96c2f9480773b946afdf42b8edea570538fd9d29468f7dececd0552a0ca7aad84f8a85441f2fb38e306a453414c8f77cec7b2b"
+      },
+      "expected": {
+        "ciphertext_hex": "024246640d1afed85b174ab937bb811f3163041d3d4e6db7ec60598f504caf43409760d5b082f39ee3c5c7fde829ba781c7be262d0b158e7707c9c58b008e7da9ca38dcb24cc0208e26396c008d53bf77286cf55dd7f69c762be70707eee7e7c0097f5ecaf2dfd870535b8d6e56a7ea989f6ce18"
+      }
+    },
+    {
+      "test_id": "gcm-028",
+      "input": {
+        "key_hex": "49811098bdea79b5176448ed4d61ba50749c846d3e321bc62752488802fdce3d",
+        "nonce_hex": "54856e1295da25ea2e98ceea",
+        "aad_hex": "f94d5bb09e4e94fc4310fdbf1aebb4037d7640c44503ae",
+        "plaintext_hex": ""
+      },
+      "expected": {
+        "ciphertext_hex": "99cbc822a3c44c964566238ace61ec13"
+      }
+    },
+    {
+      "test_id": "gcm-029",
+      "input": {
+        "key_hex": "447155cbf24c40188442aec95a6ce56db3a5c14315cffd59a16f01fd90f34edd",
+        "nonce_hex": "2ef422a3bb8e55f6d7b9ea05",
+        "aad_hex": "f30a390b36825fa9b44286758a7edb9e91556d323780d62f6e1c",
+        "plaintext_hex": "a4c1612aed54222896784e6d2f64dc129ab9b2cd5a0361c796899e05dc30fae1e5f5191204e4b751b7f43c35a88b3d0df5bf8763a5064b96eadc13f7e5d99b50776bd6f07ce3b9ef26348bd2b7ebb385dbcf9913e68ca9937b1765be6c122a8430557de74d98ddfa9c0f9bbd8fbb66ae109e2049f135b5170d97"
+      },
+      "expected": {
+        "ciphertext_hex": "46a920ec2c54c3d3c0f8de63cbabe2b4acf57e8299167f3191c579d15e07a73a333c2845bde700485b73eaa870038d6a2975d625d782e473d98b0936592a3d36eadc39b44616f5f98fce59330641f036522cbdcc6f5cfc9e7db7c40909587390826dff5079398f927fcfbfc1b405e471263d5b0f25dc547b2969294df8afbf3af836d8230be8f33d0f69"
+      }
+    },
+    {
+      "test_id": "gcm-030",
+      "input": {
+        "key_hex": "0c70a030428aba164a1af6e27887bb00e38e75ebc347751a49d71f6c8b007cf3",
+        "nonce_hex": "8aa935f256967495e54c7125",
+        "aad_hex": "",
+        "plaintext_hex": "519f2e19fc0408eb0408d0c4d697adbe9f3fd855eccbea37a54b014e65020533316baa63c0323ce999df3ad1a66e6f0a2781b9ea2723bca665583e11f22496aa0bd8838ddea03148a4cacd337e137938189d2b691da13e0c2530595f3ee8640acf79ae54963c27a4a81dfb966fcc4037156164c89ce8f695d7ea70dcafe6b3e4689efe95ab"
+      },
+      "expected": {
+        "ciphertext_hex": "b2178fd5b8f8005d0022d5e3694fbed100a47cfc4728c35884dcb387770f84d36624dc863f368380d53e9a8bbe33e5bfa1b04ec8fd787128a4473028479ba71af691158303f42ad273494a5bc5d0f14600b056a89f5b0928d51029737e0f98c2752e49208eff8dab34a899807ff477b60ccd9b02cb90a5d4338a1b8b08393190a39322773f9c323bed0482e567737dbfb15b06dc7a"
+      }
+    },
+    {
+      "test_id": "gcm-031",
+      "input": {
+        "key_hex": "f837d840f64649f223d7a04a726a683bc182c991d19b6336122a82819b7e39c9",
+        "nonce_hex": "dde523918029f0106623493a",
+        "aad_hex": "0a6cc5cbffa985ffe63cf3427c04b62647c09aa60f5639cc51bd51e1d3c3f2d8",
+        "plaintext_hex": "e9b4b2b45afb966f7e3a4cc8e766a8a704a87212ed63fe647278abadf1dba27c4bb66b15d16fe388d1cef9a1a664a0f764d3f4ce08294930403e995f9547e77bc75a60bab25dd42f3d0d5c86b4076de2739a125d4d015ed17855f5f4a106a9c7416ca4e94a19e9412951b6a94b7fe81e77d2dd4877b3c2cf65176e7b03b33e7ef6b05e537240146daef63871794ce30c"
+      },
+      "expected": {
+        "ciphertext_hex": "8029eab1727d20ff2e934937a743ef9d1670d49cb6137517cabc73f5bf718ba3aaea824d86ccf98b3e66992463702a71deba66d5c2262a67b3b4afb498dc47dc3e5e08a89513c125366117c1b56facf9fc9e139b9a9d1e1d35455bee94d1ad19cea10de944952d0f1ebab0794081aa8b1d2f40aff28b16f52df6444a0a27579c7a5914235fa8c081f4de2e17061d5b649e9af86a4878174f1e49e93743dd4e5c"
+      }
+    },
+    {
+      "test_id": "gcm-032",
+      "input": {
+        "key_hex": "9e4548ec95195befde30dd9b2785a91cbd31e7426964edcfa38ebdd4d13c712b",
+        "nonce_hex": "5346ce14ba8bea6f758488e2",
+        "aad_hex": "b78ba02b62e5b7a2543e07723e9d4f6a20fcbb2d95a6e8d75c2136917746fa239fd5a7",
+        "plaintext_hex": "a257bae7b52c8e8b5308bd542cacc0f63f81928b5d82285d99c0bfbb14b54e6fc22aa757595792ac8ece6e2086fee0d001c283918f73ba82c6c5f2c2af70211e396c1bb3ad4d7c6520edd2671346b1b848b7f9305bdb5d969b0597316a1efb030b7e696e7e8e62f97908d09acfe2681a2116102b23759914bed0d2de0155b22e8a35e8b67379b60c6ea412287cd87612b4eee5ed778d32836125fc"
+      },
+      "expected": {
+        "ciphertext_hex": "7d5010241705424eb3b8da2623c0834e5561bd4394a3a94e7a16c0c9c773bea6f294fac8ef0ef350c419ea1cebb406f14512962daceea2674f26ff84f1c45dcdd8540620038d113e3fc8c3b5c3ab989c1f2c09095292d76961c7317d4e843edd8bced2a5583139cb2bb113af937a7ef9e99777ea8c8d4c8bfe83047bab4d96a638202a92a5c106faedd75276e94b246a216943a9c95c3d2857e26dec8aca617723e5d5f6c6394bb8072bbe"
+      }
+    },
+    {
+      "test_id": "gcm-033",
+      "input": {
+        "key_hex": "11af745e0131d3589a1ac1571411fb3e25c85b5635c31dd64d1e95b78fba1321",
+        "nonce_hex": "695a1458a9638eb3d4fd3f6c",
+        "aad_hex": "477a76ad1e8447645893097ca3fb85a910d459a86e01c04f11c74ec31bd0c12f0a21006aeec1",
+        "plaintext_hex": "58a80eede1ff449753c78aadd00a2b384e458fb97dde6b5330130c4ce310af14aa9a851e1cad0e286580f7d382cbd159dfc77436bbe4d41de8df0cadc1a2aada4cc2b14c88f333095644bb0fe6ab3e4bbd2c2c4ee307cf8cb8c882886a21258feb87ad9933cd4ef617d821a9005c93f9cc663c20159b32002fc9977b03f6c8bdcde4002fdba0806d4c2617f5f487c9205d5ba7337e87433aecb5f6313d34995705d9ff22c010"
+      },
+      "expected": {
+        "ciphertext_hex": "a9998445b32261cba4f1e16487190fe5b5021eeb93c82cfbc1e047b139ce8f1ce017d372f686ae89a1d0a315eb8cd3c4191d03433836b3fdd83c40d4ed0fbcc1056525d8fc2aeca598fce8ca6823e0131f7de2e594a340c9fde81aec9e6c2b64b4a544747ceb0d43445f1559d80bb520be75d78f6d695d6cdec54eeb03ce3b08a85d953e5cab02c19fe1759aa64f67afc7aee9a4ecdd4b186ca0ae0a47f416c919ffc8ed25b32a082e05232ed2fc82e74f3272fc0bcf"
+      }
+    },
+    {
+      "test_id": "gcm-034",
+      "input": {
+        "key_hex": "2385ca82be4eda3d0d84e104094159e3afd0eca0da8379c4f80f2c94a8709b74",
+        "nonce_hex": "b765f7324aff4c51844aa7b3",
+        "aad_hex": "7e08466f049a250cfa33faa79e6f9e286f260101a41cec9abe756a436a294d32ab62adc6d66662a5c8",
+        "plaintext_hex": "febb6891cae0fcf50ec7dca9419c28a1136627b7f93143469334a84d6abe2b0de2b3ac2bcbd3e828dc6b1e04cb62564010c67b844006a18ae3d0a7439fa58031d041fb6d1b3461107b706ad37240e3615ff608ff470a20605b11819d7b928b3fe981c029e0d8aac0b3d20055b029214d32f3cac924743ecb9acd061d8fc7d582ffe0bc49faf294bc509755704b8bb1f8e245409ee437698779da740dbd0cb9236b4121d2b8073dcc25135e76a01aa82815"
+      },
+      "expected": {
+        "ciphertext_hex": "2796fb0155768c0a80d0270ef1021e3146ef8b86fa30f11c129441693b074ec9d6e3b26d23e4fd46bcd74d1d058d5964c68e24daf5d7c8f91b2db40050ff3686bc2df8ff649a3f6ed782868af8b6fae317a004cc5bf3ed714349f6a7d29d2eaf7c08172a224a8bb3a9c134ae854ff894dcf9584c7c4c07689d58b5987e8c947ddd6fccf23c60f44afbf846ed77865d84bf98439c825820284119594b6e62ae53f67778932464512b5f26d1a8ed71a45afc6576966092fdd6f045a941d95678b321"
+      }
+    },
+    {
+      "test_id": "gcm-035",
+      "input": {
+        "key_hex": "d3ff31c32dc8e1af386ac770867a9ec98abbcaa931f79d712a642591363531fe",
+        "nonce_hex": "f1f86d14b0aed7b3bb94c250",
+        "aad_hex": "",
+        "plaintext_hex": ""
+      },
+      "expected": {
+        "ciphertext_hex": "3684c940d95552d49aaf1f273539e470"
+      }
+    },
+    {
+      "test_id": "gcm-036",
+      "input": {
+        "key_hex": "c99b65a3ce28ea38c46a2d8dbc861baf4f574178c5bd04a8ba85c358074559d0",
+        "nonce_hex": "53c6554fc1461548c150d5ef",
+        "aad_hex": "14bc16e40704d48972bd05372aa9821e97902733cd022f82e252fabe22c923093f62383c5144e5270e52e05c91ab7b",
+        "plaintext_hex": "6dc0"
+      },
+      "expected": {
+        "ciphertext_hex": "87733f6c19213d3a630c140c90ef392d1236"
+      }
+    },
+    {
+      "test_id": "gcm-037",
+      "input": {
+        "key_hex": "64e98bb4a16c4af8d62a73ba29ba656fbcb928d8786a1d780296e3340de82d1d",
+        "nonce_hex": "3c0bdaf1e86634dc17d688bd",
+        "aad_hex": "fbd022e9475314a5299d19fdd85a96b5e8eab2e8136e94ebd4e4292bfcc1244d93a4c6a9885a31a4a3f8c073a407d24bb615",
+        "plaintext_hex": "7c733d6111aa12708feb767954"
+      },
+      "expected": {
+        "ciphertext_hex": "17b349c1b99d53d7a1c3f1d2627a93e7f0e1cf883e4f40e1202f231f12"
+      }
+    },
+    {
+      "test_id": "gcm-038",
+      "input": {
+        "key_hex": "a20f3c03215a241afb009e7a8ac184e4d84584596ae236177362d3dfc845d82b",
+        "nonce_hex": "70337cac744625c114582fac",
+        "aad_hex": "c35d901078c1019046a033dcf346610bd7b2cc093cbf584feedcabab04fe89dd444b5376a49b04ffb4e2ac81e11491f68acc1908d7",
+        "plaintext_hex": "54d1fd0b2bf2b389d2353b4e61c157d4125f47624c442274"
+      },
+      "expected": {
+        "ciphertext_hex": "d7b48c58b75403e613389613df9ac6fe236a59d1f46782d747d48d2eb05d15bf419c51b207569c60"
+      }
+    },
+    {
+      "test_id": "gcm-039",
+      "input": {
+        "key_hex": "02ef9229e36a715efd94ebe98d172c51012272771925f202f1f9a2258c3a77cb",
+        "nonce_hex": "0b68117de6db434ce6aca7f6",
+        "aad_hex": "355595b020073c35437b8741fee63e89fc960a98e7511c4876e8897199271118fdeeb7bc15e1bba5d0741bc5d5680fb849bdc5f8ea3abd4f",
+        "plaintext_hex": "ee881872611c60f6c1fd552195260836c66921e2ca7317847a322b104517219877a2b3"
+      },
+      "expected": {
+        "ciphertext_hex": "0507f8f2d2696f244b6ad37011e5d6f29ee7010a0a1a40926efdf2648e190dea4118b0bbffe6121b40fecc022cac81c99490d7"
+      }
+    }
+  ]
+}
