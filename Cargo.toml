@@ -17,7 +17,7 @@ repository   = "https://github.com/Apolloccrypt/paramant-core"
 # Post-quantum crypto via liboqs. M1 enables only ML-KEM (FIPS 203);
 # signature families (FIPS 204/205/206) are switched on at M2. No OpenSSL
 # backend — liboqs builds its own symmetric primitives.
-oqs        = { version = "0.10", default-features = false, features = ["ml_kem", "ml_dsa", "std"] }
+oqs        = { version = "0.10", default-features = false, features = ["ml_kem", "ml_dsa", "sphincs", "falcon", "std"] }
 
 # Classical crypto (FIPS-validated AWS-LC)
 aws-lc-rs  = "1.13"

@@ -157,9 +157,207 @@ pub mod ml_dsa_65 {
     }
 }
 
+/// Hash-based signatures via liboqs' SPHINCS+-SHA2-128f-simple.
+///
+/// **Caveat:** liboqs 0.12 ships round-3 SPHINCS+ "simple", which is *not*
+/// byte-compatible with FIPS 205 SLH-DSA (the message hashing differs). This
+/// module is round-trip tested within liboqs only — no `@noble`/FIPS-205
+/// cross-implementation parity is claimed, and `paramant-relay` does not use it.
+/// It will track true SLH-DSA once liboqs exposes it. See
+/// `docs/adrs/0009-sphincs-vs-slh-dsa.md`.
+pub mod slh_dsa {
+    use super::{raw_keygen, raw_sign, raw_verify, Algorithm, CoreError, CoreResult, Zeroizing};
+
+    /// Length of an SLH-DSA-SHA2-128f public key, in bytes.
+    pub const PUBLIC_KEY_LEN: usize = 32;
+    /// Length of an SLH-DSA-SHA2-128f secret key, in bytes.
+    pub const SECRET_KEY_LEN: usize = 64;
+    /// Length of an SLH-DSA-SHA2-128f signature, in bytes.
+    pub const SIGNATURE_LEN: usize = 17088;
+
+    const ALG: Algorithm = Algorithm::SphincsSha2128fSimple;
+
+    /// An SLH-DSA-SHA2-128f public key.
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct PublicKey(Vec<u8>);
+    /// An SLH-DSA-SHA2-128f secret key. Wiped on drop.
+    #[derive(Clone)]
+    pub struct SecretKey(Zeroizing<Vec<u8>>);
+    /// An SLH-DSA-SHA2-128f signature.
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Signature(Vec<u8>);
+
+    impl PublicKey {
+        /// Borrow the key as bytes.
+        pub fn as_bytes(&self) -> &[u8] {
+            &self.0
+        }
+        /// Build from bytes, validating the length.
+        ///
+        /// # Errors
+        /// [`CoreError::Sig`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
+        pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
+            if bytes.len() != PUBLIC_KEY_LEN {
+                return Err(CoreError::Sig("invalid public key length"));
+            }
+            Ok(Self(bytes.to_vec()))
+        }
+    }
+    impl SecretKey {
+        /// Borrow the key as bytes. Handle with care.
+        pub fn as_bytes(&self) -> &[u8] {
+            &self.0
+        }
+        /// Build from bytes, validating the length.
+        ///
+        /// # Errors
+        /// [`CoreError::Sig`] if `bytes` is not [`SECRET_KEY_LEN`] long.
+        pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
+            if bytes.len() != SECRET_KEY_LEN {
+                return Err(CoreError::Sig("invalid secret key length"));
+            }
+            Ok(Self(Zeroizing::new(bytes.to_vec())))
+        }
+    }
+    impl Signature {
+        /// Borrow the signature as bytes.
+        pub fn as_bytes(&self) -> &[u8] {
+            &self.0
+        }
+        /// Build from bytes, validating the length.
+        ///
+        /// # Errors
+        /// [`CoreError::Sig`] if `bytes` is not [`SIGNATURE_LEN`] long.
+        pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
+            if bytes.len() != SIGNATURE_LEN {
+                return Err(CoreError::Sig("invalid signature length"));
+            }
+            Ok(Self(bytes.to_vec()))
+        }
+    }
+
+    /// Generate an SLH-DSA-SHA2-128f keypair using the system RNG.
+    ///
+    /// # Errors
+    /// [`CoreError::Sig`] if liboqs fails.
+    pub fn keygen() -> CoreResult<(PublicKey, SecretKey)> {
+        let (pk, sk) = raw_keygen(ALG)?;
+        Ok((PublicKey(pk), SecretKey(Zeroizing::new(sk))))
+    }
+    /// Sign `msg` with `sk`.
+    ///
+    /// # Errors
+    /// [`CoreError::Sig`] if liboqs fails.
+    pub fn sign(sk: &SecretKey, msg: &[u8]) -> CoreResult<Signature> {
+        Ok(Signature(raw_sign(ALG, &sk.0, msg)?))
+    }
+    /// Verify `sig` over `msg` against `pk`. `Ok(false)` for a bad signature.
+    pub fn verify(pk: &PublicKey, msg: &[u8], sig: &Signature) -> CoreResult<bool> {
+        raw_verify(ALG, &pk.0, msg, &sig.0)
+    }
+}
+
+/// Falcon-512 (FN-DSA) — small signatures.
+///
+/// Round-trip verified within liboqs. We make **no** cross-implementation
+/// byte-equivalence claim for Falcon: its signature encoding varies between
+/// implementations and it is not yet FIPS-final, so it is not KAT'd against
+/// @noble (and `paramant-relay` does not use it). Signatures are variable length.
+pub mod falcon_512 {
+    use super::{raw_keygen, raw_sign, raw_verify, Algorithm, CoreError, CoreResult, Zeroizing};
+
+    /// Length of a Falcon-512 public key, in bytes.
+    pub const PUBLIC_KEY_LEN: usize = 897;
+    /// Length of a Falcon-512 secret key, in bytes.
+    pub const SECRET_KEY_LEN: usize = 1281;
+    /// Maximum length of a Falcon-512 signature, in bytes (signatures vary).
+    pub const MAX_SIGNATURE_LEN: usize = 752;
+
+    const ALG: Algorithm = Algorithm::Falcon512;
+
+    /// A Falcon-512 public key.
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct PublicKey(Vec<u8>);
+    /// A Falcon-512 secret key. Wiped on drop.
+    #[derive(Clone)]
+    pub struct SecretKey(Zeroizing<Vec<u8>>);
+    /// A Falcon-512 signature (variable length, up to [`MAX_SIGNATURE_LEN`]).
+    #[derive(Clone, PartialEq, Eq)]
+    pub struct Signature(Vec<u8>);
+
+    impl PublicKey {
+        /// Borrow the key as bytes.
+        pub fn as_bytes(&self) -> &[u8] {
+            &self.0
+        }
+        /// Build from bytes, validating the length.
+        ///
+        /// # Errors
+        /// [`CoreError::Sig`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
+        pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
+            if bytes.len() != PUBLIC_KEY_LEN {
+                return Err(CoreError::Sig("invalid public key length"));
+            }
+            Ok(Self(bytes.to_vec()))
+        }
+    }
+    impl SecretKey {
+        /// Borrow the key as bytes. Handle with care.
+        pub fn as_bytes(&self) -> &[u8] {
+            &self.0
+        }
+        /// Build from bytes, validating the length.
+        ///
+        /// # Errors
+        /// [`CoreError::Sig`] if `bytes` is not [`SECRET_KEY_LEN`] long.
+        pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
+            if bytes.len() != SECRET_KEY_LEN {
+                return Err(CoreError::Sig("invalid secret key length"));
+            }
+            Ok(Self(Zeroizing::new(bytes.to_vec())))
+        }
+    }
+    impl Signature {
+        /// Borrow the signature as bytes.
+        pub fn as_bytes(&self) -> &[u8] {
+            &self.0
+        }
+        /// Build from bytes, validating it is non-empty and within the maximum.
+        ///
+        /// # Errors
+        /// [`CoreError::Sig`] if `bytes` is empty or longer than [`MAX_SIGNATURE_LEN`].
+        pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
+            if bytes.is_empty() || bytes.len() > MAX_SIGNATURE_LEN {
+                return Err(CoreError::Sig("invalid signature length"));
+            }
+            Ok(Self(bytes.to_vec()))
+        }
+    }
+
+    /// Generate a Falcon-512 keypair using the system RNG.
+    ///
+    /// # Errors
+    /// [`CoreError::Sig`] if liboqs fails.
+    pub fn keygen() -> CoreResult<(PublicKey, SecretKey)> {
+        let (pk, sk) = raw_keygen(ALG)?;
+        Ok((PublicKey(pk), SecretKey(Zeroizing::new(sk))))
+    }
+    /// Sign `msg` with `sk`.
+    ///
+    /// # Errors
+    /// [`CoreError::Sig`] if liboqs fails.
+    pub fn sign(sk: &SecretKey, msg: &[u8]) -> CoreResult<Signature> {
+        Ok(Signature(raw_sign(ALG, &sk.0, msg)?))
+    }
+    /// Verify `sig` over `msg` against `pk`. `Ok(false)` for a bad signature.
+    pub fn verify(pk: &PublicKey, msg: &[u8], sig: &Signature) -> CoreResult<bool> {
+        raw_verify(ALG, &pk.0, msg, &sig.0)
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::ml_dsa_65;
+    use super::{falcon_512, ml_dsa_65, slh_dsa};
 
     #[test]
     fn sign_verify_roundtrip() {
@@ -178,5 +376,27 @@ mod tests {
         let sig = ml_dsa_65::sign(&sk, b"paramant").unwrap();
         assert!(!ml_dsa_65::verify(&pk, b"paramant!", &sig).unwrap());
         assert!(!ml_dsa_65::verify(&other_pk, b"paramant", &sig).unwrap());
+    }
+
+    #[test]
+    fn slh_dsa_roundtrip() {
+        let (pk, sk) = slh_dsa::keygen().unwrap();
+        assert_eq!(pk.as_bytes().len(), slh_dsa::PUBLIC_KEY_LEN);
+        let sig = slh_dsa::sign(&sk, b"paramant").unwrap();
+        assert_eq!(sig.as_bytes().len(), slh_dsa::SIGNATURE_LEN);
+        assert!(slh_dsa::verify(&pk, b"paramant", &sig).unwrap());
+        assert!(!slh_dsa::verify(&pk, b"paramant!", &sig).unwrap());
+    }
+
+    #[test]
+    fn falcon_512_roundtrip() {
+        let (pk, sk) = falcon_512::keygen().unwrap();
+        assert_eq!(pk.as_bytes().len(), falcon_512::PUBLIC_KEY_LEN);
+        let sig = falcon_512::sign(&sk, b"paramant").unwrap();
+        assert!(
+            !sig.as_bytes().is_empty() && sig.as_bytes().len() <= falcon_512::MAX_SIGNATURE_LEN
+        );
+        assert!(falcon_512::verify(&pk, b"paramant", &sig).unwrap());
+        assert!(!falcon_512::verify(&pk, b"paramant!", &sig).unwrap());
     }
 }

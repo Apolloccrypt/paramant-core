@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   via liboqs, per-algorithm types ([ADR-0007](docs/adrs/0007-signature-type-pattern.md)),
   default scheme ([ADR-0008](docs/adrs/0008-default-signature.md)). 30 KAT vectors
   verifying @noble signatures + tamper rejection + interop + sign/verify proptest.
+- M2 (in progress): `sig::slh_dsa` (liboqs SPHINCS+-SHA2-128f-simple) and
+  `sig::falcon_512`, round-trip tested. Neither is cross-impl KAT'd: liboqs 0.12's
+  SPHINCS+ is not FIPS-205 SLH-DSA ([ADR-0009](docs/adrs/0009-sphincs-vs-slh-dsa.md)),
+  and Falcon's encoding varies between implementations. `paramant-relay` uses neither.
 - M1 (First Light): `kem` module — ML-KEM-768 (FIPS 203) `keygen`/`encaps`/`decaps`
   via liboqs (`oqs`), with zeroizing secret types and no `unsafe`; `error` module
   (`CoreError`/`CoreResult`).

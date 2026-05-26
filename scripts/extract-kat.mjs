@@ -18,6 +18,9 @@ const mlkemSpec = process.env.NOBLE_PQ_MLKEM ?? '@noble/post-quantum/ml-kem.js';
 const mldsaSpec = process.env.NOBLE_PQ_MLDSA ?? mlkemSpec.replace('ml-kem.js', 'ml-dsa.js');
 const { ml_kem768 } = await import(mlkemSpec);
 const { ml_dsa65 } = await import(mldsaSpec);
+// SLH-DSA is intentionally not extracted: liboqs 0.12 ships SPHINCS+ round-3
+// (not FIPS 205), so it is round-trip tested only, not cross-impl KAT'd against
+// @noble. See docs/adrs/0009-sphincs-vs-slh-dsa.md.
 
 const COUNT = 30;
 const hex = (u8) => Buffer.from(u8).toString('hex');
