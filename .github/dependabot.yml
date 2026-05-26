@@ -1,13 +1,18 @@
 version: 2
 updates:
-  # Cargo dependencies — weekly (blueprint §7 M0).
+  # Cargo dependencies — weekly. Security + patch/minor only; major bumps are a
+  # deliberate decision (code-minimization: don't change without a reason), so
+  # they are ignored here and reconsidered by hand at the milestone that needs them.
   - package-ecosystem: cargo
     directory: "/"
     schedule:
       interval: weekly
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(deps)"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions — unpinned/stale actions are a supply-chain gap; keep current.
   - package-ecosystem: github-actions
