@@ -1,0 +1,29 @@
+# cargo-deny policy. Run: cargo deny check
+# Audit-prep from commit 1 (blueprint §9).
+
+[advisories]
+version = 2
+yanked = "deny"
+
+[licenses]
+version = 2
+# Permissive licenses present in the dependency tree. Added deliberately as deps
+# arrive (per ADR-0004), not preemptively — new crypto deps in M1 will extend it.
+allow = [
+  "MIT",
+  "Apache-2.0",
+  "Unicode-3.0",
+]
+confidence-threshold = 0.9
+# paramant-core itself is BUSL-1.1 and unpublished (publish = false); skip the
+# license check on in-tree workspace crates.
+private = { ignore = true }
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

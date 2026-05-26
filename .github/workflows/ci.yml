@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+
+jobs:
+  check:
+    name: check · test · lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Installs the toolchain pinned in rust-toolchain.toml (1.80 + clippy + rustfmt).
+      - name: Install pinned toolchain
+        run: rustup show
+      - uses: Swatinem/rust-cache@v2
+      - name: Format
+        run: cargo fmt --all -- --check
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Check
+        run: cargo check --all
+      - name: Test
+        run: cargo test --all
+
+  audit:
+    name: audit · deny
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned toolchain
+        run: rustup show
+      - uses: taiki-e/install-action@v2
+        with:
+          # Prebuilt binaries — independent of the project's 1.80 toolchain.
+          tool: cargo-audit,cargo-deny
+      - name: Advisory audit
+        run: cargo audit
+      - name: License / advisory / source policy
+        run: |
+          if [ -f deny.toml ]; then
+            cargo deny check
+          else
+            echo "no deny.toml — skipping"
+          fi
