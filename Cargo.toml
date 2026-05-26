@@ -1,31 +1,46 @@
-[package]
-name = "paramant-core"
-version = "0.1.0"
-edition = "2021"
-authors = ["Mick Beer"]
+[workspace]
+members  = ["crates/*"]
+resolver = "2"
 
-[lib]
-name = "paramant_core"
-crate-type = ["cdylib", "rlib"]
+[workspace.package]
+version      = "0.1.0"
+edition      = "2021"
+rust-version = "1.80"
+license      = "BUSL-1.1"
+authors      = ["Mick Beer <mick@paramant.app>"]
+repository   = "https://github.com/Apolloccrypt/paramant-core"
 
-[dependencies]
-pqcrypto-kyber = "0.8"
-pqcrypto-traits = "0.3"
-p256 = { version = "0.13", features = ["ecdh"] }
-aes-gcm = "0.10"
-hkdf = "0.12"
-sha2 = "0.10"
-rand_core = { version = "0.6", features = ["getrandom"] }
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-hex = "0.4"
-zeroize = { version = "1.7", features = ["derive"] }
-tokio = { version = "1", features = ["full"] }
-thiserror = "1"
-anyhow = "1"
+# Single, pinned catalogue of every dependency the core will use through M7.
+# Members opt in with `dep.workspace = true`; entries no member uses are not
+# built or locked. See docs/adrs/0004-code-minimization.md and blueprint §4.
+[workspace.dependencies]
+# Post-quantum crypto via liboqs (NIST FIPS 203/204/205/206)
+oqs        = "0.10"
 
-[profile.release]
-opt-level = 3
-lto = true
-codegen-units = 1
-strip = true
+# Classical crypto (FIPS-validated AWS-LC)
+aws-lc-rs  = "1.13"
+
+# KDF + hashing
+argon2     = "0.5"
+hkdf       = "0.12"
+sha2       = "0.10"
+
+# Mnemonic
+bip39      = "2.0"
+
+# Memory safety
+zeroize    = { version = "1.8", features = ["derive"] }
+secrecy    = { version = "0.10", features = ["serde"] }
+subtle     = "2.6"
+
+# Serialization
+serde      = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+hex        = "0.4"
+
+# Errors
+thiserror  = "1.0"
+
+# Testing only
+proptest   = "1.5"
+criterion  = "0.5"

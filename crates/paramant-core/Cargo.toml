@@ -1,0 +1,19 @@
+[package]
+name = "paramant-core"
+description = "Post-quantum cryptographic core for Paramant: KEM, signatures, AEAD, KDF, envelopes, wire format."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+# Not published to crates.io until M11 (GA). Keeps `cargo publish` from firing
+# early and lets cargo-deny skip the license check on this in-tree crate.
+publish = false
+
+# M0 is an empty shell. These are the foundational, non-crypto deps the first
+# real modules (error.rs, secret.rs) need; crypto deps are added in M1.
+[dependencies]
+thiserror = { workspace = true }
+secrecy = { workspace = true }
+zeroize = { workspace = true }
