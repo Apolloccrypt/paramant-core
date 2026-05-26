@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# Blocks accidental commits of node_modules, package manifests, or other tooling
+# artifacts that must never enter the paramant-core repo, and crate-local KAT
+# duplicates. See docs/adrs/0006-no-node-tooling-in-repo.md.
+set -euo pipefail
+
+staged() { git diff --cached --name-only --diff-filter=ACM; }
+
+blocked=$(staged | grep -E '(^|/)(node_modules/|package\.json$|package-lock\.json$|yarn\.lock$)' || true)
+if [ -n "$blocked" ]; then
+  echo "ERROR: refusing to commit forbidden tooling artifacts:" >&2
+  echo "$blocked" | sed 's/^/  /' >&2
+  echo "" >&2
+  echo "Node tooling lives in /tmp or via NOBLE_PQ_MLKEM. See .gitignore and" >&2
+  echo "docs/adrs/0006-no-node-tooling-in-repo.md." >&2
+  exit 1
+fi
+
+crate_kat=$(staged | grep -E '^crates/[^/]+/tests/kat/' || true)
+if [ -n "$crate_kat" ]; then
+  echo "ERROR: KAT vectors belong in repo-root tests/kat/, not crate-local:" >&2
+  echo "$crate_kat" | sed 's/^/  /' >&2
+  exit 1
+fi
+
+exit 0
