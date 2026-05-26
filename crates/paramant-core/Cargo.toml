@@ -21,6 +21,9 @@ oqs = { workspace = true }
 aws-lc-rs = { workspace = true }
 hkdf = { workspace = true }
 sha2 = { workspace = true }
+# M3: Argon2id password hashing + constant-time tag comparison.
+argon2 = { workspace = true }
+subtle = { workspace = true }
 
 [dev-dependencies]
 hex = { workspace = true }

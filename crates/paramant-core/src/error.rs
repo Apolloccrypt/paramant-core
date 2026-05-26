@@ -29,6 +29,10 @@ pub enum CoreError {
     #[error("AEAD operation failed: {0}")]
     Aead(&'static str),
 
+    /// A key-derivation primitive (Argon2id, HKDF) failed.
+    #[error("KDF operation failed: {0}")]
+    Kdf(&'static str),
+
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]
     InvalidLength {

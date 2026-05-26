@@ -6,5 +6,6 @@
 
 pub use crate::aead;
 pub use crate::error::{CoreError, CoreResult};
+pub use crate::kdf;
 pub use crate::kem::{self, Ciphertext, PublicKey, SecretKey, SharedSecret};
 pub use crate::sig;

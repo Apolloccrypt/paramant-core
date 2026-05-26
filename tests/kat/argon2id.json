@@ -1,0 +1,263 @@
+{
+  "primitive": "argon2id",
+  "source": "@noble/hashes (validated vs RFC 9106 Appendix A on generation); params = OWASP 2024 m=19456 KiB, t=2, p=1",
+  "note": "hash_password(pw, salt) must equal tag_hex byte-for-byte; verify_password must accept the tag and reject any flipped bit.",
+  "count": 15,
+  "vectors": [
+    {
+      "test_id": "argon2id-00",
+      "input": {
+        "password_hex": "46f7c6e98627208d",
+        "salt_hex": "98e0a027ba5ad2761d73a0a2d86e19f4"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "3f478073cc434e1fa1cb6e14a4f12836a6619cfb172c07d525d37d82407be52d"
+      }
+    },
+    {
+      "test_id": "argon2id-01",
+      "input": {
+        "password_hex": "ec6d1061711f103cbaf517",
+        "salt_hex": "7f9fbfacb07c9b946a819c7a425f724d"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "5e452e7c185f922beb177709e7f06f600511ba6df780a7feece700dd3e24a323"
+      }
+    },
+    {
+      "test_id": "argon2id-02",
+      "input": {
+        "password_hex": "4f77d3f418616226da646df135a1",
+        "salt_hex": "cb9f3cba4cb4564cb8f965ef95581cbb"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "d03291f10f4277e03bac4b7b112dbde59e96858a8fee492a481f86f9ee1ff491"
+      }
+    },
+    {
+      "test_id": "argon2id-03",
+      "input": {
+        "password_hex": "cc68562bc166e3fe0c426f0e31e6e2f808",
+        "salt_hex": "b2314488bdcec4c3a1791a9464f85b56"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "e1c60e803e2b3303ff2ff02c5f9e0e8f80322e058f6eea60fa8430ffedd8c0ae"
+      }
+    },
+    {
+      "test_id": "argon2id-04",
+      "input": {
+        "password_hex": "b78d7fa79b56451eae626e97f175f8aa9fd42732",
+        "salt_hex": "c318fe0f8e3b9ba31ebb9929f7355b66"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "138af0331ae874c51db0f175b1c28a9b20c2c502d4dac8aa85cec7e97d32c488"
+      }
+    },
+    {
+      "test_id": "argon2id-05",
+      "input": {
+        "password_hex": "978fec7a240ed3503a735b2bbd5f8d6f8c5bccb1d6c2b0",
+        "salt_hex": "15065aeefdbcfd7ad1bd6574e99c60a0"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "11b255d3292fd7f94f55dca9c7be3b27402646da382905fc87f25f0f4ed15443"
+      }
+    },
+    {
+      "test_id": "argon2id-06",
+      "input": {
+        "password_hex": "71418a91eb46f3acd62f7998303a9407e457442ce2b5b95db653",
+        "salt_hex": "2850504402a8b0951655fb2e4e4483b4"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "fd96a9bcf9278bda67f17307b145806514f9a6852252f9735482e1dbe1951373"
+      }
+    },
+    {
+      "test_id": "argon2id-07",
+      "input": {
+        "password_hex": "b2a82357880caf92a3ac0434974beeea0c608685f3da426e87e4a539cc",
+        "salt_hex": "503acd0f64128dff31241bbe800c4aea"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "e3bb3c7a52ef6ccc9527c6f0242f02061c61f293b1c3f39c019035382b611a81"
+      }
+    },
+    {
+      "test_id": "argon2id-08",
+      "input": {
+        "password_hex": "9f3ddcbbb7e5c2fb64f5c0706d5e54a91680323dc0ad772ff7f35f33e8d1f1b6",
+        "salt_hex": "bb7e906ced46241206d3111ea4072e2b"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "cabc7d60302d06c9046156c14c951a08e5ca40b6c0780424d7e838e96eae4159"
+      }
+    },
+    {
+      "test_id": "argon2id-09",
+      "input": {
+        "password_hex": "702271c425492a566b73ddb717701855930de82e21770e6ea699d0104585cdc8a887e7",
+        "salt_hex": "76e6d72eb00b72f9002b4256c53dd07b"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "1014618dc5cca02e2dba2f8d385c4e8e1aa81f68c0df9bfe8d256a36f4e1c0f1"
+      }
+    },
+    {
+      "test_id": "argon2id-10",
+      "input": {
+        "password_hex": "6fcd675e37966a05004008d275839f5e7c8db0d7baaa28d5313e5f4d3324db15c97c73ac2dba",
+        "salt_hex": "f53de8ed58c74e4e5c3baa7058819db8"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "1eb90e6e43a24052de0f0d65dd262366e363e367a2741f27d3fd5239ccaf8643"
+      }
+    },
+    {
+      "test_id": "argon2id-11",
+      "input": {
+        "password_hex": "5b62361ea67430e3",
+        "salt_hex": "97fd45ef5ca5ad5825142f68f54b885b"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "8e242298f8ed6bef9a661a66d52e5dd4f5239d34e1fdcc4ad35ac7ea48bc50ec"
+      }
+    },
+    {
+      "test_id": "argon2id-12",
+      "input": {
+        "password_hex": "bf17b84a0a89c6acdf3135",
+        "salt_hex": "890ab1ca786bd484d7bd96dabacc5674"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "99f6cf3c48d1fd816f4ae1c31ab239d31508085ae85f16c4f9748b541981aff9"
+      }
+    },
+    {
+      "test_id": "argon2id-13",
+      "input": {
+        "password_hex": "f8b67e283d9f9ddba38c037df81b",
+        "salt_hex": "0f33f1e43eec95269a1c58b46b29489f"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "132df088a3174ab2eb1cc60ad599df357e7bbadcda8e8307051cfbdb9aa1f662"
+      }
+    },
+    {
+      "test_id": "argon2id-14",
+      "input": {
+        "password_hex": "bddb1ce8cb6b082c744e8be484c1169df9",
+        "salt_hex": "6353999eaa45bc99f8758641e6d4a9dd"
+      },
+      "params": {
+        "m_kib": 19456,
+        "t": 2,
+        "p": 1,
+        "dk_len": 32,
+        "version": 19
+      },
+      "expected": {
+        "tag_hex": "9caff6878c19265057b3593cdbf80d3d5234072a750503fe7757dc2be5cf7a78"
+      }
+    }
+  ]
+}

@@ -24,6 +24,7 @@
 
 pub mod aead;
 pub mod error;
+pub mod kdf;
 pub mod kem;
 pub mod prelude;
 pub mod sig;
