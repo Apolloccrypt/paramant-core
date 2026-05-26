@@ -1,7 +1,28 @@
+# Rust
 target/
 **/*.rs.bk
-*.swp
-.DS_Store
+
+# Node tooling — used ONLY for KAT generation in /tmp or via NOBLE_PQ_MLKEM,
+# never committed. See docs/adrs/0006-no-node-tooling-in-repo.md.
+node_modules/
+**/node_modules/
+package.json
+package-lock.json
+yarn.lock
+scripts/package*.json
+scripts/node_modules/
+
+# No crate-local KAT duplicates; canonical location is repo-root tests/kat/.
+crates/*/tests/kat/
+
+# Secrets / env
 .env
 .env.*
 !.env.example
+
+# OS / editor artifacts
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
