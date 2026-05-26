@@ -33,6 +33,10 @@ pub enum CoreError {
     #[error("KDF operation failed: {0}")]
     Kdf(&'static str),
 
+    /// A BIP-0039 mnemonic operation failed.
+    #[error("mnemonic operation failed: {0}")]
+    Mnemonic(&'static str),
+
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]
     InvalidLength {

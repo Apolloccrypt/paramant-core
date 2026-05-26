@@ -5,7 +5,7 @@
 //!
 //! - **M1** [`kem`] — ML-KEM-768 (FIPS 203)
 //! - **M2** [`sig`] — ML-DSA-65 (FIPS 204), SLH-DSA, Falcon
-//! - **M3** [`aead`] — AES-256-GCM (KDF + mnemonic to follow)
+//! - **M3** [`aead`] — AES-256-GCM, [`kdf`] — Argon2id + HKDF, [`mnemonic`] — BIP-0039
 //! - **M4** Merkle, padding, envelope, wire format v1
 //!
 //! `paramant-relay` (build 2.5.0) is the reference implementation; primitives are
@@ -26,5 +26,6 @@ pub mod aead;
 pub mod error;
 pub mod kdf;
 pub mod kem;
+pub mod mnemonic;
 pub mod prelude;
 pub mod sig;

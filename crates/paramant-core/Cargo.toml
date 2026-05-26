@@ -24,6 +24,8 @@ sha2 = { workspace = true }
 # M3: Argon2id password hashing + constant-time tag comparison.
 argon2 = { workspace = true }
 subtle = { workspace = true }
+# M3: BIP-0039 English mnemonics.
+bip39 = { workspace = true }
 
 [dev-dependencies]
 hex = { workspace = true }
