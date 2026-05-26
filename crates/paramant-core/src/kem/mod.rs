@@ -19,6 +19,8 @@
 //! assert_eq!(ss_sender.as_bytes(), ss_receiver.as_bytes());
 //! ```
 
+pub mod hybrid;
+
 use oqs::kem::{Algorithm, Kem};
 use zeroize::Zeroizing;
 

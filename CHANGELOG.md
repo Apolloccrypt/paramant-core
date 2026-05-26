@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `sig::falcon_512`, round-trip tested. Neither is cross-impl KAT'd: liboqs 0.12's
   SPHINCS+ is not FIPS-205 SLH-DSA ([ADR-0009](docs/adrs/0009-sphincs-vs-slh-dsa.md)),
   and Falcon's encoding varies between implementations. `paramant-relay` uses neither.
+- M2: hybrid KEM `kem::hybrid` — ML-KEM-768 ⊕ ECDH P-256 (`aws-lc-rs`), combined via
+  HKDF-Extract per draft-ietf-tls-hybrid-design
+  ([ADR-0010](docs/adrs/0010-hybrid-kem-construction.md)); round-trip + property
+  tested. `kem.rs` split into `kem/{mod,hybrid}.rs` (>300 lines). KAT corpus raised
+  to 100 cross-impl vectors (50 ML-KEM + 50 ML-DSA). **M2 complete.**
 - M1 (First Light): `kem` module — ML-KEM-768 (FIPS 203) `keygen`/`encaps`/`decaps`
   via liboqs (`oqs`), with zeroizing secret types and no `unsafe`; `error` module
   (`CoreError`/`CoreResult`).

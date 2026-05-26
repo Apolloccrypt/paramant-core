@@ -21,7 +21,7 @@ fn unhex(s: &str) -> Vec<u8> {
 fn verifies_noble_signatures_and_rejects_tampering() {
     let kat: serde_json::Value = serde_json::from_str(KAT_JSON).expect("parse KAT json");
     let vectors = kat["vectors"].as_array().expect("vectors array");
-    assert_eq!(vectors.len(), 30, "expected 30 KAT vectors");
+    assert_eq!(vectors.len(), 50, "expected 50 KAT vectors");
 
     for v in vectors {
         let id = v["test_id"].as_str().unwrap_or("?");

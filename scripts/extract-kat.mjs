@@ -22,7 +22,7 @@ const { ml_dsa65 } = await import(mldsaSpec);
 // (not FIPS 205), so it is round-trip tested only, not cross-impl KAT'd against
 // @noble. See docs/adrs/0009-sphincs-vs-slh-dsa.md.
 
-const COUNT = 30;
+const COUNT = 50;
 const hex = (u8) => Buffer.from(u8).toString('hex');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
