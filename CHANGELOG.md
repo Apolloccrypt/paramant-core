@@ -9,9 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - M1 (First Light): `kem` module — ML-KEM-768 (FIPS 203) `keygen`/`encaps`/`decaps`
-  via liboqs (`oqs`), with zeroizing secret types and no `unsafe`. KAT strategy
-  (deterministic decaps vectors + cross-impl interop) in
-  [ADR-0005](docs/adrs/0005-kem-kat-strategy.md); `error` module (`CoreError`).
+  via liboqs (`oqs`), with zeroizing secret types and no `unsafe`; `error` module
+  (`CoreError`/`CoreResult`).
+- ML-KEM-768 KAT: 30 deterministic vectors from `@noble/post-quantum`
+  (`scripts/extract-kat.mjs` → `tests/kat/ml-kem-768.json`); tests prove `decaps`
+  byte-equivalence with paramant-relay, interop on @noble keypairs, and a
+  512-case round-trip property. KAT strategy in
+  [ADR-0005](docs/adrs/0005-kem-kat-strategy.md).
 - M0 bootstrap: Cargo workspace with the `paramant-core` crate (empty shell),
   pinned dependency catalogue, and `rust-toolchain.toml` (Rust 1.80).
 - Documentation set: `README`, `SECURITY`, `CONTRIBUTING`, `LICENSE` (BUSL-1.1),
