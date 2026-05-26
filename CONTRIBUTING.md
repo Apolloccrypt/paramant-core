@@ -27,7 +27,8 @@ high and deliberate. **Less is more** — see [ADR-0004](docs/adrs/0004-code-min
 
 - **No `unsafe`** without a `// SAFETY:` comment *and* a referenced ADR
   justifying it. The default answer is no.
-- Secret material uses `secrecy::Secret<T>` / `zeroize`; never log or `Debug`-print it.
+- Secret material uses `zeroize::Zeroizing<T>` (handled inline per module, no
+  `secret.rs`); never log or `Debug`-print it.
 - Constant-time comparisons via `subtle` wherever a timing side-channel matters.
 - No new dependency without a one-line justification in the PR and, for anything
   on a security path, an ADR. The banned list (no `tokio`, `anyhow`, `tracing`,

@@ -13,7 +13,6 @@ publish = false
 
 [dependencies]
 thiserror = { workspace = true }
-secrecy = { workspace = true }
 zeroize = { workspace = true }
 # M1: ML-KEM-768 via liboqs (built from source by the oqs crate via CMake).
 oqs = { workspace = true }

@@ -32,7 +32,6 @@ bip39      = "2.0"
 
 # Memory safety
 zeroize    = { version = "1.8", features = ["derive"] }
-secrecy    = { version = "0.10", features = ["serde"] }
 subtle     = "2.6"
 
 # Serialization

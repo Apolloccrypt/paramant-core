@@ -17,7 +17,6 @@ Flat `crates/paramant-core/src/`, one file per concept, split only past 300 line
 | File | Contents | Milestone |
 |---|---|---|
 | `error.rs` | `CoreError`, `CoreResult` | M1 |
-| `secret.rs` | `Secret<T>` helpers | M1 |
 | `kem.rs` | ML-KEM-768 + hybrid ECDH P-256 | M1–M2 |
 | `sig.rs` | ML-DSA-65, SLH-DSA, Falcon | M2 |
 | `aead.rs` | AES-256-GCM | M3 |

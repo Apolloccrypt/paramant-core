@@ -50,7 +50,7 @@ cannot:
 - **Classical:** `aws-lc-rs` (FIPS-validated AES-GCM, ECDH P-256, SHA-2).
 - **KDF/hash:** `argon2`, `hkdf`, `sha2`.
 - **Mnemonic:** `bip39`.
-- **Memory safety:** `zeroize`, `secrecy`, `subtle`.
+- **Memory safety:** `zeroize`, `subtle`.
 - **Serialization:** `serde`, `serde_json`, `hex`.
 - **Errors:** `thiserror`.
 - **Testing only:** `proptest`, `criterion`.

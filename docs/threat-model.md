@@ -33,8 +33,11 @@
 - **Constant-time** where a timing leak would matter (AEAD tag check, password
   verification, secret comparisons) — via `subtle`. Marked per function and
   tested in `tests/constant_time.rs` (from M3).
-- **Secret hygiene** — all key material wrapped in `secrecy::Secret<T>`,
-  `Zeroize` on drop, never `Debug`-printed.
+- **Secret hygiene** — all key material wrapped in `zeroize::Zeroizing<T>`
+  (zeroized on drop, never `Debug`-printed). Secret handling lives inline in
+  each primitive's module (`kem`, `sig`, `kdf`, `mnemonic`); there is no
+  separate `secret.rs` — we wrap only where it earns its keep (principle D,
+  [ADR-0004](adrs/0004-code-minimization.md)).
 - **No `unsafe`** without a `// SAFETY:` comment and an ADR.
 - **Byte-equivalence** with `paramant-relay` (build 2.5.0) for every primitive,
   proven by Known Answer Tests, so migration introduces no behavioural change.
