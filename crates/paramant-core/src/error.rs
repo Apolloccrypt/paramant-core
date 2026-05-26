@@ -17,9 +17,13 @@ use thiserror::Error;
 #[derive(Debug, Error)]
 #[non_exhaustive]
 pub enum CoreError {
-    /// A liboqs primitive returned an error.
+    /// A liboqs KEM primitive returned an error.
     #[error("KEM operation failed: {0}")]
     Kem(&'static str),
+
+    /// A liboqs signature primitive returned an error.
+    #[error("signature operation failed: {0}")]
+    Sig(&'static str),
 
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]

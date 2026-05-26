@@ -1,7 +1,7 @@
 {
   "primitive": "ml-kem-768",
-  "source": "@noble/post-quantum (FIPS 203) — the implementation used by paramant-relay build 2.5.0",
-  "note": "Deterministic via seed (keygen, 64B) and msg (encaps, 32B). paramant-core verifies decaps(secret_key, ciphertext) == shared_secret byte-for-byte; see docs/adrs/0005-kem-kat-strategy.md.",
+  "source": "@noble/post-quantum (FIPS 203) — paramant-relay build 2.5.0",
+  "note": "paramant-core verifies decaps(secret_key, ciphertext) == shared_secret byte-for-byte.",
   "count": 30,
   "vectors": [
     {

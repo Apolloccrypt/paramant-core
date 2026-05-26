@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- M2 (in progress): `sig` module — ML-DSA-65 (FIPS 204) `keygen`/`sign`/`verify`
+  via liboqs, per-algorithm types ([ADR-0007](docs/adrs/0007-signature-type-pattern.md)),
+  default scheme ([ADR-0008](docs/adrs/0008-default-signature.md)). 30 KAT vectors
+  verifying @noble signatures + tamper rejection + interop + sign/verify proptest.
 - M1 (First Light): `kem` module — ML-KEM-768 (FIPS 203) `keygen`/`encaps`/`decaps`
   via liboqs (`oqs`), with zeroizing secret types and no `unsafe`; `error` module
   (`CoreError`/`CoreResult`).

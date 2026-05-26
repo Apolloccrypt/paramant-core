@@ -4,7 +4,7 @@
 //! surface grows one milestone at a time so every line lands with tests:
 //!
 //! - **M1** [`kem`] — ML-KEM-768 (FIPS 203)
-//! - **M2** signatures — ML-DSA-65, SLH-DSA, Falcon
+//! - **M2** [`sig`] — ML-DSA-65 (FIPS 204), SLH-DSA, Falcon
 //! - **M3** AEAD, KDF, mnemonic
 //! - **M4** Merkle, padding, envelope, wire format v1
 //!
@@ -25,3 +25,4 @@
 pub mod error;
 pub mod kem;
 pub mod prelude;
+pub mod sig;
