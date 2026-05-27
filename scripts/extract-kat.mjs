@@ -357,3 +357,139 @@ if (bip39Source) {
 } else {
   console.warn('skip bip39: set BIP39_TREZOR_VECTORS to trezor vectors.json path');
 }
+
+// ── Merkle tree (RFC 6962): root + inclusion proofs ──
+// Pure Node SHA-256 — RFC 6962 is the only authority and needs no third-party
+// dependency. The generator self-checks against the canonical RFC 6962 roots
+// (empty, 1-leaf, the 8-leaf reference tree) before emitting; the proofs it
+// emits are then re-derived independently by paramant-core (Rust).
+{
+  const sha256 = (...parts) => {
+    const h = createHash('sha256');
+    for (const p of parts) h.update(Buffer.from(p));
+    return new Uint8Array(h.digest());
+  };
+  const hashLeaf = (data) => sha256(Uint8Array.of(0x00), data);
+  const hashChildren = (l, r) => sha256(Uint8Array.of(0x01), l, r);
+  const splitPoint = (n) => {
+    let k = 1;
+    while (k * 2 < n) k *= 2;
+    return k;
+  };
+  const mth = (lh) => {
+    if (lh.length === 0) return sha256(new Uint8Array(0));
+    if (lh.length === 1) return lh[0];
+    const k = splitPoint(lh.length);
+    return hashChildren(mth(lh.slice(0, k)), mth(lh.slice(k)));
+  };
+  const auditPath = (m, lh) => {
+    if (lh.length === 1) return [];
+    const k = splitPoint(lh.length);
+    return m < k
+      ? [...auditPath(m, lh.slice(0, k)), mth(lh.slice(k))]
+      : [...auditPath(m - k, lh.slice(k)), mth(lh.slice(0, k))];
+  };
+
+  // RFC 6962 §2.1.4 canonical reference leaves and their known roots.
+  const RFC_LEAVES = [
+    '',
+    '00',
+    '10',
+    '2021',
+    '3031',
+    '40414243',
+    '5051525354555657',
+    '606162636465666768696a6b6c6d6e6f',
+  ].map((s) => Uint8Array.from(Buffer.from(s, 'hex')));
+  const RFC_ROOTS = {
+    0: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+    1: '6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d',
+    8: '5dc9da79a70659a9ad559cb701ded9a2ab9d823aad2f4960cfe370eff4604328',
+  };
+  for (const [n, want] of Object.entries(RFC_ROOTS)) {
+    const got = hex(mth(RFC_LEAVES.slice(0, Number(n)).map(hashLeaf)));
+    if (got !== want) throw new Error(`Merkle RFC root mismatch for n=${n} — generator broken`);
+  }
+
+  const vectorFor = (id, leaves) => {
+    const lh = leaves.map(hashLeaf);
+    const indices = leaves.length === 0 ? [] : [...new Set([0, leaves.length - 1])];
+    return {
+      test_id: id,
+      input: { leaves_hex: leaves.map(hex) },
+      expected: {
+        tree_size: leaves.length,
+        root_hash_hex: hex(mth(lh)),
+        proofs: indices.map((leaf_index) => ({
+          leaf_index,
+          proof_hex: auditPath(leaf_index, lh).map(hex),
+        })),
+      },
+    };
+  };
+
+  const vectors = [
+    vectorFor('merkle-rfc-empty', RFC_LEAVES.slice(0, 0)),
+    vectorFor('merkle-rfc-single', RFC_LEAVES.slice(0, 1)),
+    vectorFor('merkle-rfc-eight', RFC_LEAVES.slice(0, 8)),
+  ];
+  // 17 generated trees of varying size (powers of two, off-by-one, large).
+  const SIZES = [2, 3, 4, 5, 6, 7, 9, 11, 16, 17, 31, 32, 100, 127, 128, 256, 1000];
+  SIZES.forEach((n, i) => {
+    const leaves = Array.from({ length: n }, (_, j) => bytesFrom(`paramant/merkle/${i}/${j}`, 24));
+    vectors.push(vectorFor(`merkle-gen-${String(i).padStart(2, '0')}`, leaves));
+  });
+
+  write('merkle', {
+    primitive: 'merkle-rfc6962',
+    source: 'RFC 6962 §2.1 (self-checked roots: empty, 1-leaf, 8-leaf) + generated; pure SHA-256',
+    note: 'root_hash_hex = MTH(leaves); proof_hex = inclusion proof for leaf_index. leaf = H(0x00||data), node = H(0x01||l||r).',
+    count: vectors.length,
+    vectors,
+  });
+
+  // ── Signed Tree Head: ML-DSA-65 over tree_size_be ‖ timestamp_be ‖ root ──
+  // Cross-impl like ml-dsa-65.json (deterministic @noble signing); paramant-core
+  // reconstructs the 48-byte message and must verify the @noble signature.
+  if (ml_dsa65) {
+    const sthMessage = (treeSize, timestamp, root) => {
+      const m = Buffer.alloc(48);
+      m.writeBigUInt64BE(BigInt(treeSize), 0);
+      m.writeBigUInt64BE(BigInt(timestamp), 8);
+      Buffer.from(root).copy(m, 16);
+      return new Uint8Array(m);
+    };
+    const sthVectors = [];
+    for (let i = 0; i < 10; i++) {
+      const treeSize = 1 + i * 3; // 1,4,7,...,28 leaves
+      const leaves = Array.from({ length: treeSize }, (_, j) =>
+        bytesFrom(`paramant/merkle-sth/${i}/${j}`, 16),
+      );
+      const root = mth(leaves.map(hashLeaf));
+      const timestamp = 1_700_000_000_000 + i * 86_400_000;
+      const seed = bytesFrom(`paramant/merkle-sth/seed/${i}`, 32);
+      const { publicKey, secretKey } = ml_dsa65.keygen(seed);
+      const message = sthMessage(treeSize, timestamp, root);
+      const signature = ml_dsa65.sign(message, secretKey, { extraEntropy: false });
+      sthVectors.push({
+        test_id: `sth-${String(i).padStart(2, '0')}`,
+        input: { leaves_hex: leaves.map(hex), tree_size: treeSize, timestamp, seed_hex: hex(seed) },
+        expected: {
+          public_key_hex: hex(publicKey),
+          root_hash_hex: hex(root),
+          message_hex: hex(message),
+          signature_hex: hex(signature),
+        },
+      });
+    }
+    write('merkle-sth', {
+      primitive: 'merkle-sth-ml-dsa-65',
+      source: '@noble/post-quantum (FIPS 204) — paramant-relay build 2.5.0; RFC 6962 root',
+      note: 'message = tree_size_be(8) ‖ timestamp_be(8) ‖ root(32); paramant-core verifies the ML-DSA-65 signature byte-for-byte.',
+      count: sthVectors.length,
+      vectors: sthVectors,
+    });
+  } else {
+    console.warn(`skip merkle-sth: ${mldsaSpec} not importable (set NOBLE_PQ_MLDSA)`);
+  }
+}

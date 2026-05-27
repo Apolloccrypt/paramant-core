@@ -37,6 +37,10 @@ pub enum CoreError {
     #[error("mnemonic operation failed: {0}")]
     Mnemonic(&'static str),
 
+    /// A Merkle tree operation failed (e.g. proof for an out-of-range leaf).
+    #[error("merkle operation failed: {0}")]
+    Merkle(&'static str),
+
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]
     InvalidLength {
