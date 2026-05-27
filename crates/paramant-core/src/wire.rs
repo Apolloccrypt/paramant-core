@@ -223,6 +223,19 @@ impl Envelope {
     /// magic, unsupported version, non-zero flags, unknown KEM/SIG IDs, a length
     /// prefix overrunning the buffer, and any trailing bytes after the ciphertext.
     pub fn decode(bytes: &[u8]) -> CoreResult<Self> {
+        let (envelope, consumed) = Self::decode_prefix(bytes)?;
+        if consumed != bytes.len() {
+            return Err(CoreError::Wire("trailing bytes after ciphertext"));
+        }
+        Ok(envelope)
+    }
+
+    /// Decode one envelope from the start of `bytes`, returning it and the number
+    /// of bytes it consumed. Unlike [`Envelope::decode`] this tolerates trailing
+    /// bytes after the ciphertext — e.g. the random block padding that the
+    /// envelope layer appends to the wire core (see `envelope`). Mirrors the
+    /// relay decoder's `consumedBytes`.
+    pub fn decode_prefix(bytes: &[u8]) -> CoreResult<(Self, usize)> {
         if bytes.len() < HEADER_FIXED_SIZE {
             return Err(CoreError::Wire("buffer shorter than header"));
         }
@@ -253,21 +266,21 @@ impl Envelope {
         off += NONCE_SIZE;
         let ciphertext = read_field(bytes, &mut off)?;
 
-        if off != bytes.len() {
-            return Err(CoreError::Wire("trailing bytes after ciphertext"));
-        }
-        Ok(Envelope {
-            header: Header {
-                kem_id,
-                sig_id,
-                flags,
+        Ok((
+            Envelope {
+                header: Header {
+                    kem_id,
+                    sig_id,
+                    flags,
+                },
+                ct_kem,
+                sender_pub,
+                signature,
+                nonce,
+                ciphertext,
             },
-            ct_kem,
-            sender_pub,
-            signature,
-            nonce,
-            ciphertext,
-        })
+            off,
+        ))
     }
 
     /// The 14-byte AEAD additional authenticated data for chunk `chunk_index`:

@@ -23,6 +23,7 @@
 #![warn(missing_docs)]
 
 pub mod aead;
+pub mod envelope;
 pub mod error;
 pub mod kdf;
 pub mod kem;

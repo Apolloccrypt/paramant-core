@@ -29,7 +29,7 @@
 //   BIP39_TREZOR_VECTORS=/tmp/.../trezor-vectors.json \
 //   node scripts/extract-kat.mjs
 
-import { createHash, createHmac, pbkdf2Sync } from 'node:crypto';
+import { createHash, createHmac, createCipheriv, pbkdf2Sync } from 'node:crypto';
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -670,4 +670,103 @@ if (bip39Source) {
     count: vectors.length,
     vectors,
   });
+}
+
+// ── Send-mode envelope (anonymous, SIG_ID 0x0000) ──
+// Mirrors paramant-relay/sdk-js sendAnonymous: ML-KEM-768 encapsulation,
+// HKDF-SHA256(ikm=sharedSecret, salt=ctKem[0:32], info='paramant-v1-aes-key'),
+// AES-256-GCM with the 10-byte PQHB header bound as AAD. The WebCrypto vs
+// pure-Node equivalence is proven in scripts/derisk-send.mjs; here pure-Node
+// HMAC-HKDF + AES-256-GCM generate the vectors. ct_kem/shared_secret/secret_key
+// come from @noble ML-KEM-768 (deterministic seeds) — paramant-core takes them
+// as KAT inputs because oqs cannot derandomise encapsulation (ADR-0005), exactly
+// like ml-kem-768.json. Plaintext is the j%251 pattern (compact for large cases).
+if (ml_kem768) {
+  const INFO = new TextEncoder().encode('paramant-v1-aes-key');
+  const hkdfExtract = (salt, ikm) =>
+    createHmac('sha256', salt.length ? Buffer.from(salt) : Buffer.alloc(32)).update(Buffer.from(ikm)).digest();
+  const hkdfExpand = (prk, info, len) => {
+    const n = Math.ceil(len / 32);
+    let t = Buffer.alloc(0);
+    const out = [];
+    for (let i = 1; i <= n; i++) {
+      t = createHmac('sha256', prk).update(Buffer.concat([t, Buffer.from(info), Buffer.from([i])])).digest();
+      out.push(t);
+    }
+    return new Uint8Array(Buffer.concat(out).subarray(0, len));
+  };
+  const headerBytes = (kemId, sigId) => {
+    const h = Buffer.alloc(10);
+    Buffer.from([0x50, 0x51, 0x48, 0x42]).copy(h, 0);
+    h.writeUInt8(0x01, 4);
+    h.writeUInt16BE(kemId, 5);
+    h.writeUInt16BE(sigId, 7);
+    h.writeUInt8(0x00, 9);
+    return h;
+  };
+  const u32be = (n) => { const b = Buffer.alloc(4); b.writeUInt32BE(n, 0); return b; };
+  const wireEncodeAnon = (kemId, ctKem, senderPub, nonce, ct) =>
+    new Uint8Array(Buffer.concat([
+      headerBytes(kemId, 0x0000),
+      u32be(ctKem.length), Buffer.from(ctKem),
+      u32be(senderPub.length), Buffer.from(senderPub),
+      Buffer.from(nonce),
+      u32be(ct.length), Buffer.from(ct),
+    ]));
+  const mkPt = (n) => { const b = Buffer.alloc(n); for (let j = 0; j < n; j++) b[j] = j % 251; return new Uint8Array(b); };
+
+  const LENGTHS = [
+    0, 1, 15, 16, 17, 31, 32, 33, 100, 255, 256, 257, 1023, 1024,
+    4095, 4096, 4097, 60000, 250000, 1000000,
+  ];
+  const vectors = LENGTHS.map((len, i) => {
+    const id = `send-${String(i).padStart(2, '0')}`;
+    const seed = bytesFrom(`paramant/send/${i}/seed`, 64);
+    const msg = bytesFrom(`paramant/send/${i}/msg`, 32);
+    const { publicKey, secretKey } = ml_kem768.keygen(seed);
+    const { cipherText: ctKem, sharedSecret } = ml_kem768.encapsulate(publicKey, msg);
+    const senderPub = publicKey; // anonymous: senderPub = own KEM pubkey (opaque id)
+    const nonce = bytesFrom(`paramant/send/${i}/nonce`, 12);
+    const plaintext = mkPt(len);
+
+    const aesKey = hkdfExpand(hkdfExtract(ctKem.slice(0, 32), sharedSecret), INFO, 32);
+    const aad = Buffer.concat([headerBytes(0x0002, 0x0000), u32be(0)]); // header || chunk_index_be32
+    const cipher = createCipheriv('aes-256-gcm', Buffer.from(aesKey), Buffer.from(nonce));
+    cipher.setAAD(aad);
+    const body = Buffer.concat([cipher.update(Buffer.from(plaintext)), cipher.final()]);
+    const ct = new Uint8Array(Buffer.concat([body, cipher.getAuthTag()]));
+
+    const core = wireEncodeAnon(0x0002, ctKem, senderPub, nonce, ct);
+    return {
+      test_id: id,
+      input: {
+        kem_id: 0x0002,
+        sig_id: 0x0000,
+        seed_hex: hex(seed),
+        msg_hex: hex(msg),
+        secret_key_hex: hex(secretKey),
+        ct_kem_hex: hex(ctKem),
+        shared_secret_hex: hex(sharedSecret),
+        sender_pub_hex: hex(senderPub),
+        nonce_hex: hex(nonce),
+        plaintext: { pattern: 'mod251', len },
+      },
+      expected: {
+        aes_key_hex: hex(aesKey),
+        header_hex: hex(core.subarray(0, 10)),
+        core_len: core.length,
+        core_sha256_hex: hex(createHash('sha256').update(core).digest()),
+      },
+    };
+  });
+
+  write('envelope-send', {
+    primitive: 'envelope-send',
+    source: 'paramant-relay sdk-js sendAnonymous (SIG_ID 0x0000): ML-KEM-768 + HKDF-SHA256(salt=ctKem[0:32], info="paramant-v1-aes-key") + AES-256-GCM(aad=PQHB header); WebCrypto==pure-Node verified by scripts/derisk-send.mjs; ct_kem/shared_secret from @noble ML-KEM-768 (deterministic), plaintext = j%251.',
+    note: 'derive_key(ct_kem, shared_secret) == aes_key_hex; seal_core(MlKem768, ct_kem, shared_secret, sender_pub, nonce, plaintext) encodes to core_len bytes with header_hex and core_sha256_hex; decaps(secret_key, ct_kem) == shared_secret links Rust oqs to @noble; open_core recovers plaintext.',
+    count: vectors.length,
+    vectors,
+  });
+} else {
+  console.warn(`skip envelope-send: ${mlkemSpec} not importable (set NOBLE_PQ_MLKEM)`);
 }
