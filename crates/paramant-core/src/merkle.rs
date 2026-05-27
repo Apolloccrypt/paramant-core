@@ -16,7 +16,7 @@ use sha2::{Digest, Sha256};
 use crate::error::{CoreError, CoreResult};
 use crate::sig::ml_dsa_65;
 
-/// Hash of a leaf's data: `SHA-256(0x00 || data)` (RFC 6962 §2.1).
+/// Hash of a leaf's data: `SHA-256(0x00 || data)` (RFC 6962 Sec.2.1).
 fn hash_leaf(data: &[u8]) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update([0x00]);
@@ -24,7 +24,7 @@ fn hash_leaf(data: &[u8]) -> [u8; 32] {
     h.finalize().into()
 }
 
-/// Hash of two child subtrees: `SHA-256(0x01 || left || right)` (RFC 6962 §2.1).
+/// Hash of two child subtrees: `SHA-256(0x01 || left || right)` (RFC 6962 Sec.2.1).
 fn hash_children(left: &[u8; 32], right: &[u8; 32]) -> [u8; 32] {
     let mut h = Sha256::new();
     h.update([0x01]);
@@ -39,7 +39,7 @@ fn split_point(n: usize) -> usize {
     1usize << (usize::BITS - 1 - (n as u64 - 1).leading_zeros())
 }
 
-/// Merkle Tree Hash of a list of already-computed leaf hashes (RFC 6962 §2.1).
+/// Merkle Tree Hash of a list of already-computed leaf hashes (RFC 6962 Sec.2.1).
 fn mth(leaves: &[[u8; 32]]) -> [u8; 32] {
     match leaves.len() {
         0 => Sha256::digest([]).into(),
@@ -108,7 +108,7 @@ impl MerkleTree {
     }
 
     /// Verify an inclusion proof against a `root`, reconstructing it from the leaf
-    /// (RFC 6962 / RFC 9162 §2.1.3.2). Returns `false` for any inconsistency.
+    /// (RFC 6962 / RFC 9162 Sec.2.1.3.2). Returns `false` for any inconsistency.
     pub fn verify_inclusion(
         root: &[u8; 32],
         leaf: &[u8],
@@ -146,7 +146,7 @@ impl MerkleTree {
 
 /// A signed commitment to the tree's state at a point in time (RFC 6962 STH).
 ///
-/// The signature covers `tree_size ‖ timestamp ‖ root_hash`, with the two
+/// The signature covers `tree_size || timestamp || root_hash`, with the two
 /// integers serialized big-endian, signed with ML-DSA-65.
 #[derive(Debug, Clone)]
 pub struct SignedTreeHead {
@@ -161,7 +161,7 @@ pub struct SignedTreeHead {
 }
 
 impl SignedTreeHead {
-    /// The canonical signed message: `tree_size_be ‖ timestamp_be ‖ root_hash`.
+    /// The canonical signed message: `tree_size_be || timestamp_be || root_hash`.
     fn message(tree_size: u64, timestamp: u64, root_hash: &[u8; 32]) -> [u8; 48] {
         let mut m = [0u8; 48];
         m[..8].copy_from_slice(&tree_size.to_be_bytes());

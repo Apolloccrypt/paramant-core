@@ -21,7 +21,7 @@ the relay's behaviour.
   pure-Node HKDF + AES-256-GCM that paramant-core mirrors in Rust, by
   `scripts/derisk-send.mjs`, before any Rust was written.
 
-> **Note — this is *not* a URL-fragment mode.** An earlier design described
+> **Note  --  this is *not* a URL-fragment mode.** An earlier design described
 > "Send" as a no-KEM, browser-fragment-derived key. No such mode exists in this
 > relay (build 2.5.0 / sdk 3.0.0). The anonymous mode is KEM-based: the sender
 > encapsulates to the recipient's ML-KEM-768 public key. See ADR-0015.
@@ -49,9 +49,9 @@ the relay's behaviour.
 | KDF      | HKDF-SHA256, `salt = CT_KEM[0..32]`, `info = "paramant-v1-aes-key"`, 32-byte output |
 | KDF IKM  | the ML-KEM-768 shared secret (32 bytes) |
 | AEAD     | AES-256-GCM, 12-byte random nonce, 16-byte tag |
-| AAD      | `HEADER (10 bytes) ‖ chunk_index_be32` (chunk 0 for single-chunk) |
+| AAD      | `HEADER (10 bytes) || chunk_index_be32` (chunk 0 for single-chunk) |
 
-The relay optionally mixes a pre-shared secret (`ikm = shared_secret ‖
+The relay optionally mixes a pre-shared secret (`ikm = shared_secret ||
 sha256(pss)`); paramant-core's v1 anonymous Send uses `ikm = shared_secret`
 (no PSS). PSS support is deferred (it is a relay-MITM hardening layer, not part
 of the anonymous primitive).
@@ -64,14 +64,14 @@ A specific instance of the PQHB wire format:
 
 ```
 HEADER (10B):  50 51 48 42 | 01 | 00 02 | 00 00 | 00      ("PQHB", v1, KEM 0x0002, SIG 0x0000, FLAGS 0)
-CT_KEM:        u32_be(1088) ‖ ML-KEM-768 ciphertext
-SENDER_PUB:    u32_be(len)  ‖ sender KEM public key (opaque identifier)
-               (signature section omitted — SIG_ID is 0x0000)
+CT_KEM:        u32_be(1088) || ML-KEM-768 ciphertext
+SENDER_PUB:    u32_be(len)  || sender KEM public key (opaque identifier)
+               (signature section omitted  --  SIG_ID is 0x0000)
 NONCE:         12 random bytes (no length prefix)
-CIPHERTEXT:    u32_be(len)  ‖ AES-256-GCM(ciphertext ‖ tag)
+CIPHERTEXT:    u32_be(len)  || AES-256-GCM(ciphertext || tag)
 ```
 
-This **encoded core** is then padded for transport (§7). `AAD = HEADER ‖
+This **encoded core** is then padded for transport (Sec.7). `AAD = HEADER ||
 chunk_index_be32`.
 
 ---
@@ -91,26 +91,26 @@ implemented with `kdf::hkdf::extract` + `kdf::hkdf::expand`.
 
 ## 6. Encryption / decryption flow
 
-**Encrypt** (`encrypt` → wire blob; non-deterministic):
+**Encrypt** (`encrypt`  ->  wire blob; non-deterministic):
 
-1. `kem::encaps(recipient_pub)` → `(ct_kem, shared_secret)`.
+1. `kem::encaps(recipient_pub)`  ->  `(ct_kem, shared_secret)`.
 2. `aes_key = derive_key(ct_kem, shared_secret)`.
 3. Generate a 12-byte random nonce.
-4. `ciphertext = AES-256-GCM(aes_key, nonce, aad = HEADER ‖ 0u32, plaintext)`
-   (the **raw** plaintext — no plaintext-level padding).
-5. `wire::Envelope::encode` → core bytes.
-6. Append random bytes up to `pad_block` (§7).
+4. `ciphertext = AES-256-GCM(aes_key, nonce, aad = HEADER || 0u32, plaintext)`
+   (the **raw** plaintext  --  no plaintext-level padding).
+5. `wire::Envelope::encode`  ->  core bytes.
+6. Append random bytes up to `pad_block` (Sec.7).
 
 **Decrypt** (`decrypt`):
 
-1. `Envelope::decode_prefix(blob)` → `(envelope, consumed)` (tolerates the
+1. `Envelope::decode_prefix(blob)`  ->  `(envelope, consumed)` (tolerates the
    trailing padding).
 2. `shared_secret = kem::decaps(recipient_sk, envelope.ct_kem)`.
 3. `aes_key = derive_key(envelope.ct_kem, shared_secret)`.
 4. `plaintext = AES-256-GCM-open(aes_key, envelope.nonce, aad, envelope.ciphertext)`.
 
 The deterministic core is factored into `seal_core` / `open_core`, which take a
-fixed `(ct_kem, shared_secret, nonce)` — these carry the KAT.
+fixed `(ct_kem, shared_secret, nonce)`  --  these carry the KAT.
 
 ---
 
@@ -120,13 +120,13 @@ The transport blob is the encoded core followed by **random** bytes up to a
 caller-chosen `pad_block` (the relay default is 5 MiB; tests use smaller tiers):
 
 ```text
-blob = core ‖ random_fill(pad_block − core.len())          (error if core > pad_block)
+blob = core || random_fill(pad_block - core.len())          (error if core > pad_block)
 ```
 
 There is **no length suffix**: the core boundary is recovered by
 `Envelope::decode_prefix`'s `consumed` count. This differs from the
 `padding` module (M4 phase 1), whose length-suffixed scheme is **not** used by
-Send mode — the relay pads the outer blob, not the plaintext.
+Send mode  --  the relay pads the outer blob, not the plaintext.
 
 ---
 
@@ -136,7 +136,7 @@ Send mode — the relay pads the outer blob, not the plaintext.
 `crates/paramant-core/tests/kat_envelope_send.rs`:
 
 - `ct_kem` / `shared_secret` / `secret_key` come from @noble ML-KEM-768
-  (deterministic seeds) and are KAT **inputs** — `oqs` cannot derandomise
+  (deterministic seeds) and are KAT **inputs**  --  `oqs` cannot derandomise
   encapsulation (ADR-0005), so the encrypt direction is pinned on a fixed KEM
   result, exactly like `ml-kem-768.json`.
 - Each vector pins `aes_key`, the core length, header, and core SHA-256, and
@@ -158,7 +158,7 @@ randomised end-to-end flow.
   secret key can decrypt; there is no forward secrecy (the KEM key is long-term).
 - **`SENDER_PUB` is not authenticated.** It is carried in the clear and is *not*
   in the AEAD AAD (only the header is), so it is an unauthenticated hint, not a
-  trustworthy identity — anonymous mode provides no sender authentication by
+  trustworthy identity  --  anonymous mode provides no sender authentication by
   design. Tampering with it is undetectable; tampering with the header, KEM
   ciphertext, nonce or ciphertext makes decryption fail.
 - **Algorithm binding.** The 10-byte header (incl. `KEM_ID`/`SIG_ID`) is in the

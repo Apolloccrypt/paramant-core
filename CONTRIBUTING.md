@@ -2,7 +2,7 @@
 
 paramant-core is the post-quantum cryptographic core of Paramant. It is
 security-critical and audited code. Contributions are welcome, but the bar is
-high and deliberate. **Less is more** — see [ADR-0004](docs/adrs/0004-code-minimization.md).
+high and deliberate. **Less is more**  --  see [ADR-0004](docs/adrs/0004-code-minimization.md).
 
 ## Ground rules
 
@@ -32,7 +32,7 @@ high and deliberate. **Less is more** — see [ADR-0004](docs/adrs/0004-code-min
 - Constant-time comparisons via `subtle` wherever a timing side-channel matters.
 - No new dependency without a one-line justification in the PR and, for anything
   on a security path, an ADR. The banned list (no `tokio`, `anyhow`, `tracing`,
-  `clap`, `rayon` in the core) is in the blueprint §4.
+  `clap`, `rayon` in the core) is in the blueprint Sec.4.
 
 ## PR process
 
@@ -41,5 +41,5 @@ high and deliberate. **Less is more** — see [ADR-0004](docs/adrs/0004-code-min
 3. Open a PR describing *what* and *why*.
 4. CI passes, one approving review, then squash-or-rebase merge.
 
-Reports of security issues do **not** go through public PRs — see
+Reports of security issues do **not** go through public PRs  --  see
 [SECURITY.md](SECURITY.md).

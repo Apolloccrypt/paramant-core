@@ -3,9 +3,9 @@
 //! See `BLUEPRINT.md` for the full design and milestone plan. The cryptographic
 //! surface grows one milestone at a time so every line lands with tests:
 //!
-//! - **M1** [`kem`] — ML-KEM-768 (FIPS 203)
-//! - **M2** [`sig`] — ML-DSA-65 (FIPS 204), SLH-DSA, Falcon
-//! - **M3** [`aead`] — AES-256-GCM, [`kdf`] — Argon2id + HKDF, [`mnemonic`] — BIP-0039
+//! - **M1** [`kem`]  --  ML-KEM-768 (FIPS 203)
+//! - **M2** [`sig`]  --  ML-DSA-65 (FIPS 204), SLH-DSA, Falcon
+//! - **M3** [`aead`]  --  AES-256-GCM, [`kdf`]  --  Argon2id + HKDF, [`mnemonic`]  --  BIP-0039
 //! - **M4** Merkle, padding, envelope, wire format v1
 //!
 //! `paramant-relay` (build 2.5.0) is the reference implementation; primitives are

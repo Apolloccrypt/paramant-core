@@ -24,14 +24,14 @@ Geen rewrite. Geen tijdsdruk. Mijlpalen knallen wanneer in flow.
 
 **A. GitHub is source of truth.** Server pulled vanuit GitHub via CI. Geen secrets in code, ooit. Alle env-waarden in GitHub Actions secrets, Hetzner secrets, of `.env` files in `.gitignore`. Cryptocode heeft van nature geen secrets, dus dit kan vanaf commit 1.
 
-**B. Apple-simpel.** Eén repo. README ≤ 200 regels. Eén build-command (`cargo build`). Eén test-command (`cargo test`). Wie de repo opent moet binnen 60 seconden begrijpen wat het is.
+**B. Apple-simpel.** Een repo. README <= 200 regels. Een build-command (`cargo build`). Een test-command (`cargo test`). Wie de repo opent moet binnen 60 seconden begrijpen wat het is.
 
 **C. Vooruitstrevend in WAT, conservatief in WAARMEE.** Bleeding-edge crypto (NIST PQ suite). Gevestigde toolchain (Cargo, GitHub Actions, oqs, aws-lc-rs). Geen experimentele build-systems, geen pre-1.0 deps voor security-paden.
 
 **D. Code-minimalisatie. Maximaal effect met minimaal oppervlak.**
 
 Less code is less audit surface, less bugs, less cognitive load. Concreet:
-- Eén bestand per module tenzij > 300 regels rechtvaardigen splitsen
+- Een bestand per module tenzij > 300 regels rechtvaardigen splitsen
 - Geen traits zonder 2+ implementaties
 - Geen generics zonder duidelijke reden
 - Geen abstraction layers die zichzelf niet terugverdienen
@@ -53,35 +53,35 @@ Less code is less audit surface, less bugs, less cognitive load. Concreet:
 
 ```
 paramant-core/
-├── Cargo.toml                       # workspace root
-├── README.md                        # ≤ 200 regels
-├── SECURITY.md
-├── CONTRIBUTING.md
-├── LICENSE                          # BUSL-1.1 → Apache 2.0 op 2029-01-01
-├── CHANGELOG.md
-├── rust-toolchain.toml              # pin Rust 1.80+
-├── crates/
-│   ├── paramant-core/               # core lib
-│   └── paramant-core-node/          # NAPI-RS binding (toegevoegd bij M5)
-├── tests/
-│   ├── kat/                         # Known Answer Tests, JSON
-│   └── fuzz/                        # cargo-fuzz targets
-├── scripts/
-│   └── extract-kat.js               # genereert KAT-vectors uit paramant-relay
-├── docs/
-│   ├── architecture.md
-│   ├── threat-model.md
-│   ├── wire-format-v1.md
-│   ├── doc-conventions.md
-│   └── adrs/
-├── .github/workflows/
-│   ├── ci.yml
-│   └── dependabot.yml
-├── .gitignore
-└── BLUEPRINT.md                     # dit document
++-- Cargo.toml                       # workspace root
++-- README.md                        # <= 200 regels
++-- SECURITY.md
++-- CONTRIBUTING.md
++-- LICENSE                          # BUSL-1.1  ->  Apache 2.0 op 2029-01-01
++-- CHANGELOG.md
++-- rust-toolchain.toml              # pin Rust 1.80+
++-- crates/
+|   +-- paramant-core/               # core lib
+|   +-- paramant-core-node/          # NAPI-RS binding (toegevoegd bij M5)
++-- tests/
+|   +-- kat/                         # Known Answer Tests, JSON
+|   +-- fuzz/                        # cargo-fuzz targets
++-- scripts/
+|   +-- extract-kat.js               # genereert KAT-vectors uit paramant-relay
++-- docs/
+|   +-- architecture.md
+|   +-- threat-model.md
+|   +-- wire-format-v1.md
+|   +-- doc-conventions.md
+|   +-- adrs/
++-- .github/workflows/
+|   +-- ci.yml
+|   +-- dependabot.yml
++-- .gitignore
++-- BLUEPRINT.md                     # dit document
 ```
 
-Crates die later toegevoegd worden, één per relevante mijlpaal:
+Crates die later toegevoegd worden, een per relevante mijlpaal:
 
 | Mijlpaal | Crate toegevoegd | Reden |
 |---|---|---|
@@ -98,25 +98,25 @@ Niet allemaal vanaf M0 aanmaken. Wachten tot de mijlpaal die het rechtvaardigt.
 
 ## 3. MODULES IN paramant-core
 
-Plat. Eén bestand per concept. Splitsen alleen bij > 300 regels.
+Plat. Een bestand per concept. Splitsen alleen bij > 300 regels.
 
 ```
 crates/paramant-core/src/
-├── lib.rs                           # prelude + re-exports (≤ 50 regels)
-├── error.rs                         # CoreError, CoreResult (thiserror)
-├── secret.rs                        # Secret<T> wrapper helpers
-├── kem.rs                           # ML-KEM-768 + hybrid (ECDH P-256)
-├── sig.rs                           # ML-DSA-65 + SLH-DSA + Falcon
-├── aead.rs                          # AES-256-GCM
-├── kdf.rs                           # Argon2id + HKDF
-├── mnemonic.rs                      # BIP-0039 12-word
-├── merkle.rs                        # tree + Signed Tree Head
-├── padding.rs                       # 4/64/512 KB + 5 MB blokken
-├── envelope.rs                      # Send + ParaShare + ParaDrop modes
-└── wire.rs                          # wire format v1 + TLV
++-- lib.rs                           # prelude + re-exports (<= 50 regels)
++-- error.rs                         # CoreError, CoreResult (thiserror)
++-- secret.rs                        # Secret<T> wrapper helpers
++-- kem.rs                           # ML-KEM-768 + hybrid (ECDH P-256)
++-- sig.rs                           # ML-DSA-65 + SLH-DSA + Falcon
++-- aead.rs                          # AES-256-GCM
++-- kdf.rs                           # Argon2id + HKDF
++-- mnemonic.rs                      # BIP-0039 12-word
++-- merkle.rs                        # tree + Signed Tree Head
++-- padding.rs                       # 4/64/512 KB + 5 MB blokken
++-- envelope.rs                      # Send + ParaShare + ParaDrop modes
++-- wire.rs                          # wire format v1 + TLV
 ```
 
-12 bestanden. Geschatte totaal: ≤ 2000 regels Rust voor de volledige core. Als een module groeit boven 300 regels, dan splitsen (kem.rs → kem/mod.rs + kem/hybrid.rs), niet eerder.
+12 bestanden. Geschatte totaal: <= 2000 regels Rust voor de volledige core. Als een module groeit boven 300 regels, dan splitsen (kem.rs  ->  kem/mod.rs + kem/hybrid.rs), niet eerder.
 
 Per pub item: rustdoc met voorbeeld. Geen exceptions.
 
@@ -209,7 +209,7 @@ Welke opties zijn afgesloten? Welke openen?
 Wat hebben we niet gekozen, en waarom niet?
 ```
 
-**README-structuur (≤ 200 regels):**
+**README-structuur (<= 200 regels):**
 1. Wat is paramant-core (3 zinnen)
 2. Modules (lijst)
 3. Quick start (3 commands)
@@ -230,9 +230,9 @@ Geen marketing-paragrafen. Geen feature-walls. Wie wil weten waarom Paramant rel
 | **M2** | PQ Complete | KEM + alle SIG primitieven, 100+ KAT-vectors |
 | **M3** | Symmetric Layer | AEAD + KDF + mnemonic, constant-time verified |
 | **M4** | Protocol Layer | Merkle + padding + envelope + wire v1, end-to-end werkt |
-| **M5** | Bridge | paramant-core-node toegevoegd, één paramant-relay endpoint draait erop |
+| **M5** | Bridge | paramant-core-node toegevoegd, een paramant-relay endpoint draait erop |
 | **M6** | Surface | paramant-core-wasm toegevoegd, paramant.app/send draait op WASM |
-| **M7** | **GOEDE EERSTE BETA** | Één sector-relay (IoT) draait 60+ dagen op paramant-core, 0 regressies |
+| **M7** | **GOEDE EERSTE BETA** | Een sector-relay (IoT) draait 60+ dagen op paramant-core, 0 regressies |
 | M8 | External Review | 3 reviewers, 0 kritieke findings, blog post live |
 | M9 | Audit Prepared | Audit-pakket compleet, firma begonnen |
 | M10 | Audited | Rapport publiek, findings geremedieerd |
@@ -247,7 +247,7 @@ Focus deze blueprint: M0 tot M7. Vanaf M8 lichter.
 
 ## 7. PER-MIJLPAAL CLAUDE CODE PROMPTS
 
-### M0 — SYNC REPO MET BLUEPRINT
+### M0  --  SYNC REPO MET BLUEPRINT
 
 ```
 Read BLUEPRINT.md in full.
@@ -266,15 +266,15 @@ Steps:
    - rust-toolchain.toml pinning 1.80+
    - .gitignore covering target/, *.swp, .DS_Store, .env, .env.*
 
-2. Write or update docs (each ≤ stated length):
-   - README.md: ≤ 200 lines, follows blueprint §5 structure
+2. Write or update docs (each <= stated length):
+   - README.md: <= 200 lines, follows blueprint Sec.5 structure
    - SECURITY.md: responsible disclosure, contact privacy@paramant.app
    - CONTRIBUTING.md: conventional commits, signed commits, rustdoc requirement, 
      no unsafe without ADR
    - LICENSE: BUSL-1.1 full text, Change Date 2029-01-01, Change License Apache 2.0
    - CHANGELOG.md: Keep a Changelog format
-   - docs/architecture.md: mirrors blueprint §2-4, ≤ 2 pages
-   - docs/threat-model.md: v0.1, STRIDE-lite, ≤ 1 page. Assets: secret keys, 
+   - docs/architecture.md: mirrors blueprint Sec.2-4, <= 2 pages
+   - docs/threat-model.md: v0.1, STRIDE-lite, <= 1 page. Assets: secret keys, 
      plaintext, merkle log. Adversaries: passive net, active net, malicious 
      operator, compromised endpoint
    - docs/doc-conventions.md: rustdoc style + ADR template + CHANGELOG rules
@@ -320,7 +320,7 @@ Do NOT over-engineer. No extra modules, no extra crates, no premature
 abstractions. Less is more.
 ```
 
-### M1 — FIRST LIGHT
+### M1  --  FIRST LIGHT
 
 ```
 M1 from BLUEPRINT.md. Code-minimization is principle D.
@@ -331,7 +331,7 @@ Goal: ML-KEM-768 in paramant-core, byte-equivalent with paramant-relay,
 Tasks:
 
 1. crates/paramant-core/Cargo.toml: add oqs, aws-lc-rs (not used yet but 
-   matches blueprint §4), serde, serde_json (dev), hex (dev), proptest (dev).
+   matches blueprint Sec.4), serde, serde_json (dev), hex (dev), proptest (dev).
    Pin via workspace.dependencies.
 
 2. crates/paramant-core/src/error.rs (ONE FILE):
@@ -340,7 +340,7 @@ Tasks:
 3. crates/paramant-core/src/secret.rs (ONE FILE):
    Re-export secrecy::Secret. Helper for hex deserialization in test code.
 
-4. crates/paramant-core/src/kem.rs (ONE FILE, target ≤ 250 lines):
+4. crates/paramant-core/src/kem.rs (ONE FILE, target <= 250 lines):
    - PublicKey, SecretKey (wraps Secret), Ciphertext, SharedSecret structs
    - Functions: keygen(), keygen_from_seed(seed), encaps(pk), 
      encaps_from_seed(pk, seed), decaps(sk, ct)
@@ -399,7 +399,7 @@ DO NOT add extra modules. DO NOT split kem.rs into submodules unless > 300
 lines. DO NOT add traits. Minimize.
 ```
 
-### M2 — POST-QUANTUM COMPLETE
+### M2  --  POST-QUANTUM COMPLETE
 
 ```
 M2 from BLUEPRINT.md. Code-minimization is principle D.
@@ -452,7 +452,7 @@ SLH-DSA, feat(sig): Falcon, test: KATs for all, docs(adr): 5/6/7. Signed.
 Reminder: no unnecessary traits, no generics where concrete enums work.
 ```
 
-### M3 — SYMMETRIC LAYER
+### M3  --  SYMMETRIC LAYER
 
 ```
 M3 from BLUEPRINT.md. Code-minimization.
@@ -461,21 +461,21 @@ Goal: AEAD + KDF + mnemonic complete, constant-time verified where relevant.
 
 Tasks:
 
-1. crates/paramant-core/src/aead.rs (ONE file, ≤ 200 lines):
+1. crates/paramant-core/src/aead.rs (ONE file, <= 200 lines):
    - encrypt(key: &Secret<[u8;32]>, nonce: &[u8;12], aad: &[u8], pt: &[u8]) -> Vec<u8>
    - decrypt(key, nonce, aad, ct) -> CoreResult<Vec<u8>>
    - aws-lc-rs::aead with AES-256-GCM
    - Debug build: assert nonce != all-zero
    - KAT: tests/kat/aes-256-gcm.json (40 vectors)
 
-2. crates/paramant-core/src/kdf.rs (ONE file, ≤ 250 lines):
+2. crates/paramant-core/src/kdf.rs (ONE file, <= 250 lines):
    - argon2id::hash_password(password: &[u8], salt: &[u8]) -> Secret<[u8;32]>
    - argon2id::verify_password(password, salt, expected) -> bool (constant-time)
    - Params: m=19456, t=2, p=1 (OWASP 2024). ADR-008 documents.
    - hkdf::extract, hkdf::expand
    - KAT: tests/kat/argon2id.json (15 vectors), tests/kat/hkdf.json (20)
 
-3. crates/paramant-core/src/mnemonic.rs (ONE file, ≤ 150 lines):
+3. crates/paramant-core/src/mnemonic.rs (ONE file, <= 150 lines):
    - Mnemonic struct wrapping 12 words
    - generate(), generate_from_entropy([u8; 16]) (for KAT), parse(&str), 
      to_seed(passphrase) -> Secret<[u8; 64]>
@@ -504,7 +504,7 @@ Commits: feat(aead), feat(kdf): argon2id, feat(kdf): hkdf, feat(mnemonic),
 test: constant-time, docs(adr): 8. Signed.
 ```
 
-### M4 — PROTOCOL LAYER
+### M4  --  PROTOCOL LAYER
 
 ```
 M4 from BLUEPRINT.md. Code-minimization.
@@ -514,19 +514,19 @@ round-trip byte-equivalent with paramant-relay.
 
 Tasks:
 
-1. crates/paramant-core/src/merkle.rs (ONE file, ≤ 300 lines, split if exceeds):
+1. crates/paramant-core/src/merkle.rs (ONE file, <= 300 lines, split if exceeds):
    - MerkleTree struct (append, root, inclusion_proof, verify_inclusion)
    - SHA-256 hashing
    - SignedTreeHead { tree_size, root_hash, timestamp, signature }
    - sign_sth(sk: &Ml DSA65SecretKey, ...) and verify_sth(pk, sth)
 
-2. crates/paramant-core/src/padding.rs (ONE file, ≤ 150 lines):
+2. crates/paramant-core/src/padding.rs (ONE file, <= 150 lines):
    - enum PaddingScheme { Block4K, Block64K, Block512K, Block5M }
    - pad(plaintext) -> (PaddingScheme, Vec<u8>)
    - unpad(padded, scheme) -> CoreResult<Vec<u8>>
    - Last 4 bytes encode original length
 
-3. crates/paramant-core/src/wire.rs (ONE file, ≤ 250 lines):
+3. crates/paramant-core/src/wire.rs (ONE file, <= 250 lines):
    - Version byte at start (0x01 for v1)
    - TLV (Type-Length-Value) encoding
    - encode_v1(envelope) -> Vec<u8>
@@ -534,7 +534,7 @@ Tasks:
    - Forward-compat: unknown TLV tags skipped, not errored
    - docs/wire-format-v1.md spec (5-10 pages, RFC-style)
 
-4. crates/paramant-core/src/envelope.rs (ONE file, ≤ 300 lines, split if exceeds):
+4. crates/paramant-core/src/envelope.rs (ONE file, <= 300 lines, split if exceeds):
    - enum Envelope { Send {..}, ParaShare {..}, ParaDrop {..} }
    - Send: AES-256-GCM with browser-generated key (out-of-band, URL fragment)
    - ParaShare: Hybrid KEM + ML-DSA-65 signature + device fingerprint
@@ -554,13 +554,13 @@ Acceptance:
 - All envelope modes round-trip
 - Byte-equivalent with paramant-relay output
 - 50+ new KAT vectors
-- docs/wire-format-v1.md exists, ≥ 5 pages
+- docs/wire-format-v1.md exists, >= 5 pages
 
 Commits: feat(merkle), feat(padding), feat(wire), feat(envelope), test: 
 roundtrip, docs(adr): 9, docs(wire): v1 spec. Signed.
 ```
 
-### M5 — BRIDGE
+### M5  --  BRIDGE
 
 ```
 M5 from BLUEPRINT.md. Code-minimization.
@@ -576,7 +576,7 @@ Tasks:
    - [lib] crate-type = ["cdylib"]
    - package.json: name @paramant/core, version 0.5.0-alpha.1
 
-2. crates/paramant-core-node/src/lib.rs (ONE file, ≤ 400 lines):
+2. crates/paramant-core-node/src/lib.rs (ONE file, <= 400 lines):
    - #[napi] thin wrappers around paramant-core public API
    - Inputs/outputs as Buffer
    - Errors as JS Error
@@ -606,7 +606,7 @@ Tasks:
    - Report ratio. Target: NAPI > 80% of native.
    - Save to docs/benchmarks.md
 
-8. docs/deploy-bridge.md (≤ 2 pages):
+8. docs/deploy-bridge.md (<= 2 pages):
    - Step-by-step for swapping one endpoint
    - Rollback (git revert + npm install old version)
    - Monitoring metrics
@@ -622,7 +622,7 @@ Commits: feat(node): NAPI binding, test(node): interop, docs(bridge): runbook.
 Signed.
 ```
 
-### M6 — SURFACE
+### M6  --  SURFACE
 
 ```
 M6 from BLUEPRINT.md. Code-minimization.
@@ -636,7 +636,7 @@ Tasks:
    - paramant-core = { path = "../paramant-core" }
    - [lib] crate-type = ["cdylib"]
 
-2. crates/paramant-core-wasm/src/lib.rs (ONE file, ≤ 400 lines):
+2. crates/paramant-core-wasm/src/lib.rs (ONE file, <= 400 lines):
    - #[wasm_bindgen] wrappers, mirror @paramant/core API surface
    - Inputs/outputs as Uint8Array
 
@@ -671,7 +671,7 @@ Acceptance:
 Commits: feat(wasm), perf(wasm): bundle size, docs(adr): 10. Signed.
 ```
 
-### M7 — GOEDE EERSTE BETA
+### M7  --  GOEDE EERSTE BETA
 
 ```
 M7 from BLUEPRINT.md. The milestone.
@@ -733,9 +733,9 @@ flag. Signed.
 
 Vanaf M8 wordt het externe audit + governance werk. Geen exacte prompts nodig op deze schaal.
 
-- **M8 External Review:** Ryan Williams + 2 nieuwe reviewers (€500-1500 honorarium per persoon), 4-week window, triage findings, blog post bij sluiting
+- **M8 External Review:** Ryan Williams + 2 nieuwe reviewers (EUR 500-1500 honorarium per persoon), 4-week window, triage findings, blog post bij sluiting
 - **M9 Audit Prepared:** Cure53 of NCC Group boeken bij M7-voltooiing (6-12 maanden wachttijd), audit-pakket leveren (architecture, threat model, KAT-resultaten, fuzz-uren, constant-time analyse, benchmarks, coverage, cargo-deny, SBOM)
-- **M10 Audited:** rapport ontvangen, findings remediëren, re-test, publicatie op paramant.app/audits
+- **M10 Audited:** rapport ontvangen, findings remedieren, re-test, publicatie op paramant.app/audits
 - **M11 GA:** v1.0.0 op crates.io + npm + GitHub Releases (signed binaries), persrelease + LinkedIn-launch
 - **M12 Specification:** Wire format v1 spec als zelfstandig document, Conformance Test Suite (CTS) vrijgegeven
 - **M13 Second Implementation:** Go-implementatie, CTS draait er groen op, interop met paramant-core werkt
@@ -794,14 +794,14 @@ Voor stochastische ops: deterministic seeds via mock-RNG. AEAD: fixed nonces in 
 
 | Post | Bedrag |
 |---|---|
-| External review M8 (3 reviewers) | €4.500 - €9.000 |
-| Cure53 / NCC audit M9-M10 | €15.000 - €40.000 |
-| crates.io / npm / PyPI | €0 |
-| GitHub Actions minutes | €0 - €50/mnd |
-| ETSI participation (optioneel M12+) | €5.000 - €15.000/jr |
-| Conference travel M14 | €2.000 - €5.000/jr |
-| NLnet / GAIA-X grant (potentieel inkomst) | -€30.000 tot -€100.000 |
-| **Netto M0-M11** | **€20.000 - €55.000** |
+| External review M8 (3 reviewers) | EUR 4.500 - EUR 9.000 |
+| Cure53 / NCC audit M9-M10 | EUR 15.000 - EUR 40.000 |
+| crates.io / npm / PyPI | EUR 0 |
+| GitHub Actions minutes | EUR 0 - EUR 50/mnd |
+| ETSI participation (optioneel M12+) | EUR 5.000 - EUR 15.000/jr |
+| Conference travel M14 | EUR 2.000 - EUR 5.000/jr |
+| NLnet / GAIA-X grant (potentieel inkomst) | -EUR 30.000 tot -EUR 100.000 |
+| **Netto M0-M11** | **EUR 20.000 - EUR 55.000** |
 
 ---
 
@@ -824,7 +824,7 @@ Voor stochastische ops: deterministic seeds via mock-RNG. AEAD: fixed nonces in 
 ## 13. BOTTOM LINE
 
 paramant-core wordt:
-- Geschat ≤ 2000 regels Rust core
+- Geschat <= 2000 regels Rust core
 - 12 source-bestanden in `src/`
 - 12 dependencies
 - 2 crates bij M0, 4 bij M11, max 6 ever

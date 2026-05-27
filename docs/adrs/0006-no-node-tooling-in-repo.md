@@ -22,7 +22,7 @@ Node tooling lives **outside** the repo:
   to stage `package.json`, `package-lock.json`, `yarn.lock`, anything under
   `node_modules/`, or crate-local `tests/kat/` paths.
 - `.gitignore` reinforces this at the working-tree level.
-- **Never `git add -A` / `git add .`** — always explicit paths. This was the
+- **Never `git add -A` / `git add .`**  --  always explicit paths. This was the
   proximate cause of the incident.
 
 ## Consequenties
@@ -34,9 +34,9 @@ inputs are not.
 
 ## Alternatieven
 
-- **In-tree `node_modules`**: rejected — hundreds of files, lockfile metadata,
+- **In-tree `node_modules`**: rejected  --  hundreds of files, lockfile metadata,
   supply-chain surface in a Rust-first repo.
-- **npm workspace / monorepo**: rejected — paramant-core is Rust-first; Node is
+- **npm workspace / monorepo**: rejected  --  paramant-core is Rust-first; Node is
   incidental tooling.
-- **Git submodule for tooling**: rejected — overcomplicates a simple
+- **Git submodule for tooling**: rejected  --  overcomplicates a simple
   "install once, set one env var" workflow.

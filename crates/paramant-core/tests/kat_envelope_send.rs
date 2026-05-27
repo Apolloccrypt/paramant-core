@@ -4,7 +4,7 @@
 //! `scripts/extract-kat.mjs`), with the WebCrypto-vs-pure-Node equivalence
 //! proven separately in `scripts/derisk-send.mjs`. `ct_kem`/`shared_secret` come
 //! from @noble ML-KEM-768 (deterministic) and are taken as inputs, because
-//! `oqs` cannot derandomise encapsulation (ADR-0005) — exactly as in
+//! `oqs` cannot derandomise encapsulation (ADR-0005)  --  exactly as in
 //! `kat_ml_kem_768.rs`. The `decaps(secret_key, ct_kem) == shared_secret` check
 //! links the Rust `oqs` KEM to the @noble-produced vectors end to end.
 

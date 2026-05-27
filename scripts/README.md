@@ -1,4 +1,4 @@
-# Scripts — KAT vector generation
+# Scripts  --  KAT vector generation
 
 `extract-kat.mjs` regenerates the Known-Answer-Test vectors in
 [`../tests/kat/`](../tests/kat/). Sources differ by primitive:
@@ -42,7 +42,7 @@ node scripts/extract-kat.mjs
 ```
 
 SLH-DSA and Falcon are not extracted (liboqs ships SPHINCS+ round-3, not
-FIPS-205 SLH-DSA, and Falcon's encoding varies between implementations — see
+FIPS-205 SLH-DSA, and Falcon's encoding varies between implementations  --  see
 [ADR-0009](../docs/adrs/0009-sphincs-vs-slh-dsa.md)); they are round-trip tested
 in-crate instead.
 

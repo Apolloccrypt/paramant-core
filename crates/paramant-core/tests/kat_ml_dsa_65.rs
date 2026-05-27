@@ -2,7 +2,7 @@
 //! the implementation paramant-relay uses for signatures.
 //!
 //! oqs has no deterministic keygen, so parity is proven on the deterministic
-//! path — verification of @noble-produced signatures — plus tamper rejection and
+//! path  --  verification of @noble-produced signatures  --  plus tamper rejection and
 //! interop (the core signs and verifies @noble keypairs). See
 //! `docs/adrs/0005-kem-kat-strategy.md` and `docs/adrs/0007-signature-type-pattern.md`.
 

@@ -4,7 +4,7 @@
 //! only the block tier, not the exact length. The layout is
 //!
 //! ```text
-//! [ original_data ‖ random_filler ‖ original_length (u32, little-endian) ]
+//! [ original_data || random_filler || original_length (u32, little-endian) ]
 //! ```
 //!
 //! The trailing four bytes encode the original length; the filler between the

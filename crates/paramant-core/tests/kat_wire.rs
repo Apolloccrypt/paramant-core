@@ -4,7 +4,7 @@
 //! 2026-04-24); the two anchor vectors carry the published SHA-256 of a signed
 //! (5090 B) and an anonymous (1778 B) envelope. For every vector we rebuild the
 //! [`Envelope`], assert `encode` is byte-identical (SHA-256, total length and
-//! header), and assert `decode ∘ encode` round-trips. A block of tamper cases
+//! header), and assert `decode  then  encode` round-trips. A block of tamper cases
 //! confirms the decoder rejects malformed blobs.
 
 use paramant_core::wire::{Envelope, Header, KemId, SigId};
@@ -76,7 +76,7 @@ fn encode_matches_vectors_and_decode_roundtrips() {
             "sha256 {id}"
         );
 
-        // decode ∘ encode is the identity (consuming the whole buffer).
+        // decode  then  encode is the identity (consuming the whole buffer).
         assert_eq!(
             Envelope::decode(&blob).expect("decode"),
             env,

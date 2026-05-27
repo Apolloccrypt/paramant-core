@@ -1,4 +1,4 @@
-//! Property tests for the anonymous Send-mode envelope: encrypt→decrypt
+//! Property tests for the anonymous Send-mode envelope: encrypt -> decrypt
 //! round-trips, the wrong recipient key never decrypts, and tampering with the
 //! AEAD-protected ciphertext is always rejected.
 //!

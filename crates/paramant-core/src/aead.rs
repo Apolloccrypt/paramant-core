@@ -1,6 +1,6 @@
 //! AES-256-GCM authenticated encryption (FIPS 197 + NIST SP 800-38D) via AWS-LC.
 //!
-//! [`encrypt`] returns `ciphertext ‖ tag` (16-byte GCM tag appended); [`decrypt`]
+//! [`encrypt`] returns `ciphertext || tag` (16-byte GCM tag appended); [`decrypt`]
 //! consumes that same layout and verifies the tag before returning plaintext.
 //!
 //! **Nonce discipline:** the 96-bit nonce MUST be unique per key. Reusing a
@@ -35,7 +35,7 @@ fn load_key(key: &[u8; KEY_LEN]) -> CoreResult<LessSafeKey> {
     Ok(LessSafeKey::new(unbound))
 }
 
-/// Encrypt `plaintext`, returning `ciphertext ‖ tag`.
+/// Encrypt `plaintext`, returning `ciphertext || tag`.
 ///
 /// `aad` is authenticated but not encrypted. The `nonce` must be unique for this
 /// `key`.
@@ -60,7 +60,7 @@ pub fn encrypt(
     Ok(buf)
 }
 
-/// Decrypt `ciphertext ‖ tag`, verifying the tag, and return the plaintext.
+/// Decrypt `ciphertext || tag`, verifying the tag, and return the plaintext.
 ///
 /// # Errors
 /// [`CoreError::Aead`] if the input is too short, the tag is invalid, or the

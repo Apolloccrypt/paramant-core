@@ -8,7 +8,7 @@ seriously and welcome coordinated disclosure.
 Email **privacy@paramant.app**. Encrypt sensitive reports to our age public key:
 
 ```
-# age public key (placeholder — replace before public launch / M8)
+# age public key (placeholder  --  replace before public launch / M8)
 age1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsplaceholder
 ```
 

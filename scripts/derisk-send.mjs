@@ -3,13 +3,13 @@
 //
 // Proves that the deterministic crypto paramant-core will mirror in Rust
 // (HKDF-SHA256 via HMAC + AES-256-GCM via AWS-LC) is byte-identical to what
-// paramant-relay's `sdk-js` actually does — which uses WebCrypto HKDF/AES-GCM
+// paramant-relay's `sdk-js` actually does  --  which uses WebCrypto HKDF/AES-GCM
 // and the relay's own `wireEncode`. For each fixed input we:
 //
 //   1. derive ctKem + sharedSecret deterministically with @noble/post-quantum
 //      ML-KEM-768 (seed-based keygen + msg-based encapsulate);
-//   2. derive the AES key + ciphertext two ways — WebCrypto (exactly the relay
-//      code path) and pure-Node HMAC/AES-GCM (the path Rust reproduces) — and
+//   2. derive the AES key + ciphertext two ways  --  WebCrypto (exactly the relay
+//      code path) and pure-Node HMAC/AES-GCM (the path Rust reproduces)  --  and
 //      assert they are byte-equal;
 //   3. frame the envelope with the relay's *own* `wireEncode` and print the
 //      core SHA-256.
@@ -42,7 +42,7 @@ function bytesFrom(label, n) {
   return new Uint8Array(b.subarray(0, n));
 }
 
-// Pure-Node HKDF-SHA256 (RFC 5869) — the algorithm kdf::hkdf implements in Rust.
+// Pure-Node HKDF-SHA256 (RFC 5869)  --  the algorithm kdf::hkdf implements in Rust.
 const hkdfExtract = (salt, ikm) =>
   createHmac('sha256', salt.length ? Buffer.from(salt) : Buffer.alloc(32))
     .update(Buffer.from(ikm))
@@ -60,7 +60,7 @@ function hkdfExpand(prk, info, len) {
   return new Uint8Array(Buffer.concat(out).subarray(0, len));
 }
 
-// Path A: WebCrypto — exactly what sdk-js/index.js `_encrypt` runs.
+// Path A: WebCrypto  --  exactly what sdk-js/index.js `_encrypt` runs.
 async function webcryptoPath(sharedSecret, salt, nonce, aad, plaintext) {
   const base = await subtle.importKey('raw', sharedSecret, { name: 'HKDF' }, false, ['deriveKey']);
   const aesKey = await subtle.deriveKey(
@@ -77,7 +77,7 @@ async function webcryptoPath(sharedSecret, salt, nonce, aad, plaintext) {
   return { rawKey, ct };
 }
 
-// Path B: pure-Node HMAC-HKDF + AES-256-GCM — what paramant-core does in Rust.
+// Path B: pure-Node HMAC-HKDF + AES-256-GCM  --  what paramant-core does in Rust.
 function nodePath(sharedSecret, salt, nonce, aad, plaintext) {
   const prk = hkdfExtract(salt, sharedSecret);
   const key = hkdfExpand(prk, INFO, 32);

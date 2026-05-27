@@ -5,7 +5,7 @@ Status: Geaccepteerd
 
 ## Context
 
-Argon2id takes three tuning parameters — memory cost `m`, time cost `t`, and
+Argon2id takes three tuning parameters  --  memory cost `m`, time cost `t`, and
 parallelism `p`. Set too low they weaken resistance to offline cracking; set too
 high they make interactive password verification sluggish. The values must be
 fixed in one place so every caller inherits a vetted cost rather than guessing.
@@ -35,7 +35,7 @@ reuse the cross-implementation strategy already chosen for the KEM in
 [ADR-0005](0005-kem-kat-strategy.md): a trusted independent implementation
 produces the vectors and paramant-core must reproduce them byte-for-byte.
 
-Concretely, `@noble/hashes` generates 15 Argon2id vectors at our OWASP params —
+Concretely, `@noble/hashes` generates 15 Argon2id vectors at our OWASP params  -- 
 but only **after** the generator has reproduced the single RFC 9106 Appendix A
 vector on that same run, so the reference is itself anchored to the RFC ground
 truth before we trust it. The Rust `argon2` crate must then match those 15 tags
@@ -54,16 +54,16 @@ BIP-0039 uses the trezor/python-mnemonic canonical vectors.
 
 ## Alternatieven
 
-- **RFC 9106 minimum (`m = 8` MiB)**: rejected — too low for 2024 attack budgets.
-- **Argon2d / Argon2i**: rejected — Argon2id is the recommended hybrid for
+- **RFC 9106 minimum (`m = 8` MiB)**: rejected  --  too low for 2024 attack budgets.
+- **Argon2d / Argon2i**: rejected  --  Argon2id is the recommended hybrid for
   password hashing (Argon2d alone is side-channel-prone, Argon2i weaker against
   GPUs).
-- **Higher `t` at lower `m`**: rejected — memory hardness, not iteration count,
+- **Higher `t` at lower `m`**: rejected  --  memory hardness, not iteration count,
   is what frustrates parallel cracking hardware.
-- **Configurable parameters**: rejected — one vetted cost beats per-caller
+- **Configurable parameters**: rejected  --  one vetted cost beats per-caller
   guesses; revisit by bumping the constants (a versioned change) as hardware
   moves.
-- **Inline-only RFC 9106 vectors (no `@noble`)**: rejected — Appendix A supplies
+- **Inline-only RFC 9106 vectors (no `@noble`)**: rejected  --  Appendix A supplies
   a single Argon2id vector, at non-OWASP parameters; too few for a corpus. We
   keep it as the ground-truth anchor and follow the ADR-0005 cross-impl pattern
   for volume (see "KAT-bron" above).

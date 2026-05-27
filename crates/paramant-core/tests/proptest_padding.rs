@@ -35,8 +35,8 @@ proptest! {
     }
 }
 
-/// Explicit 0–10 MiB coverage including a 5 MiB exact block and multi-block
-/// outputs — too large for proptest's per-element generation, fast as a pattern.
+/// Explicit 0-10 MiB coverage including a 5 MiB exact block and multi-block
+/// outputs  --  too large for proptest's per-element generation, fast as a pattern.
 #[test]
 fn large_and_multiblock_roundtrip() {
     for len in [524_285usize, 5_242_876, 6_000_000, 10_000_000] {

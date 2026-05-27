@@ -2,8 +2,8 @@
 //! the implementation paramant-relay uses.
 //!
 //! oqs exposes no deterministic (derand) keygen, so parity is proven on the
-//! deterministic receiver path — `decaps(secret_key, ciphertext) ==
-//! shared_secret`, byte-for-byte — plus interop on @noble-generated keypairs.
+//! deterministic receiver path  --  `decaps(secret_key, ciphertext) ==
+//! shared_secret`, byte-for-byte  --  plus interop on @noble-generated keypairs.
 //! See `docs/adrs/0005-kem-kat-strategy.md`.
 
 use paramant_core::kem::{self, Ciphertext, PublicKey, SecretKey};

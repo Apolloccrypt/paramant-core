@@ -5,7 +5,7 @@ Status: Geaccepteerd
 
 ## Context
 
-Less code is less audit surface, fewer bugs, less cognitive load — and this code
+Less code is less audit surface, fewer bugs, less cognitive load  --  and this code
 goes to a paid external audit. Unchecked, Rust projects accrete traits, generics,
 helper modules, and speculative abstraction. We decide against that up front.
 
@@ -14,7 +14,7 @@ helper modules, and speculative abstraction. We decide against that up front.
 **Maximum effect, minimum surface.** Concretely:
 
 - One file per module unless it exceeds ~300 lines (then split, e.g.
-  `kem.rs` → `kem/mod.rs` + `kem/hybrid.rs`) — never preemptively.
+  `kem.rs`  ->  `kem/mod.rs` + `kem/hybrid.rs`)  --  never preemptively.
 - Use vetted crates for crypto primitives; do not reimplement.
 - Re-export where wrapping adds nothing; wrap only for security (`Secret<T>`).
 - Functions over builders where a function fits.
@@ -33,13 +33,13 @@ helper modules, and speculative abstraction. We decide against that up front.
 ## Consequenties
 
 - Reviewers and auditors read less and understand faster.
-- Some changes feel "manual" rather than abstracted — accepted on purpose.
+- Some changes feel "manual" rather than abstracted  --  accepted on purpose.
 - A new abstraction must justify itself in the PR; on a security path it needs
   an ADR.
 
 ## Alternatieven
 
-- **Idiomatic-maximalist Rust** (traits + generics everywhere): rejected — more
+- **Idiomatic-maximalist Rust** (traits + generics everywhere): rejected  --  more
   surface, slower audit, no payoff at this size.
-- **Premature multi-crate split**: rejected — crates arrive with the milestone
-  that needs them (blueprint §2 table).
+- **Premature multi-crate split**: rejected  --  crates arrive with the milestone
+  that needs them (blueprint Sec.2 table).

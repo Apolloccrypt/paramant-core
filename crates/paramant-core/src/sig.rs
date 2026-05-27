@@ -50,7 +50,7 @@ fn raw_verify(alg: Algorithm, pk: &[u8], msg: &[u8], sig: &[u8]) -> CoreResult<b
     Ok(s.verify(msg, sig_ref, pk_ref).is_ok())
 }
 
-/// ML-DSA-65 (FIPS 204) — Paramant's default signature scheme.
+/// ML-DSA-65 (FIPS 204)  --  Paramant's default signature scheme.
 pub mod ml_dsa_65 {
     use super::{raw_keygen, raw_sign, raw_verify, Algorithm, CoreError, CoreResult, Zeroizing};
 
@@ -161,7 +161,7 @@ pub mod ml_dsa_65 {
 ///
 /// **Caveat:** liboqs 0.12 ships round-3 SPHINCS+ "simple", which is *not*
 /// byte-compatible with FIPS 205 SLH-DSA (the message hashing differs). This
-/// module is round-trip tested within liboqs only — no `@noble`/FIPS-205
+/// module is round-trip tested within liboqs only  --  no `@noble`/FIPS-205
 /// cross-implementation parity is claimed, and `paramant-relay` does not use it.
 /// It will track true SLH-DSA once liboqs exposes it. See
 /// `docs/adrs/0009-sphincs-vs-slh-dsa.md`.
@@ -257,7 +257,7 @@ pub mod slh_dsa {
     }
 }
 
-/// Falcon-512 (FN-DSA) — small signatures.
+/// Falcon-512 (FN-DSA)  --  small signatures.
 ///
 /// Round-trip verified within liboqs. We make **no** cross-implementation
 /// byte-equivalence claim for Falcon: its signature encoding varies between

@@ -1,7 +1,7 @@
 //! Known-Answer Tests for the KDF module.
 //!
 //! - HKDF (RFC 5869): `extract`/`expand` must reproduce the published PRK/OKM
-//!   bytes, including the RFC 5869 Appendix A cases 1–3.
+//!   bytes, including the RFC 5869 Appendix A cases 1-3.
 //! - Argon2id (RFC 9106 / OWASP 2024 params): `hash_password` must reproduce
 //!   the reference tag byte-for-byte (the generator validated the reference
 //!   against the RFC 9106 Appendix A vector), and `verify_password` must accept

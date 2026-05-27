@@ -17,9 +17,9 @@ Blob").
 ## 1. Source of truth
 
 `paramant-relay/docs/wire-format-v1.md` (approved 2026-04-24) is **canonical**.
-The relay's encoder/decoder pair —
+The relay's encoder/decoder pair  -- 
 `paramant-relay/relay/crypto/wire-format.js` (Node, authoritative) and
-`paramant-relay/sdk-js/src/wire-format.js` (browser SDK) — define the bytes on
+`paramant-relay/sdk-js/src/wire-format.js` (browser SDK)  --  define the bytes on
 the wire.
 
 - This document is the Rust-implementation-oriented mirror.
@@ -29,7 +29,7 @@ the wire.
 - ADR-0003 (source of truth) and
   [ADR-0014](adrs/0014-wire-format-byte-equivalence-with-relay.md)
   (byte-equivalence policy) govern the relationship. Changes flow
-  relay → core, never the other direction.
+  relay  ->  core, never the other direction.
 
 Key words **MUST**, **MUST NOT**, **SHOULD**, **MAY** are to be interpreted as
 in RFC 2119.
@@ -43,29 +43,29 @@ padding or alignment between fields. The blob is the concatenation of a fixed
 header and a variable body:
 
 ```
-┌────────────────────────────────────────────────────────────────────┐
-│ HEADER (10 bytes, fixed)                                             │
-│   MAGIC        4B   'PQHB' = 0x50 0x51 0x48 0x42                      │
-│   VERSION      1B   0x01 for v1                                       │
-│   KEM_ID       2B   uint16 big-endian                                │
-│   SIG_ID       2B   uint16 big-endian (0x0000 = unsigned/anonymous)  │
-│   FLAGS        1B   reserved, MUST be 0x00 in v1                      │
-├────────────────────────────────────────────────────────────────────┤
-│ KEY ENCAPSULATION                                                    │
-│   CT_KEM_LEN     4B   uint32 big-endian                              │
-│   CT_KEM         N    KEM ciphertext                                 │
-│   SENDER_PUB_LEN 4B   uint32 big-endian                             │
-│   SENDER_PUB     N    sender public key                              │
-├────────────────────────────────────────────────────────────────────┤
-│ SIGNATURE  (present only if SIG_ID != 0x0000)                        │
-│   SIG_LEN      4B   uint32 big-endian                                │
-│   SIGNATURE    N                                                     │
-├────────────────────────────────────────────────────────────────────┤
-│ PAYLOAD                                                              │
-│   NONCE        12B  AES-256-GCM nonce (NO length prefix, fixed)      │
-│   CT_LEN       4B   uint32 big-endian                                │
-│   CIPHERTEXT   N    AES-256-GCM ciphertext (encrypted padded data)   │
-└────────────────────────────────────────────────────────────────────┘
++--------------------------------------------------------------------+
+| HEADER (10 bytes, fixed)                                             |
+|   MAGIC        4B   'PQHB' = 0x50 0x51 0x48 0x42                      |
+|   VERSION      1B   0x01 for v1                                       |
+|   KEM_ID       2B   uint16 big-endian                                |
+|   SIG_ID       2B   uint16 big-endian (0x0000 = unsigned/anonymous)  |
+|   FLAGS        1B   reserved, MUST be 0x00 in v1                      |
++--------------------------------------------------------------------+
+| KEY ENCAPSULATION                                                    |
+|   CT_KEM_LEN     4B   uint32 big-endian                              |
+|   CT_KEM         N    KEM ciphertext                                 |
+|   SENDER_PUB_LEN 4B   uint32 big-endian                             |
+|   SENDER_PUB     N    sender public key                              |
++--------------------------------------------------------------------+
+| SIGNATURE  (present only if SIG_ID != 0x0000)                        |
+|   SIG_LEN      4B   uint32 big-endian                                |
+|   SIGNATURE    N                                                     |
++--------------------------------------------------------------------+
+| PAYLOAD                                                              |
+|   NONCE        12B  AES-256-GCM nonce (NO length prefix, fixed)      |
+|   CT_LEN       4B   uint32 big-endian                                |
+|   CIPHERTEXT   N    AES-256-GCM ciphertext (encrypted padded data)   |
++--------------------------------------------------------------------+
 ```
 
 Fixed overhead: 10-byte header + length prefixes. An anonymous envelope adds
@@ -105,7 +105,7 @@ one. A relay MAY refuse to load specific IDs for policy reasons (returning HTTP
 
 | ID       | Algorithm    | Public key | Ciphertext | Status                |
 |----------|--------------|-----------:|-----------:|-----------------------|
-| `0x0000` | reserved     | —          | —          | invalid for encryption |
+| `0x0000` | reserved     |  --           |  --           | invalid for encryption |
 | `0x0001` | ML-KEM-512   | 800 B      | 768 B      | FIPS 203              |
 | `0x0002` | ML-KEM-768   | 1184 B     | 1088 B     | FIPS 203, **default** |
 | `0x0003` | ML-KEM-1024  | 1568 B     | 1568 B     | FIPS 203              |
@@ -114,17 +114,17 @@ one. A relay MAY refuse to load specific IDs for policy reasons (returning HTTP
 
 | ID       | Algorithm           | Public key | Signature | Status                |
 |----------|---------------------|-----------:|----------:|-----------------------|
-| `0x0000` | none (anonymous)    | —          | —         | valid, skips section  |
+| `0x0000` | none (anonymous)    |  --           |  --          | valid, skips section  |
 | `0x0001` | ML-DSA-44           | 1312 B     | 2420 B    | FIPS 204              |
 | `0x0002` | ML-DSA-65           | 1952 B     | 3309 B    | FIPS 204, **default** |
 | `0x0003` | ML-DSA-87           | 2592 B     | 4627 B    | FIPS 204              |
 | `0x0100` | Falcon-512          | 897 B      | ~666 B    | FIPS 206              |
 | `0x0101` | Falcon-1024         | 1793 B     | ~1280 B   | FIPS 206              |
-| `0x0200`–`0x020B` | SLH-DSA / SPHINCS+ family | 32–64 B | large | FIPS 205     |
+| `0x0200`-`0x020B` | SLH-DSA / SPHINCS+ family | 32-64 B | large | FIPS 205     |
 
 The canonical relay spec documents `0x0200` (SLH-DSA-SHA2-128s) and `0x0201`
 (SLH-DSA-SHA2-128f); the relay's runtime registry (`relay/crypto/bootstrap.js`)
-additionally registers the SHA2 and SHAKE `{128,192,256}×{s,f}` variants through
+additionally registers the SHA2 and SHAKE `{128,192,256}x{s,f}` variants through
 `0x020B`. paramant-core's [`SigId`](../crates/paramant-core/src/wire.rs) enum
 covers the full `0x0200..=0x020B` range so it decodes anything the relay can
 emit. IDs `>= 0x8000` are reserved for private/experimental use by self-hosters.
@@ -141,7 +141,7 @@ emit. IDs `>= 0x8000` are reserved for private/experimental use by self-hosters.
 2. All header integer fields (`KEM_ID`, `SIG_ID`) are **uint16 big-endian**.
 3. There is **no padding or alignment** between fields.
 4. `NONCE` is exactly 12 bytes and has **no length prefix**.
-5. When `SIG_ID == 0x0000` the signature section is **omitted entirely** — not a
+5. When `SIG_ID == 0x0000` the signature section is **omitted entirely**  --  not a
    zero-length prefix. When `SIG_ID != 0x0000` the section is present with its
    `SIG_LEN` prefix (which MAY itself be zero for a zero-length signature).
 6. `FLAGS` MUST be `0x00`. Decoders MUST reject any other value.
@@ -162,7 +162,7 @@ A decoder MUST reject a blob that:
 
 ## 5. Padding integration
 
-Length-hiding padding is applied to the **plaintext**, before AEAD encryption —
+Length-hiding padding is applied to the **plaintext**, before AEAD encryption  -- 
 not to the outer blob. The encoder:
 
 1. Pads the plaintext to a fixed block tier via
@@ -204,13 +204,13 @@ boundary cases (empty ciphertext, empty fields, large signatures). All 30 live
 in [`tests/kat/wire-format-v1.json`](../tests/kat/wire-format-v1.json) and are
 checked by `crates/paramant-core/tests/kat_wire.rs`.
 
-Common inputs for both anchors: `ctKem = 00112233445566778899aabbccddeeff × 68`
-(1088 B), `senderPub = cafe × 296` (592 B), `nonce = 000102030405060708090a0b`,
-`ciphertext = deadbeef × 16` (64 B). (`× N` = the hex pattern repeated N times.)
+Common inputs for both anchors: `ctKem = 00112233445566778899aabbccddeeff x 68`
+(1088 B), `senderPub = cafe x 296` (592 B), `nonce = 000102030405060708090a0b`,
+`ciphertext = deadbeef x 16` (64 B). (`x N` = the hex pattern repeated N times.)
 
 | Anchor    | KEM_ID | SIG_ID | signature      | total | SHA-256 (full blob) |
 |-----------|--------|--------|----------------|------:|---------------------|
-| signed    | `0x0002` | `0x0002` | `babe × 1654` (3308 B) | 5090 B | `002b4f6aad4fa992804a3e94c46d514b4f842e9f5c283f7a31d7c76722d0476a` |
+| signed    | `0x0002` | `0x0002` | `babe x 1654` (3308 B) | 5090 B | `002b4f6aad4fa992804a3e94c46d514b4f842e9f5c283f7a31d7c76722d0476a` |
 | anonymous | `0x0002` | `0x0000` | omitted        | 1778 B | `46bce75b12e90ed312420fafcbead4108d55aa25273aee3ce4f2b4f61b3d19ef` |
 
 Their header bytes are `50514842010002000200` (signed) and
@@ -253,9 +253,9 @@ producer's claim.
 
 ## References
 
-- NIST FIPS 203 — Module-Lattice-Based KEM (ML-KEM)
-- NIST FIPS 204 — Module-Lattice-Based Digital Signature (ML-DSA)
-- NIST FIPS 205 — Stateless Hash-Based Digital Signature (SLH-DSA / SPHINCS+)
-- NIST FIPS 206 — FN-DSA (Falcon)
-- RFC 5116 — An Interface and Algorithms for Authenticated Encryption
-- RFC 2119 — Key words for use in RFCs
+- NIST FIPS 203  --  Module-Lattice-Based KEM (ML-KEM)
+- NIST FIPS 204  --  Module-Lattice-Based Digital Signature (ML-DSA)
+- NIST FIPS 205  --  Stateless Hash-Based Digital Signature (SLH-DSA / SPHINCS+)
+- NIST FIPS 206  --  FN-DSA (Falcon)
+- RFC 5116  --  An Interface and Algorithms for Authenticated Encryption
+- RFC 2119  --  Key words for use in RFCs

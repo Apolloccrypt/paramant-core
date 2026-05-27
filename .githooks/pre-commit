@@ -23,4 +23,22 @@ if [ -n "$crate_kat" ]; then
   exit 1
 fi
 
+# Reject non-ASCII typography in staged text files (docs/code/config). KAT JSON
+# is exempt (hex data). Use ASCII equivalents; see the ASCII-only chore commit.
+staged_text=$(staged | grep -E '\.(md|rs|toml|yml|mjs|js|sh)$' || true)
+if [ -n "$staged_text" ]; then
+  offenders=""
+  for f in $staged_text; do
+    if [ -f "$f" ] && grep -lP "[^\x00-\x7F]" "$f" >/dev/null 2>&1; then
+      offenders="$offenders  $f"$'\n'
+    fi
+  done
+  if [ -n "$offenders" ]; then
+    echo "ERROR: non-ASCII typography in staged text files:" >&2
+    echo "$offenders" >&2
+    echo "Use ASCII equivalents (em-dash -> --, curly quotes -> straight, etc.)." >&2
+    exit 1
+  fi
+fi
+
 exit 0

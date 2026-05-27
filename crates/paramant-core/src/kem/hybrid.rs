@@ -1,16 +1,16 @@
-//! Hybrid KEM: ML-KEM-768 ⊕ ECDH P-256.
+//! Hybrid KEM: ML-KEM-768  XOR  ECDH P-256.
 //!
 //! The shared secret is derived from both a post-quantum (ML-KEM-768) and a
 //! classical (ECDH P-256) KEM, so it stays secure as long as *either* holds.
 //! The combiner follows `draft-ietf-tls-hybrid-design`:
 //!
 //! ```text
-//! ss = HKDF-Extract( salt = ml_kem_ct ‖ ecdh_ephemeral_pub,
-//!                    ikm  = ml_kem_ss ‖ ecdh_ss )            // HMAC-SHA-256, 32 bytes
+//! ss = HKDF-Extract( salt = ml_kem_ct || ecdh_ephemeral_pub,
+//!                    ikm  = ml_kem_ss || ecdh_ss )            // HMAC-SHA-256, 32 bytes
 //! ```
 //!
-//! Wire layout: a public key is `ml_kem_pk ‖ ecdh_pub` (SEC1 uncompressed), a
-//! ciphertext is `ml_kem_ct ‖ ecdh_ephemeral_pub`. See
+//! Wire layout: a public key is `ml_kem_pk || ecdh_pub` (SEC1 uncompressed), a
+//! ciphertext is `ml_kem_ct || ecdh_ephemeral_pub`. See
 //! `docs/adrs/0010-hybrid-kem-construction.md`. ECDH is provided by AWS-LC
 //! (`aws-lc-rs`); ML-KEM by liboqs (`super`). No `unsafe`.
 //!
@@ -34,25 +34,25 @@ use crate::error::{CoreError, CoreResult};
 
 /// ECDH P-256 scalar length (big-endian), in bytes.
 const ECDH_SCALAR_LEN: usize = 32;
-/// ECDH P-256 public point length (SEC1 uncompressed, `0x04‖X‖Y`), in bytes.
+/// ECDH P-256 public point length (SEC1 uncompressed, `0x04||X||Y`), in bytes.
 const ECDH_POINT_LEN: usize = 65;
 
-/// Hybrid public key length: ML-KEM-768 public key ‖ ECDH P-256 point.
+/// Hybrid public key length: ML-KEM-768 public key || ECDH P-256 point.
 pub const PUBLIC_KEY_LEN: usize = kem::PUBLIC_KEY_LEN + ECDH_POINT_LEN;
-/// Hybrid secret key length: ML-KEM-768 secret key ‖ ECDH P-256 scalar.
+/// Hybrid secret key length: ML-KEM-768 secret key || ECDH P-256 scalar.
 pub const SECRET_KEY_LEN: usize = kem::SECRET_KEY_LEN + ECDH_SCALAR_LEN;
-/// Hybrid ciphertext length: ML-KEM-768 ciphertext ‖ ECDH ephemeral point.
+/// Hybrid ciphertext length: ML-KEM-768 ciphertext || ECDH ephemeral point.
 pub const CIPHERTEXT_LEN: usize = kem::CIPHERTEXT_LEN + ECDH_POINT_LEN;
 /// Hybrid shared-secret length, in bytes.
 pub const SHARED_SECRET_LEN: usize = 32;
 
-/// A hybrid public key (`ml_kem_pk ‖ ecdh_pub`).
+/// A hybrid public key (`ml_kem_pk || ecdh_pub`).
 #[derive(Clone, PartialEq, Eq)]
 pub struct HybridPublicKey(Vec<u8>);
-/// A hybrid secret key (`ml_kem_sk ‖ ecdh_scalar`). Wiped on drop.
+/// A hybrid secret key (`ml_kem_sk || ecdh_scalar`). Wiped on drop.
 #[derive(Clone)]
 pub struct HybridSecretKey(Zeroizing<Vec<u8>>);
-/// A hybrid ciphertext (`ml_kem_ct ‖ ecdh_ephemeral_pub`).
+/// A hybrid ciphertext (`ml_kem_ct || ecdh_ephemeral_pub`).
 #[derive(Clone, PartialEq, Eq)]
 pub struct HybridCiphertext(Vec<u8>);
 /// A hybrid shared secret. Wiped on drop.

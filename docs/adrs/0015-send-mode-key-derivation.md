@@ -12,7 +12,7 @@ from a key encoded in a URL fragment via HKDF, with the plaintext padded by the
 
 Reading the relay source first (the standing rule from phase 2a) showed none of
 that matches reality. `paramant-relay` (build 2.5.0 / `sdk-js` 3.0.0) has no
-URL-fragment mode anywhere — not in `sdk-js`, not in the browser frontend. Its
+URL-fragment mode anywhere  --  not in `sdk-js`, not in the browser frontend. Its
 anonymous transfer is `sendAnonymous`, which calls the same `_encrypt` as a
 signed send but with `SIG_ID = 0x0000`. Concretely:
 
@@ -20,7 +20,7 @@ signed send but with `SIG_ID = 0x0000`. Concretely:
   derived from the **KEM shared secret**, not a fragment.
 - Key derivation is `HKDF-SHA256(ikm = shared_secret, salt = ct_kem[0..32],
   info = "paramant-v1-aes-key")`, 32-byte output.
-- The **raw** plaintext is AES-256-GCM-encrypted with `AAD = HEADER ‖
+- The **raw** plaintext is AES-256-GCM-encrypted with `AAD = HEADER ||
   chunk_index_be32`. There is no plaintext-level padding.
 - The wire core is then padded with **random** bytes up to a caller-chosen
   block size; the boundary is recovered from the decoder's consumed-byte count,
@@ -52,7 +52,7 @@ HMAC-HKDF + AES-256-GCM that paramant-core mirrors (and to the relay's own
    `decaps(secret_key, ct_kem) == shared_secret` (the `ml-kem-768.json`
    pattern). The randomised end-to-end flow is covered by property tests.
 4. **No PSS in v1.** The relay can mix a pre-shared secret into the HKDF IKM
-   (`shared_secret ‖ sha256(pss)`); that is a relay-MITM hardening layer, not
+   (`shared_secret || sha256(pss)`); that is a relay-MITM hardening layer, not
    part of the anonymous primitive, and is deferred.
 
 ## Consequences
@@ -63,7 +63,7 @@ HMAC-HKDF + AES-256-GCM that paramant-core mirrors (and to the relay's own
   concatenated buffer; strict `decode` remains for exact-core checks.
 - Signed (ParaShare) and mnemonic (ParaDrop) modes reuse `wire`, `aead`, `kdf`
   and `kem`; ParaDrop in particular does not use the PQHB format at all (it is a
-  bare `nonce ‖ ct_len ‖ ct` packet keyed from a BIP-39 mnemonic) and will get
+  bare `nonce || ct_len || ct` packet keyed from a BIP-39 mnemonic) and will get
   its own analysis in a later phase.
 
 ## Alternatives

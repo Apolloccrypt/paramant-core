@@ -56,7 +56,7 @@ proptest! {
         prop_assert_eq!(Envelope::decode(&blob).expect("decode"), env);
     }
 
-    // A single flipped byte at any position must yield Ok or a clean Err — never
+    // A single flipped byte at any position must yield Ok or a clean Err  --  never
     // a panic (proptest fails the test if decode panics).
     #[test]
     fn mutated_blob_never_panics(

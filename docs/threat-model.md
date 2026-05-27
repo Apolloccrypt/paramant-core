@@ -1,14 +1,14 @@
 # Threat Model
 
-*v0.1 — STRIDE-lite. One page. Revisited every tagged release.*
+*v0.1  --  STRIDE-lite. One page. Revisited every tagged release.*
 
 ## Assets
 
-1. **Secret keys** — KEM/signature secret keys and derived symmetric keys. Must
+1. **Secret keys**  --  KEM/signature secret keys and derived symmetric keys. Must
    never leave the process in plaintext, never hit logs, zeroized on drop.
-2. **Plaintext** — the user data inside an envelope, before encryption / after
+2. **Plaintext**  --  the user data inside an envelope, before encryption / after
    decryption.
-3. **Merkle log** — the append-only transparency log and its Signed Tree Heads;
+3. **Merkle log**  --  the append-only transparency log and its Signed Tree Heads;
    integrity and non-equivocation matter even though it is public.
 
 ## Adversaries
@@ -24,19 +24,19 @@
 
 - A compromised **build host** or a malicious dependency injected before
   compilation (mitigated operationally: pinned deps, `cargo audit` / `cargo deny`,
-  reproducible builds goal, SBOM — not a property of the source).
+  reproducible builds goal, SBOM  --  not a property of the source).
 - Side channels below the cryptographic layer (CPU, power, EM).
 - Endpoint malware that reads plaintext before encryption.
 
 ## Security properties the code must hold
 
 - **Constant-time** where a timing leak would matter (AEAD tag check, password
-  verification, secret comparisons) — via `subtle`. Marked per function and
+  verification, secret comparisons)  --  via `subtle`. Marked per function and
   tested in `tests/constant_time.rs` (from M3).
-- **Secret hygiene** — all key material wrapped in `zeroize::Zeroizing<T>`
+- **Secret hygiene**  --  all key material wrapped in `zeroize::Zeroizing<T>`
   (zeroized on drop, never `Debug`-printed). Secret handling lives inline in
   each primitive's module (`kem`, `sig`, `kdf`, `mnemonic`); there is no
-  separate `secret.rs` — we wrap only where it earns its keep (principle D,
+  separate `secret.rs`  --  we wrap only where it earns its keep (principle D,
   [ADR-0004](adrs/0004-code-minimization.md)).
 - **No `unsafe`** without a `// SAFETY:` comment and an ADR.
 - **Byte-equivalence** with `paramant-relay` (build 2.5.0) for every primitive,
@@ -56,7 +56,7 @@ secret data. These functions MUST run in time independent of secret values:
 
 **How we test it.** Wall-clock measurement is platform-dependent and flaky, so
 `tests/constant_time.rs` asserts the *structural* property instead: the
-comparison examines the whole input with no data-dependent early return — every
+comparison examines the whole input with no data-dependent early return  --  every
 single-bit tamper of an AEAD ciphertext and of an Argon2id tag is rejected, and
 the comparison primitive is `subtle::ConstantTimeEq`. We rely on the underlying
 crates (`aws-lc-rs`, `argon2`, `oqs`) for the constant-time guarantee inside

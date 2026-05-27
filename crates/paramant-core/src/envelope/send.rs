@@ -17,7 +17,7 @@
 //! caller-chosen block size; the boundary is recovered with
 //! [`Envelope::decode_prefix`]. Because ML-KEM encapsulation, the nonce and the
 //! padding are all randomised (and `oqs` exposes no derandomised encapsulate,
-//! ADR-0005), full envelopes are non-deterministic — the deterministic
+//! ADR-0005), full envelopes are non-deterministic  --  the deterministic
 //! [`seal_core`]/[`open_core`] pair carries the KAT (fixed `ct_kem` +
 //! `shared_secret`), see [ADR-0015](../../docs/adrs/0015-send-mode-key-derivation.md).
 

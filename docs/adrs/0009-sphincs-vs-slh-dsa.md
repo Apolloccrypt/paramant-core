@@ -8,7 +8,7 @@ Status: Geaccepteerd
 M2 intended to ship SLH-DSA (FIPS 205) alongside ML-DSA-65 and Falcon, with
 cross-implementation Known-Answer Tests against `@noble/post-quantum` (which
 implements FIPS 205 SLH-DSA). The KAT immediately failed: liboqs 0.12 exposes
-the **round-3 SPHINCS+ "simple"** instantiations (`SphincsSha2128fSimple`, …),
+the **round-3 SPHINCS+ "simple"** instantiations (`SphincsSha2128fSimple`, ...),
 not FIPS 205 SLH-DSA. The two differ in message processing (FIPS 205 adds a
 domain-separation prefix), so signatures do not cross-verify.
 
@@ -23,7 +23,7 @@ KEM/ML-DSA strategy (verify @noble vectors) does not apply here.
 
 ## Consequenties
 
-- `sig::slh_dsa` is available and self-consistent (sign↔verify), but is round-3
+- `sig::slh_dsa` is available and self-consistent (sign <-> verify), but is round-3
   SPHINCS+, not FIPS 205, until liboqs exposes SLH-DSA.
 - No SLH-DSA KAT vectors in `tests/kat/`; coverage is the round-trip unit test.
 - When liboqs ships FIPS 205 SLH-DSA, switch the backing `Algorithm`, add the
@@ -31,7 +31,7 @@ KEM/ML-DSA strategy (verify @noble vectors) does not apply here.
 
 ## Alternatieven
 
-- **Implement FIPS 205 message-prefix on top of SPHINCS+**: rejected — hand-rolling
+- **Implement FIPS 205 message-prefix on top of SPHINCS+**: rejected  --  hand-rolling
   the FIPS wrapper around a round-3 primitive is exactly the "don't reinvent
   crypto" trap (ADR-0004); wait for liboqs.
 - **Drop SPHINCS+ entirely until FIPS 205 lands**: viable, but a working,

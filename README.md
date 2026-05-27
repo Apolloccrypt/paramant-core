@@ -1,13 +1,13 @@
 # paramant-core
 
 Post-quantum cryptographic core for [Paramant](https://paramant.app). It holds
-the cryptographic primitives, wire format, and envelope logic — KEM, signatures,
-AEAD, KDF, mnemonic, Merkle log, padding — as one small, auditable Rust library.
+the cryptographic primitives, wire format, and envelope logic  --  KEM, signatures,
+AEAD, KDF, mnemonic, Merkle log, padding  --  as one small, auditable Rust library.
 Every primitive is checked byte-for-byte against the production `paramant-relay`
 (build 2.5.0), so the relay can adopt this core without any client-visible change.
 
 > **Status: M0 (bootstrap).** The crate is an intentionally empty shell. The
-> cryptographic modules land one milestone at a time (M1–M4). See
+> cryptographic modules land one milestone at a time (M1-M4). See
 > [`BLUEPRINT.md`](BLUEPRINT.md) for the full plan.
 
 ## Modules (target layout)
@@ -17,7 +17,7 @@ Flat `crates/paramant-core/src/`, one file per concept, split only past 300 line
 | File | Contents | Milestone |
 |---|---|---|
 | `error.rs` | `CoreError`, `CoreResult` | M1 |
-| `kem.rs` | ML-KEM-768 + hybrid ECDH P-256 | M1–M2 |
+| `kem.rs` | ML-KEM-768 + hybrid ECDH P-256 | M1-M2 |
 | `sig.rs` | ML-DSA-65, SLH-DSA, Falcon | M2 |
 | `aead.rs` | AES-256-GCM | M3 |
 | `kdf.rs` | Argon2id + HKDF | M3 |
@@ -53,13 +53,13 @@ One core, many consumers. Bindings are added at the milestone that needs them
 
 ## Documentation
 
-- [BLUEPRINT.md](BLUEPRINT.md) — full design and milestone plan
-- [docs/architecture.md](docs/architecture.md) — workspace, modules, dependencies
-- [docs/threat-model.md](docs/threat-model.md) — assets, adversaries, boundaries
-- [docs/doc-conventions.md](docs/doc-conventions.md) — rustdoc, ADR, CHANGELOG rules
-- [docs/adrs/](docs/adrs/) — Architecture Decision Records
-- [SECURITY.md](SECURITY.md) — responsible disclosure
-- [CONTRIBUTING.md](CONTRIBUTING.md) — how to contribute
+- [BLUEPRINT.md](BLUEPRINT.md)  --  full design and milestone plan
+- [docs/architecture.md](docs/architecture.md)  --  workspace, modules, dependencies
+- [docs/threat-model.md](docs/threat-model.md)  --  assets, adversaries, boundaries
+- [docs/doc-conventions.md](docs/doc-conventions.md)  --  rustdoc, ADR, CHANGELOG rules
+- [docs/adrs/](docs/adrs/)  --  Architecture Decision Records
+- [SECURITY.md](SECURITY.md)  --  responsible disclosure
+- [CONTRIBUTING.md](CONTRIBUTING.md)  --  how to contribute
 
 Why Paramant is relevant lives at [paramant.app/vs](https://paramant.app/vs),
 not in this README.

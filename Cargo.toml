@@ -12,11 +12,11 @@ repository   = "https://github.com/Apolloccrypt/paramant-core"
 
 # Single, pinned catalogue of every dependency the core will use through M7.
 # Members opt in with `dep.workspace = true`; entries no member uses are not
-# built or locked. See docs/adrs/0004-code-minimization.md and blueprint §4.
+# built or locked. See docs/adrs/0004-code-minimization.md and blueprint Sec.4.
 [workspace.dependencies]
 # Post-quantum crypto via liboqs. M1 enables only ML-KEM (FIPS 203);
 # signature families (FIPS 204/205/206) are switched on at M2. No OpenSSL
-# backend — liboqs builds its own symmetric primitives.
+# backend  --  liboqs builds its own symmetric primitives.
 oqs        = { version = "0.10", default-features = false, features = ["ml_kem", "ml_dsa", "sphincs", "falcon", "std"] }
 
 # Classical crypto (FIPS-validated AWS-LC)

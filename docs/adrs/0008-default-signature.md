@@ -25,7 +25,7 @@ hash-based conservatism or the smallest signatures, respectively.
 
 ## Alternatieven
 
-- **SLH-DSA default**: rejected — kilobyte-plus signatures and slower signing;
+- **SLH-DSA default**: rejected  --  kilobyte-plus signatures and slower signing;
   kept as the conservative hash-based option.
-- **Falcon default**: rejected — floating-point and constant-time hazards, and
+- **Falcon default**: rejected  --  floating-point and constant-time hazards, and
   not FIPS-final; kept for callers who specifically need small signatures.

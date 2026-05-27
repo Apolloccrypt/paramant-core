@@ -2,10 +2,10 @@
 //!
 //! Two distinct jobs, deliberately not interchangeable:
 //!
-//! - [`argon2id`] — slow, memory-hard hashing for **low-entropy secrets**
+//! - [`argon2id`]  --  slow, memory-hard hashing for **low-entropy secrets**
 //!   (passwords). Fixed OWASP-2024 parameters (see ADR-0011); the salt is the
 //!   caller's responsibility and must be unique per password.
-//! - [`hkdf`] — fast extract-and-expand for **high-entropy keying material**
+//! - [`hkdf`]  --  fast extract-and-expand for **high-entropy keying material**
 //!   (e.g. a KEM shared secret). Never feed a password to HKDF.
 //!
 //! Derived password tags are returned in [`Zeroizing`] storage, matching the
@@ -99,7 +99,7 @@ pub mod hkdf {
 
     /// HKDF-Extract: derive a 32-byte pseudorandom key from `salt` and `ikm`.
     ///
-    /// An empty `salt` is treated as `HashLen` zero bytes, per RFC 5869 §2.2.
+    /// An empty `salt` is treated as `HashLen` zero bytes, per RFC 5869 Sec.2.2.
     pub fn extract(salt: &[u8], ikm: &[u8]) -> [u8; PRK_LEN] {
         let salt = if salt.is_empty() { None } else { Some(salt) };
         let (prk, _hk) = Hkdf::<Sha256>::extract(salt, ikm);
@@ -153,7 +153,7 @@ mod tests {
 
     #[test]
     fn hkdf_empty_salt_matches_none() {
-        // RFC 5869 §2.2: empty salt == HashLen zeros == the crate's `None`.
+        // RFC 5869 Sec.2.2: empty salt == HashLen zeros == the crate's `None`.
         let a = hkdf::extract(b"", b"ikm");
         let (prk, _) = Hkdf::<Sha256>::extract(None, b"ikm");
         assert_eq!(a, prk.as_slice());

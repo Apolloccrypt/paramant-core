@@ -7,7 +7,7 @@ Status: Geaccepteerd
 
 paramant-core offers three signature schemes (ML-DSA-65, SLH-DSA, Falcon) with
 different key and signature sizes and different security properties. Mixing keys
-across schemes — passing an ML-DSA key to Falcon verify — must be impossible.
+across schemes  --  passing an ML-DSA key to Falcon verify  --  must be impossible.
 
 ## Beslissing
 
@@ -26,6 +26,6 @@ private helper (`raw_keygen` / `raw_sign` / `raw_verify` over an oqs
 
 ## Alternatieven
 
-- **Generic over a `SigAlgorithm` enum or trait**: rejected — permits runtime
+- **Generic over a `SigAlgorithm` enum or trait**: rejected  --  permits runtime
   algorithm confusion, adds abstraction for its own sake (ADR-0004), and buys
   nothing the modules don't already give.

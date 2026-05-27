@@ -232,7 +232,7 @@ impl Envelope {
 
     /// Decode one envelope from the start of `bytes`, returning it and the number
     /// of bytes it consumed. Unlike [`Envelope::decode`] this tolerates trailing
-    /// bytes after the ciphertext — e.g. the random block padding that the
+    /// bytes after the ciphertext  --  e.g. the random block padding that the
     /// envelope layer appends to the wire core (see `envelope`). Mirrors the
     /// relay decoder's `consumedBytes`.
     pub fn decode_prefix(bytes: &[u8]) -> CoreResult<(Self, usize)> {

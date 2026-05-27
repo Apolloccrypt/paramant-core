@@ -1,4 +1,4 @@
-//! Property test: every ML-KEM-768 keypair round-trips — the secret a sender
+//! Property test: every ML-KEM-768 keypair round-trips  --  the secret a sender
 //! encapsulates is exactly the secret the receiver decapsulates.
 
 use paramant_core::kem;

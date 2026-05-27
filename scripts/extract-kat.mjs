@@ -3,13 +3,13 @@
 //
 // Two sourcing strategies, by primitive:
 //
-//   * KEM / signatures / AEAD — generated from @noble/post-quantum and
+//   * KEM / signatures / AEAD  --  generated from @noble/post-quantum and
 //     @noble/ciphers, the FIPS implementations paramant-relay (build 2.5.0)
 //     uses. paramant-core checks these byte-for-byte. See ADR-0005.
 //
-//   * KDF / mnemonic — anchored to RFC/canonical sources:
+//   * KDF / mnemonic  --  anchored to RFC/canonical sources:
 //       - HKDF (RFC 5869): pure-Node HMAC-SHA256, anchored to Appendix A
-//         cases 1–3 (the generator self-checks against them on every run).
+//         cases 1-3 (the generator self-checks against them on every run).
 //       - Argon2id (RFC 9106): @noble/hashes, *validated against the RFC 9106
 //         Appendix A vector on every run* before emitting OWASP-2024-param
 //         vectors. RFC 9106 Appendix A has only one Argon2id vector, so volume
@@ -73,7 +73,7 @@ function write(name, doc) {
   console.log(`wrote ${doc.count} vectors to tests/kat/${name}.json`);
 }
 
-// ── ML-KEM-768 (FIPS 203): decaps(secret_key, ciphertext) == shared_secret ──
+// -- ML-KEM-768 (FIPS 203): decaps(secret_key, ciphertext) == shared_secret --
 if (ml_kem768) {
   const COUNT = 50;
   const vectors = [];
@@ -95,7 +95,7 @@ if (ml_kem768) {
   }
   write('ml-kem-768', {
     primitive: 'ml-kem-768',
-    source: '@noble/post-quantum (FIPS 203) — paramant-relay build 2.5.0',
+    source: '@noble/post-quantum (FIPS 203)  --  paramant-relay build 2.5.0',
     note: 'paramant-core verifies decaps(secret_key, ciphertext) == shared_secret byte-for-byte.',
     count: vectors.length,
     vectors,
@@ -104,7 +104,7 @@ if (ml_kem768) {
   console.warn(`skip ml-kem-768: ${mlkemSpec} not importable (set NOBLE_PQ_MLKEM)`);
 }
 
-// ── ML-DSA-65 (FIPS 204): verify(public_key, msg, signature) == true ──
+// -- ML-DSA-65 (FIPS 204): verify(public_key, msg, signature) == true --
 // Deterministic signing via extraEntropy:false (FIPS 204 deterministic variant).
 if (ml_dsa65) {
   const COUNT = 50;
@@ -126,7 +126,7 @@ if (ml_dsa65) {
   }
   write('ml-dsa-65', {
     primitive: 'ml-dsa-65',
-    source: '@noble/post-quantum (FIPS 204) — paramant-relay build 2.5.0',
+    source: '@noble/post-quantum (FIPS 204)  --  paramant-relay build 2.5.0',
     note: 'paramant-core verifies verify(public_key, msg, signature) == true byte-for-byte; deterministic signing (extraEntropy:false).',
     count: vectors.length,
     vectors,
@@ -135,7 +135,7 @@ if (ml_dsa65) {
   console.warn(`skip ml-dsa-65: ${mldsaSpec} not importable (set NOBLE_PQ_MLDSA)`);
 }
 
-// ── AES-256-GCM (FIPS 197 + SP 800-38D): encrypt(key,nonce,aad,pt) == ct‖tag ──
+// -- AES-256-GCM (FIPS 197 + SP 800-38D): encrypt(key,nonce,aad,pt) == ct||tag --
 // AES-GCM is deterministic given (key, nonce, aad, pt), so this is a true
 // byte-equal cross-implementation KAT. Varies aad/pt lengths, including empty.
 if (gcm) {
@@ -146,7 +146,7 @@ if (gcm) {
     const nonce = bytesFrom(`paramant/aes-256-gcm/nonce/${i}`, 12);
     const aad = bytesFrom(`paramant/aes-256-gcm/aad/${i}`, i % 5 === 0 ? 0 : (i * 3) % 61);
     const pt = bytesFrom(`paramant/aes-256-gcm/pt/${i}`, i % 7 === 0 ? 0 : (i * 11) % 197);
-    const ct = gcm(key, nonce, aad).encrypt(pt); // ciphertext ‖ 16-byte tag
+    const ct = gcm(key, nonce, aad).encrypt(pt); // ciphertext || 16-byte tag
     vectors.push({
       test_id: `gcm-${String(i).padStart(3, '0')}`,
       input: {
@@ -161,7 +161,7 @@ if (gcm) {
   write('aes-256-gcm', {
     primitive: 'aes-256-gcm',
     source: '@noble/ciphers',
-    note: 'ciphertext_hex = ciphertext ‖ tag; encrypt(key, nonce, aad, plaintext) must equal it byte-for-byte.',
+    note: 'ciphertext_hex = ciphertext || tag; encrypt(key, nonce, aad, plaintext) must equal it byte-for-byte.',
     count: vectors.length,
     vectors,
   });
@@ -169,13 +169,13 @@ if (gcm) {
   console.warn(`skip aes-256-gcm: ${ciphersSpec} not importable (set NOBLE_CIPHERS)`);
 }
 
-// ── HKDF-SHA256 (RFC 5869): extract then expand ──
-// Pure-Node HMAC-SHA256 — HKDF is HMAC all the way down, so no third-party
+// -- HKDF-SHA256 (RFC 5869): extract then expand --
+// Pure-Node HMAC-SHA256  --  HKDF is HMAC all the way down, so no third-party
 // dependency is needed and the RFC is the only authority. The generator
-// self-checks against RFC 5869 Appendix A cases 1–3 before emitting.
+// self-checks against RFC 5869 Appendix A cases 1-3 before emitting.
 {
   function hkdfExtract(salt, ikm) {
-    // RFC 5869 §2.2: an absent/empty salt is HashLen (32) zero bytes.
+    // RFC 5869 Sec.2.2: an absent/empty salt is HashLen (32) zero bytes.
     const key = salt.length ? Buffer.from(salt) : Buffer.alloc(32);
     return createHmac('sha256', key).update(Buffer.from(ikm)).digest();
   }
@@ -192,7 +192,7 @@ if (gcm) {
     return new Uint8Array(Buffer.concat(out).subarray(0, len));
   }
 
-  // RFC 5869 Appendix A test cases 1–3 (SHA-256), with published PRK/OKM.
+  // RFC 5869 Appendix A test cases 1-3 (SHA-256), with published PRK/OKM.
   const rfc = [
     {
       ikm: '0b'.repeat(22),
@@ -224,8 +224,8 @@ if (gcm) {
   rfc.forEach((c, i) => {
     const prk = hkdfExtract(Buffer.from(c.salt, 'hex'), Buffer.from(c.ikm, 'hex'));
     const okm = hkdfExpand(prk, Buffer.from(c.info, 'hex'), c.len);
-    if (hex(prk) !== c.prk) throw new Error(`HKDF RFC TC${i + 1} PRK mismatch — generator broken`);
-    if (hex(okm) !== c.okm) throw new Error(`HKDF RFC TC${i + 1} OKM mismatch — generator broken`);
+    if (hex(prk) !== c.prk) throw new Error(`HKDF RFC TC${i + 1} PRK mismatch  --  generator broken`);
+    if (hex(okm) !== c.okm) throw new Error(`HKDF RFC TC${i + 1} OKM mismatch  --  generator broken`);
     vectors.push({
       test_id: `hkdf-rfc-${String(i + 1).padStart(2, '0')}`,
       input: { ikm_hex: c.ikm, salt_hex: c.salt, info_hex: c.info, length: c.len },
@@ -252,14 +252,14 @@ if (gcm) {
 
   write('hkdf', {
     primitive: 'hkdf-sha256',
-    source: 'RFC 5869 Appendix A (cases 1–3) + generated; pure HMAC-SHA256',
-    note: 'extract(salt, ikm) == prk; expand(prk, info, length) == okm. Empty salt = 32 zero bytes (RFC 5869 §2.2).',
+    source: 'RFC 5869 Appendix A (cases 1-3) + generated; pure HMAC-SHA256',
+    note: 'extract(salt, ikm) == prk; expand(prk, info, length) == okm. Empty salt = 32 zero bytes (RFC 5869 Sec.2.2).',
     count: vectors.length,
     vectors,
   });
 }
 
-// ── Argon2id (RFC 9106): hash_password(pw, salt) == tag at OWASP-2024 params ──
+// -- Argon2id (RFC 9106): hash_password(pw, salt) == tag at OWASP-2024 params --
 // @noble/hashes is validated against the single RFC 9106 Appendix A vector
 // before any OWASP-param vectors are emitted, so a parameter-conversion bug
 // (KiB vs bytes, parallelism vs lanes) in either impl is caught here.
@@ -277,7 +277,7 @@ if (argon2id) {
     });
     const RFC_9106_TAG = '0d640df58d78766c08c037a34a8b53c9d01ef0452d75b65eb52520e96b01e659';
     if (hex(got) !== RFC_9106_TAG) {
-      throw new Error('Argon2id reference does not match RFC 9106 Appendix A — refusing to emit');
+      throw new Error('Argon2id reference does not match RFC 9106 Appendix A  --  refusing to emit');
     }
   }
 
@@ -290,7 +290,7 @@ if (argon2id) {
   const vectors = [];
   for (let i = 0; i < N; i++) {
     const pw = bytesFrom(`paramant/argon2id/pw/${i}`, 8 + ((i * 3) % 33)); // 8..40 bytes
-    const salt = bytesFrom(`paramant/argon2id/salt/${i}`, 16); // ≥ 8 bytes (Argon2 minimum)
+    const salt = bytesFrom(`paramant/argon2id/salt/${i}`, 16); // >= 8 bytes (Argon2 minimum)
     const tag = argon2id(pw, salt, { t: T, m: M, p: P, dkLen: DK, version: 0x13 });
     vectors.push({
       test_id: `argon2id-${String(i).padStart(2, '0')}`,
@@ -311,7 +311,7 @@ if (argon2id) {
   console.warn(`skip argon2id: ${argon2Spec} not importable (set ARGON2_SPEC)`);
 }
 
-// ── BIP-0039 (12/18/24-word English): entropy → mnemonic → seed ──
+// -- BIP-0039 (12/18/24-word English): entropy  ->  mnemonic  ->  seed --
 // trezor/python-mnemonic canonical vectors (out-of-tree per ADR-0006). Seeds
 // are re-derived with pure-Node PBKDF2-HMAC-SHA512 and asserted byte-equal to
 // the canonical seed, so a parse/selection error cannot slip through.
@@ -338,7 +338,7 @@ if (bip39Source) {
     const [entropy, mnemonic, canonicalSeed] = r;
     const seed = bip39Seed(mnemonic, PASSPHRASE);
     if (hex(seed) !== canonicalSeed) {
-      throw new Error(`BIP-39 seed mismatch for vector ${i} — generator or source broken`);
+      throw new Error(`BIP-39 seed mismatch for vector ${i}  --  generator or source broken`);
     }
     return {
       test_id: `bip39-${String(i).padStart(2, '0')}`,
@@ -358,8 +358,8 @@ if (bip39Source) {
   console.warn('skip bip39: set BIP39_TREZOR_VECTORS to trezor vectors.json path');
 }
 
-// ── Merkle tree (RFC 6962): root + inclusion proofs ──
-// Pure Node SHA-256 — RFC 6962 is the only authority and needs no third-party
+// -- Merkle tree (RFC 6962): root + inclusion proofs --
+// Pure Node SHA-256  --  RFC 6962 is the only authority and needs no third-party
 // dependency. The generator self-checks against the canonical RFC 6962 roots
 // (empty, 1-leaf, the 8-leaf reference tree) before emitting; the proofs it
 // emits are then re-derived independently by paramant-core (Rust).
@@ -390,7 +390,7 @@ if (bip39Source) {
       : [...auditPath(m - k, lh.slice(k)), mth(lh.slice(0, k))];
   };
 
-  // RFC 6962 §2.1.4 canonical reference leaves and their known roots.
+  // RFC 6962 Sec.2.1.4 canonical reference leaves and their known roots.
   const RFC_LEAVES = [
     '',
     '00',
@@ -408,7 +408,7 @@ if (bip39Source) {
   };
   for (const [n, want] of Object.entries(RFC_ROOTS)) {
     const got = hex(mth(RFC_LEAVES.slice(0, Number(n)).map(hashLeaf)));
-    if (got !== want) throw new Error(`Merkle RFC root mismatch for n=${n} — generator broken`);
+    if (got !== want) throw new Error(`Merkle RFC root mismatch for n=${n}  --  generator broken`);
   }
 
   const vectorFor = (id, leaves) => {
@@ -442,13 +442,13 @@ if (bip39Source) {
 
   write('merkle', {
     primitive: 'merkle-rfc6962',
-    source: 'RFC 6962 §2.1 (self-checked roots: empty, 1-leaf, 8-leaf) + generated; pure SHA-256',
+    source: 'RFC 6962 Sec.2.1 (self-checked roots: empty, 1-leaf, 8-leaf) + generated; pure SHA-256',
     note: 'root_hash_hex = MTH(leaves); proof_hex = inclusion proof for leaf_index. leaf = H(0x00||data), node = H(0x01||l||r).',
     count: vectors.length,
     vectors,
   });
 
-  // ── Signed Tree Head: ML-DSA-65 over tree_size_be ‖ timestamp_be ‖ root ──
+  // -- Signed Tree Head: ML-DSA-65 over tree_size_be || timestamp_be || root --
   // Cross-impl like ml-dsa-65.json (deterministic @noble signing); paramant-core
   // reconstructs the 48-byte message and must verify the @noble signature.
   if (ml_dsa65) {
@@ -484,8 +484,8 @@ if (bip39Source) {
     }
     write('merkle-sth', {
       primitive: 'merkle-sth-ml-dsa-65',
-      source: '@noble/post-quantum (FIPS 204) — paramant-relay build 2.5.0; RFC 6962 root',
-      note: 'message = tree_size_be(8) ‖ timestamp_be(8) ‖ root(32); paramant-core verifies the ML-DSA-65 signature byte-for-byte.',
+      source: '@noble/post-quantum (FIPS 204)  --  paramant-relay build 2.5.0; RFC 6962 root',
+      note: 'message = tree_size_be(8) || timestamp_be(8) || root(32); paramant-core verifies the ML-DSA-65 signature byte-for-byte.',
       count: sthVectors.length,
       vectors: sthVectors,
     });
@@ -494,13 +494,13 @@ if (bip39Source) {
   }
 }
 
-// ── Block padding: unpad recovers the original data ──
+// -- Block padding: unpad recovers the original data --
 // Padding is deterministic only in the unpad direction (pad uses random filler),
 // so vectors are described compactly by a recipe rather than stored in full
 // (a single 5 MiB block would otherwise dominate the repo). The plaintext is the
 // pattern byte_j = j % 251; the length suffix is the little-endian u32 the layout
 // commits to. paramant-core rebuilds the block-aligned blob and must unpad it to
-// the original `plaintext_len` bytes — locking the LE suffix and the block sizes.
+// the original `plaintext_len` bytes  --  locking the LE suffix and the block sizes.
 {
   const BLOCKS = { Block4K: 4096, Block64K: 65536, Block512K: 524288, Block5M: 5242880 };
   const LEN_SUFFIX = 4;
@@ -516,7 +516,7 @@ if (bip39Source) {
     b.writeUInt32LE(n);
     return new Uint8Array(b);
   };
-  // 25 lengths: empty, exact-block, boundary±1 across all four tiers, plus
+  // 25 lengths: empty, exact-block, boundary+/-1 across all four tiers, plus
   // multi-block 5 MiB cases.
   const LENGTHS = [
     0, 1, 100, 2048, 3000, 4000, 4091, 4092, // Block4K
@@ -541,25 +541,25 @@ if (bip39Source) {
   });
   write('padding', {
     primitive: 'block-padding',
-    source: 'generated; layout = original_data ‖ random_filler ‖ original_length (u32 LE), block-aligned',
+    source: 'generated; layout = original_data || random_filler || original_length (u32 LE), block-aligned',
     note: 'Rebuild blob: bytes[0..plaintext_len] = j%251, filler = filler_byte, last 4 = length_suffix_hex (LE of plaintext_len). unpad(blob, scheme) must equal the j%251 pattern; padded_len is a multiple of the scheme block size.',
     count: vectors.length,
     vectors,
   });
 }
 
-// ── Wire format v1 (PQHB envelope): encode(fields) == blob ──
+// -- Wire format v1 (PQHB envelope): encode(fields) == blob --
 // The canonical source is paramant-relay/docs/wire-format-v1.md (approved
 // 2026-04-24) and relay/crypto/wire-format.js. The encoder is re-implemented
 // here in pure Node and *self-checked against the two published SHA-256 anchor
 // vectors* (signed 5090 B, anonymous 1778 B) before any vector is emitted, so a
-// byte-level divergence from the relay is caught at generation time — the same
+// byte-level divergence from the relay is caught at generation time  --  the same
 // "validate vs canonical ground truth, then emit" discipline used for HKDF,
 // Argon2id and Merkle. paramant-core's wire.rs must reproduce every blob.
 {
   // Each variable field is {pattern_hex, repeat}: the pattern bytes repeated
   // `repeat` times. Single-byte patterns give arbitrary lengths; multi-byte
-  // patterns reproduce the relay spec's `<pattern> × N` anchor notation.
+  // patterns reproduce the relay spec's `<pattern> x N` anchor notation.
   const expand = (f) => {
     if (!f) return null;
     const p = Buffer.from(f.pattern_hex, 'hex');
@@ -602,7 +602,7 @@ if (bip39Source) {
     };
   };
 
-  // Two published anchor vectors (paramant-relay docs/wire-format-v1.md §Test
+  // Two published anchor vectors (paramant-relay docs/wire-format-v1.md Sec.Test
   // vectors). Their SHA-256 is the cross-implementation ground truth.
   const anchorSigned = finalize('wire-anchor-signed', {
     kem_id: 0x0002, sig_id: 0x0002, flags: 0x00,
@@ -623,10 +623,10 @@ if (bip39Source) {
   const ANCHOR_SIGNED_SHA = '002b4f6aad4fa992804a3e94c46d514b4f842e9f5c283f7a31d7c76722d0476a';
   const ANCHOR_ANON_SHA = '46bce75b12e90ed312420fafcbead4108d55aa25273aee3ce4f2b4f61b3d19ef';
   if (anchorSigned.expected.total_len !== 5090 || anchorSigned.expected.sha256_hex !== ANCHOR_SIGNED_SHA) {
-    throw new Error('wire-format signed anchor mismatch — encoder diverged from relay');
+    throw new Error('wire-format signed anchor mismatch  --  encoder diverged from relay');
   }
   if (anchorAnon.expected.total_len !== 1778 || anchorAnon.expected.sha256_hex !== ANCHOR_ANON_SHA) {
-    throw new Error('wire-format anonymous anchor mismatch — encoder diverged from relay');
+    throw new Error('wire-format anonymous anchor mismatch  --  encoder diverged from relay');
   }
 
   const nonceFor = (id) => hex(createHash('sha256').update(`paramant/wire/nonce/${id}`).digest().subarray(0, 12));
@@ -666,19 +666,19 @@ if (bip39Source) {
   write('wire-format-v1', {
     primitive: 'wire-format-v1',
     source: 'paramant-relay docs/wire-format-v1.md + relay/crypto/wire-format.js (approved 2026-04-24); signed/anonymous anchors self-checked by SHA-256',
-    note: 'Expand each {pattern_hex, repeat} field, build the PQHB envelope (big-endian, length-prefixed), and assert Envelope::encode == expected (total_len, header_hex, sha256_hex) and decode∘encode round-trips. SIG_ID 0x0000 omits the signature section.',
+    note: 'Expand each {pattern_hex, repeat} field, build the PQHB envelope (big-endian, length-prefixed), and assert Envelope::encode == expected (total_len, header_hex, sha256_hex) and decode then encode round-trips. SIG_ID 0x0000 omits the signature section.',
     count: vectors.length,
     vectors,
   });
 }
 
-// ── Send-mode envelope (anonymous, SIG_ID 0x0000) ──
+// -- Send-mode envelope (anonymous, SIG_ID 0x0000) --
 // Mirrors paramant-relay/sdk-js sendAnonymous: ML-KEM-768 encapsulation,
 // HKDF-SHA256(ikm=sharedSecret, salt=ctKem[0:32], info='paramant-v1-aes-key'),
 // AES-256-GCM with the 10-byte PQHB header bound as AAD. The WebCrypto vs
 // pure-Node equivalence is proven in scripts/derisk-send.mjs; here pure-Node
 // HMAC-HKDF + AES-256-GCM generate the vectors. ct_kem/shared_secret/secret_key
-// come from @noble ML-KEM-768 (deterministic seeds) — paramant-core takes them
+// come from @noble ML-KEM-768 (deterministic seeds)  --  paramant-core takes them
 // as KAT inputs because oqs cannot derandomise encapsulation (ADR-0005), exactly
 // like ml-kem-768.json. Plaintext is the j%251 pattern (compact for large cases).
 if (ml_kem768) {

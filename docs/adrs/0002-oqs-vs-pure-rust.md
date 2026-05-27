@@ -13,7 +13,7 @@ audit.
 
 ## Beslissing
 
-Use **`oqs` (liboqs C bindings) for M1–M7.** Re-evaluate migrating to pure-Rust
+Use **`oqs` (liboqs C bindings) for M1-M7.** Re-evaluate migrating to pure-Rust
 crates at **M9** (audit-prep), when those crates have NIST-final implementations
 and their own validation story.
 
@@ -22,12 +22,12 @@ and their own validation story.
 - We track the upstream reference implementation; NIST's validation effort
   targets the underlying C code.
 - A C dependency enters the build (liboqs); the build needs a C toolchain +
-  CMake. The FFI boundary is a fuzzing target (blueprint §10).
+  CMake. The FFI boundary is a fuzzing target (blueprint Sec.10).
 - An `oqs` breaking change is a known risk; this ADR is the migration anchor.
 
 ## Alternatieven
 
-- **pure-Rust now**: rejected for M1–M7 — the crates are not yet NIST-final and
+- **pure-Rust now**: rejected for M1-M7  --  the crates are not yet NIST-final and
   carry less validation weight for an audit. Revisited at M9.
-- **Hand-rolled primitives**: rejected outright — never roll your own crypto;
+- **Hand-rolled primitives**: rejected outright  --  never roll your own crypto;
   principle D says use vetted crates, not reimplement.

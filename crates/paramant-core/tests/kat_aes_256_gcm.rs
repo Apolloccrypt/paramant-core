@@ -2,7 +2,7 @@
 //!
 //! AES-GCM is deterministic given (key, nonce, aad, plaintext), so this is a
 //! true byte-for-byte cross-implementation KAT: paramant-core's `encrypt` must
-//! reproduce @noble's `ciphertext ‖ tag` exactly, `decrypt` must recover the
+//! reproduce @noble's `ciphertext || tag` exactly, `decrypt` must recover the
 //! plaintext, and a tampered tag must be rejected.
 
 use paramant_core::aead;

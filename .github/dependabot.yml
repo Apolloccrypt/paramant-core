@@ -1,6 +1,6 @@
 version: 2
 updates:
-  # Cargo dependencies — weekly. Security + patch/minor only; major bumps are a
+  # Cargo dependencies  --  weekly. Security + patch/minor only; major bumps are a
   # deliberate decision (code-minimization: don't change without a reason), so
   # they are ignored here and reconsidered by hand at the milestone that needs them.
   - package-ecosystem: cargo
@@ -14,7 +14,7 @@ updates:
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
 
-  # GitHub Actions — unpinned/stale actions are a supply-chain gap; keep current.
+  # GitHub Actions  --  unpinned/stale actions are a supply-chain gap; keep current.
   - package-ecosystem: github-actions
     directory: "/"
     schedule:

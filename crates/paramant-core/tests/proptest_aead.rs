@@ -1,4 +1,4 @@
-//! Property test: AES-256-GCM encrypt→decrypt round-trips for arbitrary inputs,
+//! Property test: AES-256-GCM encrypt -> decrypt round-trips for arbitrary inputs,
 //! and authentication rejects a changed AAD.
 
 use paramant_core::aead;

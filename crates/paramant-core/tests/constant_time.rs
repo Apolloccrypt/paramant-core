@@ -3,7 +3,7 @@
 //! Wall-clock timing is platform-dependent and noisy, so these tests do not
 //! measure time. They assert the *structural* guarantee that protects against
 //! timing attacks: the comparison considers the whole input with no
-//! data-dependent early return. Concretely — a mismatch at any position is
+//! data-dependent early return. Concretely  --  a mismatch at any position is
 //! rejected uniformly, and the underlying comparison is `subtle::ConstantTimeEq`
 //! (see kdf.rs / aead.rs). See docs/threat-model.md and ADR-0012.
 
@@ -26,7 +26,7 @@ fn aead_decrypt_rejects_tamper_at_every_position() {
             "tamper at byte {i} was accepted"
         );
     }
-    // The untampered ciphertext still opens — the test isn't vacuous.
+    // The untampered ciphertext still opens  --  the test isn't vacuous.
     assert_eq!(
         aead::decrypt(&key, &nonce, b"aad", &ct).unwrap(),
         b"a longer plaintext payload"

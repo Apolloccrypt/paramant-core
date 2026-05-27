@@ -18,8 +18,8 @@ Follow RFC 6962 Section 2:
 - `H` = SHA-256
 
 The empty tree hashes to `SHA-256("")`. Inclusion proofs and their verification
-follow the same RFC (the verification walk is specified in RFC 9162 §2.1.3.2).
-The Signed Tree Head signs `tree_size ‖ timestamp ‖ root_hash` (integers
+follow the same RFC (the verification walk is specified in RFC 9162 Sec.2.1.3.2).
+The Signed Tree Head signs `tree_size || timestamp || root_hash` (integers
 big-endian) with ML-DSA-65, Paramant's default signature scheme (ADR-0008).
 
 ## Consequences

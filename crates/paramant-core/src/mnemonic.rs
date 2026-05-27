@@ -4,7 +4,7 @@
 //! a 4-bit checksum. [`Mnemonic::to_seed`] stretches it (PBKDF2-HMAC-SHA512,
 //! 2048 rounds) into the 64-byte seed that higher layers feed to a KDF.
 //!
-//! English only, 12 words only — a deliberate single shape so wallets and the
+//! English only, 12 words only  --  a deliberate single shape so wallets and the
 //! relay agree without negotiating word counts or languages.
 //!
 //! # Examples
@@ -24,7 +24,7 @@ use zeroize::Zeroizing;
 
 use crate::error::{CoreError, CoreResult};
 
-/// 128 bits of entropy → a 12-word mnemonic.
+/// 128 bits of entropy  ->  a 12-word mnemonic.
 const ENTROPY_LEN: usize = 16;
 
 /// A validated 12-word BIP-0039 English mnemonic.

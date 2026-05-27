@@ -17,7 +17,7 @@ paramant-core is the Rust replacement growing under the strangler pattern. Per
 ADR-0003 (source of truth), the relay's format is canonical. An earlier draft of
 this milestone proposed a *fresh* TLV format (tags, LEB128, terminator) for the
 core; analysis of the relay source showed that format does not exist there and
-never did — the relay already ships a struct-style v1. Defining a new format in
+never did  --  the relay already ships a struct-style v1. Defining a new format in
 the core would have produced a blob the relay cannot decode, breaking the whole
 reason the core exists.
 
@@ -31,11 +31,11 @@ the blobs the relay produces.
    registry are transcribed from the relay spec into
    `docs/wire-format-v1.md` (a Rust-port mirror, explicitly non-authoritative).
 2. KAT vectors are anchored on the two SHA-256 test vectors published in the
-   relay spec (signed 5090 B → `002b4f6a…`, anonymous 1778 B → `46bce75b…`).
+   relay spec (signed 5090 B  ->  `002b4f6a...`, anonymous 1778 B  ->  `46bce75b...`).
    The generator self-checks both before emitting; generated vectors cover the
    remaining algorithm IDs and boundary cases.
 3. When the relay's spec evolves, paramant-core follows. Updates flow
-   relay → core, never the reverse. Any divergence is a paramant-core bug.
+   relay  ->  core, never the reverse. Any divergence is a paramant-core bug.
 
 ## Consequences
 
@@ -51,11 +51,11 @@ the blobs the relay produces.
 
 ## Alternatives
 
-- **Define a fresh TLV format in core, port the relay later**: rejected —
+- **Define a fresh TLV format in core, port the relay later**: rejected  -- 
   violates ADR-0003 and forces a client-facing format change on an
   already-approved v1.
-- **Implement only the signed path / a subset**: rejected — ParaShare needs
+- **Implement only the signed path / a subset**: rejected  --  ParaShare needs
   signatures and ParaDrop/Send need the anonymous path; the full format is
   small.
-- **Diverge with a version bump (core v2, relay v1)**: rejected — the relay is
+- **Diverge with a version bump (core v2, relay v1)**: rejected  --  the relay is
   the live source of truth on v1; a parallel v2 fork helps no one pre-launch.

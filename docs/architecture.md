@@ -1,6 +1,6 @@
 # Architecture
 
-*v0.1 — mirrors blueprint §2–4. Updated as milestones land.*
+*v0.1  --  mirrors blueprint Sec.2-4. Updated as milestones land.*
 
 ## Two repositories
 
@@ -17,15 +17,15 @@ grows under it. After M7, all relay crypto is imported from `@paramant/core`
 
 ```
 paramant-core/
-├── Cargo.toml                # workspace root + pinned dependency catalogue
-├── rust-toolchain.toml       # Rust 1.80
-├── crates/
-│   ├── paramant-core/        # core lib (this is the whole product at M0)
-│   └── paramant-core-node/   # NAPI binding — added at M5
-├── tests/                    # kat/ (Known Answer Tests), fuzz/
-├── scripts/extract-kat.js    # generates KAT vectors from paramant-relay
-├── docs/                     # this file, threat model, conventions, ADRs
-└── .github/workflows/ci.yml  # check, test, clippy, fmt, audit, deny
++-- Cargo.toml                # workspace root + pinned dependency catalogue
++-- rust-toolchain.toml       # Rust 1.80
++-- crates/
+|   +-- paramant-core/        # core lib (this is the whole product at M0)
+|   +-- paramant-core-node/   # NAPI binding  --  added at M5
++-- tests/                    # kat/ (Known Answer Tests), fuzz/
++-- scripts/extract-kat.js    # generates KAT vectors from paramant-relay
++-- docs/                     # this file, threat model, conventions, ADRs
++-- .github/workflows/ci.yml  # check, test, clippy, fmt, audit, deny
 ```
 
 Crates are added one per milestone that justifies them: `paramant-core-node` (M5),
@@ -34,7 +34,7 @@ Never all upfront.
 
 ## Modules
 
-The core is a flat `src/` — one file per concept, split only past 300 lines.
+The core is a flat `src/`  --  one file per concept, split only past 300 lines.
 See the [README](../README.md#modules-target-layout) for the file/milestone table.
 Per `pub` item: rustdoc with an example. No traits without two implementations,
 no generics without a reason, no abstraction that does not pay for itself
@@ -42,10 +42,10 @@ no generics without a reason, no abstraction that does not pay for itself
 
 ## Dependencies
 
-Twelve, pinned, no wildcards (blueprint §4). Each does something existing deps
+Twelve, pinned, no wildcards (blueprint Sec.4). Each does something existing deps
 cannot:
 
-- **Post-quantum:** `oqs` (liboqs — NIST FIPS 203/204/205/206). See
+- **Post-quantum:** `oqs` (liboqs  --  NIST FIPS 203/204/205/206). See
   [ADR-0002](adrs/0002-oqs-vs-pure-rust.md).
 - **Classical:** `aws-lc-rs` (FIPS-validated AES-GCM, ECDH P-256, SHA-2).
 - **KDF/hash:** `argon2`, `hkdf`, `sha2`.
