@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **M4 (in progress)** (Transparency & Framing): `merkle` + `padding`.
+  55 new KAT vectors (**245 total**).
+- M4: `merkle` module — append-only Merkle tree with RFC 6962 hash construction
+  (`0x00` leaf-prefix, `0x01` internal-prefix; empty tree = `SHA-256("")`;
+  [ADR-0013](docs/adrs/0013-merkle-rfc6962-hash-construction.md)) plus inclusion
+  proofs and a `SignedTreeHead` signed with ML-DSA-65. 30 KAT vectors: 20 Merkle
+  (RFC 6962 self-checked roots + generated) and 10 STH cross-impl with
+  `@noble/post-quantum` ML-DSA-65; 256-case proptest.
+- M4: `padding` module — length-hiding block padding (4K/64K/512K/5M) with random
+  filler and a little-endian `u32` length suffix. 25 KAT vectors over all four
+  block sizes and boundary cases; 256-case round-trip + selection-monotonicity
+  proptest.
 - **M3 complete** (Symmetric Layer): `aead` + `kdf` + `mnemonic` +
   constant-time tests. KAT corpus now **190 vectors**.
 - M3: `kdf` module — Argon2id password hashing at OWASP-2024 params
