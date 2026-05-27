@@ -8,8 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **M4 (in progress)** (Transparency & Framing): `merkle` + `padding`.
-  55 new KAT vectors (**245 total**).
+- **M4 (in progress)** (Transparency & Framing): `merkle` + `padding` + `wire`.
+  85 new KAT vectors (**275 total**).
+- M4 phase 2a: `wire` module — the `PQHB` envelope codec, byte-equivalent with
+  paramant-relay's wire format v1 (`relay/crypto/wire-format.js`, approved
+  2026-04-24): 10-byte magic header (`KEM_ID`/`SIG_ID` registry, reserved
+  `FLAGS`), big-endian length-prefixed body, and `aad_for_chunk` binding the
+  header to AEAD integrity. Mirrored in
+  [`docs/wire-format-v1.md`](docs/wire-format-v1.md);
+  [ADR-0014](docs/adrs/0014-wire-format-byte-equivalence-with-relay.md) records
+  the byte-equivalence policy. 30 KAT vectors including two SHA-256-anchored
+  vectors from the relay spec (signed 5090 B, anonymous 1778 B); 256-case
+  round-trip + mutation/tamper-reject proptest.
 - M4: `merkle` module — append-only Merkle tree with RFC 6962 hash construction
   (`0x00` leaf-prefix, `0x01` internal-prefix; empty tree = `SHA-256("")`;
   [ADR-0013](docs/adrs/0013-merkle-rfc6962-hash-construction.md)) plus inclusion
