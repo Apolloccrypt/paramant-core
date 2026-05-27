@@ -42,6 +42,12 @@ hex        = "0.4"
 # Errors
 thiserror  = "1.0"
 
+# Node-API binding (M5, crates/paramant-core-node only). napi-rs exposes
+# paramant-core's public API to paramant-relay as @paramant/core.
+napi        = { version = "2.16", default-features = false, features = ["napi6"] }
+napi-derive = "2.16"
+napi-build  = "2.1"
+
 # Testing only
 proptest   = "1.5"
 criterion  = "0.5"

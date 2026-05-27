@@ -25,6 +25,9 @@ private = { ignore = true }
 [bans]
 multiple-versions = "warn"
 wildcards = "deny"
+# Local path dependencies (paramant-core-node -> paramant-core, M5) carry no
+# version requirement; that is not a real wildcard-version risk.
+allow-wildcard-paths = true
 
 [sources]
 unknown-registry = "deny"

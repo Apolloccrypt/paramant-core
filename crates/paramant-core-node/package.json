@@ -1,0 +1,33 @@
+{
+  "name": "@paramant/core",
+  "version": "0.5.0-alpha.1",
+  "description": "Post-quantum cryptographic core for Paramant (napi-rs binding to paramant-core).",
+  "license": "BUSL-1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Apolloccrypt/paramant-core.git"
+  },
+  "main": "index.node",
+  "files": [
+    "index.node"
+  ],
+  "napi": {
+    "name": "paramant-core",
+    "triples": {
+      "defaults": false,
+      "additional": [
+        "x86_64-unknown-linux-gnu",
+        "aarch64-unknown-linux-gnu"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "scripts": {
+    "build": "bash scripts/build.sh"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.0"
+  }
+}
