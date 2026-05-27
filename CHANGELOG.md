@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **M5a (Bridge)**: `crates/paramant-core-node` -- a napi-rs binding published as
+  `@paramant/core`, exposing paramant-core's KEM, ML-DSA-65, AES-256-GCM and the
+  three envelope modes to paramant-relay as thin `#[napi]` wrappers (Buffers in/
+  out, `CoreError` -> JS `Error`). Interop test (`test/interop.mjs`) runs the
+  binding over the relay-anchored `tests/kat/` vectors plus envelope round-trips
+  (149 checks); a `napi-interop` CI job builds the cdylib and runs it. Benchmark
+  (`scripts/bench-napi.mjs`, `docs/benchmarks.md`) and the endpoint-swap runbook
+  (`docs/deploy-bridge.md`) included. The binding manifest is permitted by
+  [ADR-0018](docs/adrs/0018-allow-binding-manifests.md); design in
+  [ADR-0019](docs/adrs/0019-napi-binding.md). The live endpoint swap + bench vs
+  the legacy relay path is M5b (in the paramant-relay repo).
 - **M4 (in progress)** (Transparency & Framing): `merkle` + `padding` + `wire` +
   `envelope::{send, para_share, para_drop}`. 135 new KAT vectors (**325 total**).
 - M4 phase 2c: `envelope::para_drop` module -- anonymous BIP-39 mnemonic drop,
