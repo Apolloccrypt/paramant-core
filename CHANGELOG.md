@@ -9,7 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **M4 (in progress)** (Transparency & Framing): `merkle` + `padding` + `wire` +
-  `envelope::send`. 105 new KAT vectors (**295 total**).
+  `envelope::send` + `envelope::para_share`. 120 new KAT vectors (**310 total**).
+- M4 phase 2c: `envelope::para_share` module -- signed, device-paired send,
+  byte-equivalent with paramant-relay `sdk-js` `send`/`_encrypt` (`SIG_ID =
+  0x0002` ML-DSA-65): single ML-KEM-768 (not the hybrid KEM), Send-mode key
+  derivation and AEAD, plus an ML-DSA-65 signature over
+  `ct_kem || sender_pub || nonce || ciphertext || aad` (`sender_pub` = the
+  ML-DSA-65 public key). `decrypt` verifies the signature against the carried
+  key and returns it for caller-side pinning. Shared `random_nonce`/`pad_to_block`
+  promoted to `envelope`. Mirrored in [ADR-0016](docs/adrs/0016-parashare-signature.md).
+  15 KAT vectors (deterministic `seal_core` framing on @noble inputs; the Rust
+  ML-DSA-65 verifier checks the @noble signature, decaps links the KEM); 48-case
+  roundtrip + wrong-recipient + tamper proptest. De-risked by
+  `scripts/derisk-parashare.mjs` (WebCrypto == pure-Node, signature verifies,
+  relay framing round-trips).
 - M4 phase 2b: `envelope::send` module  --  anonymous Send-mode envelope,
   byte-equivalent with paramant-relay `sdk-js` `sendAnonymous` (`SIG_ID =
   0x0000`): ML-KEM-768 to the recipient, `HKDF-SHA256(ikm = shared_secret,
