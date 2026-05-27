@@ -41,6 +41,10 @@ pub enum CoreError {
     #[error("merkle operation failed: {0}")]
     Merkle(&'static str),
 
+    /// A padding operation failed (e.g. a corrupt length suffix on unpad).
+    #[error("padding operation failed: {0}")]
+    Padding(&'static str),
+
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]
     InvalidLength {

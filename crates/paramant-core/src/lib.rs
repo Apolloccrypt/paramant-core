@@ -28,5 +28,6 @@ pub mod kdf;
 pub mod kem;
 pub mod merkle;
 pub mod mnemonic;
+pub mod padding;
 pub mod prelude;
 pub mod sig;

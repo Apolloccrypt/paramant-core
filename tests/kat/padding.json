@@ -1,0 +1,308 @@
+{
+  "primitive": "block-padding",
+  "source": "generated; layout = original_data ‖ random_filler ‖ original_length (u32 LE), block-aligned",
+  "note": "Rebuild blob: bytes[0..plaintext_len] = j%251, filler = filler_byte, last 4 = length_suffix_hex (LE of plaintext_len). unpad(blob, scheme) must equal the j%251 pattern; padded_len is a multiple of the scheme block size.",
+  "count": 25,
+  "vectors": [
+    {
+      "test_id": "padding-00",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 0,
+        "padded_len": 4096,
+        "filler_byte": 11
+      },
+      "expected": {
+        "length_suffix_hex": "00000000"
+      }
+    },
+    {
+      "test_id": "padding-01",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 1,
+        "padded_len": 4096,
+        "filler_byte": 48
+      },
+      "expected": {
+        "length_suffix_hex": "01000000"
+      }
+    },
+    {
+      "test_id": "padding-02",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 100,
+        "padded_len": 4096,
+        "filler_byte": 85
+      },
+      "expected": {
+        "length_suffix_hex": "64000000"
+      }
+    },
+    {
+      "test_id": "padding-03",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 2048,
+        "padded_len": 4096,
+        "filler_byte": 122
+      },
+      "expected": {
+        "length_suffix_hex": "00080000"
+      }
+    },
+    {
+      "test_id": "padding-04",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 3000,
+        "padded_len": 4096,
+        "filler_byte": 159
+      },
+      "expected": {
+        "length_suffix_hex": "b80b0000"
+      }
+    },
+    {
+      "test_id": "padding-05",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 4000,
+        "padded_len": 4096,
+        "filler_byte": 196
+      },
+      "expected": {
+        "length_suffix_hex": "a00f0000"
+      }
+    },
+    {
+      "test_id": "padding-06",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 4091,
+        "padded_len": 4096,
+        "filler_byte": 233
+      },
+      "expected": {
+        "length_suffix_hex": "fb0f0000"
+      }
+    },
+    {
+      "test_id": "padding-07",
+      "input": {
+        "scheme": "Block4K",
+        "plaintext_len": 4092,
+        "padded_len": 4096,
+        "filler_byte": 14
+      },
+      "expected": {
+        "length_suffix_hex": "fc0f0000"
+      }
+    },
+    {
+      "test_id": "padding-08",
+      "input": {
+        "scheme": "Block64K",
+        "plaintext_len": 4093,
+        "padded_len": 65536,
+        "filler_byte": 51
+      },
+      "expected": {
+        "length_suffix_hex": "fd0f0000"
+      }
+    },
+    {
+      "test_id": "padding-09",
+      "input": {
+        "scheme": "Block64K",
+        "plaintext_len": 10000,
+        "padded_len": 65536,
+        "filler_byte": 88
+      },
+      "expected": {
+        "length_suffix_hex": "10270000"
+      }
+    },
+    {
+      "test_id": "padding-10",
+      "input": {
+        "scheme": "Block64K",
+        "plaintext_len": 30000,
+        "padded_len": 65536,
+        "filler_byte": 125
+      },
+      "expected": {
+        "length_suffix_hex": "30750000"
+      }
+    },
+    {
+      "test_id": "padding-11",
+      "input": {
+        "scheme": "Block64K",
+        "plaintext_len": 50000,
+        "padded_len": 65536,
+        "filler_byte": 162
+      },
+      "expected": {
+        "length_suffix_hex": "50c30000"
+      }
+    },
+    {
+      "test_id": "padding-12",
+      "input": {
+        "scheme": "Block64K",
+        "plaintext_len": 65531,
+        "padded_len": 65536,
+        "filler_byte": 199
+      },
+      "expected": {
+        "length_suffix_hex": "fbff0000"
+      }
+    },
+    {
+      "test_id": "padding-13",
+      "input": {
+        "scheme": "Block64K",
+        "plaintext_len": 65532,
+        "padded_len": 65536,
+        "filler_byte": 236
+      },
+      "expected": {
+        "length_suffix_hex": "fcff0000"
+      }
+    },
+    {
+      "test_id": "padding-14",
+      "input": {
+        "scheme": "Block512K",
+        "plaintext_len": 65533,
+        "padded_len": 524288,
+        "filler_byte": 17
+      },
+      "expected": {
+        "length_suffix_hex": "fdff0000"
+      }
+    },
+    {
+      "test_id": "padding-15",
+      "input": {
+        "scheme": "Block512K",
+        "plaintext_len": 100000,
+        "padded_len": 524288,
+        "filler_byte": 54
+      },
+      "expected": {
+        "length_suffix_hex": "a0860100"
+      }
+    },
+    {
+      "test_id": "padding-16",
+      "input": {
+        "scheme": "Block512K",
+        "plaintext_len": 400000,
+        "padded_len": 524288,
+        "filler_byte": 91
+      },
+      "expected": {
+        "length_suffix_hex": "801a0600"
+      }
+    },
+    {
+      "test_id": "padding-17",
+      "input": {
+        "scheme": "Block512K",
+        "plaintext_len": 524283,
+        "padded_len": 524288,
+        "filler_byte": 128
+      },
+      "expected": {
+        "length_suffix_hex": "fbff0700"
+      }
+    },
+    {
+      "test_id": "padding-18",
+      "input": {
+        "scheme": "Block512K",
+        "plaintext_len": 524284,
+        "padded_len": 524288,
+        "filler_byte": 165
+      },
+      "expected": {
+        "length_suffix_hex": "fcff0700"
+      }
+    },
+    {
+      "test_id": "padding-19",
+      "input": {
+        "scheme": "Block5M",
+        "plaintext_len": 524285,
+        "padded_len": 5242880,
+        "filler_byte": 202
+      },
+      "expected": {
+        "length_suffix_hex": "fdff0700"
+      }
+    },
+    {
+      "test_id": "padding-20",
+      "input": {
+        "scheme": "Block5M",
+        "plaintext_len": 1000000,
+        "padded_len": 5242880,
+        "filler_byte": 239
+      },
+      "expected": {
+        "length_suffix_hex": "40420f00"
+      }
+    },
+    {
+      "test_id": "padding-21",
+      "input": {
+        "scheme": "Block5M",
+        "plaintext_len": 5242876,
+        "padded_len": 5242880,
+        "filler_byte": 20
+      },
+      "expected": {
+        "length_suffix_hex": "fcff4f00"
+      }
+    },
+    {
+      "test_id": "padding-22",
+      "input": {
+        "scheme": "Block5M",
+        "plaintext_len": 6000000,
+        "padded_len": 10485760,
+        "filler_byte": 57
+      },
+      "expected": {
+        "length_suffix_hex": "808d5b00"
+      }
+    },
+    {
+      "test_id": "padding-23",
+      "input": {
+        "scheme": "Block5M",
+        "plaintext_len": 7000000,
+        "padded_len": 10485760,
+        "filler_byte": 94
+      },
+      "expected": {
+        "length_suffix_hex": "c0cf6a00"
+      }
+    },
+    {
+      "test_id": "padding-24",
+      "input": {
+        "scheme": "Block5M",
+        "plaintext_len": 10000000,
+        "padded_len": 10485760,
+        "filler_byte": 131
+      },
+      "expected": {
+        "length_suffix_hex": "80969800"
+      }
+    }
+  ]
+}

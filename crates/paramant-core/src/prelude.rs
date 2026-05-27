@@ -10,4 +10,5 @@ pub use crate::kdf;
 pub use crate::kem::{self, Ciphertext, PublicKey, SecretKey, SharedSecret};
 pub use crate::merkle::{MerkleTree, SignedTreeHead};
 pub use crate::mnemonic::{self, Mnemonic};
+pub use crate::padding::{pad, unpad, PaddingScheme};
 pub use crate::sig;

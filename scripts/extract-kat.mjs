@@ -493,3 +493,57 @@ if (bip39Source) {
     console.warn(`skip merkle-sth: ${mldsaSpec} not importable (set NOBLE_PQ_MLDSA)`);
   }
 }
+
+// ── Block padding: unpad recovers the original data ──
+// Padding is deterministic only in the unpad direction (pad uses random filler),
+// so vectors are described compactly by a recipe rather than stored in full
+// (a single 5 MiB block would otherwise dominate the repo). The plaintext is the
+// pattern byte_j = j % 251; the length suffix is the little-endian u32 the layout
+// commits to. paramant-core rebuilds the block-aligned blob and must unpad it to
+// the original `plaintext_len` bytes — locking the LE suffix and the block sizes.
+{
+  const BLOCKS = { Block4K: 4096, Block64K: 65536, Block512K: 524288, Block5M: 5242880 };
+  const LEN_SUFFIX = 4;
+  const selectFor = (len) => {
+    const need = len + LEN_SUFFIX;
+    if (need <= 4096) return 'Block4K';
+    if (need <= 65536) return 'Block64K';
+    if (need <= 524288) return 'Block512K';
+    return 'Block5M';
+  };
+  const suffixLe = (n) => {
+    const b = Buffer.alloc(4);
+    b.writeUInt32LE(n);
+    return new Uint8Array(b);
+  };
+  // 25 lengths: empty, exact-block, boundary±1 across all four tiers, plus
+  // multi-block 5 MiB cases.
+  const LENGTHS = [
+    0, 1, 100, 2048, 3000, 4000, 4091, 4092, // Block4K
+    4093, 10000, 30000, 50000, 65531, 65532, // Block64K
+    65533, 100000, 400000, 524283, 524284, // Block512K
+    524285, 1000000, 5242876, 6000000, 7000000, 10000000, // Block5M (incl. multi-block)
+  ];
+  const vectors = LENGTHS.map((len, i) => {
+    const scheme = selectFor(len);
+    const bs = BLOCKS[scheme];
+    const paddedLen = Math.ceil((len + LEN_SUFFIX) / bs) * bs;
+    return {
+      test_id: `padding-${String(i).padStart(2, '0')}`,
+      input: {
+        scheme,
+        plaintext_len: len,
+        padded_len: paddedLen,
+        filler_byte: (i * 37 + 11) & 0xff,
+      },
+      expected: { length_suffix_hex: hex(suffixLe(len)) },
+    };
+  });
+  write('padding', {
+    primitive: 'block-padding',
+    source: 'generated; layout = original_data ‖ random_filler ‖ original_length (u32 LE), block-aligned',
+    note: 'Rebuild blob: bytes[0..plaintext_len] = j%251, filler = filler_byte, last 4 = length_suffix_hex (LE of plaintext_len). unpad(blob, scheme) must equal the j%251 pattern; padded_len is a multiple of the scheme block size.',
+    count: vectors.length,
+    vectors,
+  });
+}
