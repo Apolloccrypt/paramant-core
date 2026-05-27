@@ -1,0 +1,21 @@
+[package]
+name = "cross-impl-validator"
+description = "Test-only: validates the RustCrypto crates crypto-wasm depends on against the @noble-anchored KAT vectors. Not a paramant-core dependency (no lib consumers); see ADR-0020."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+publish = false
+
+# The crates crypto-wasm (paramant-relay) builds on, pinned to the same majors.
+# These are dev-dependencies: only the integration tests use them, so they never
+# enter any shipping artifact.
+[dev-dependencies]
+ml-kem = "0.3.0-rc.2"
+aes-gcm = "0.10"
+hkdf = { workspace = true }
+sha2 = { workspace = true }
+serde_json = { workspace = true }
+hex = { workspace = true }
