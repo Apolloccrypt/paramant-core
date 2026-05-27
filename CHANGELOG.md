@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **M6 (Browser convergence + cross-impl validation)**: documents that paramant
+  runs three wire formats by design (PQHB native/SDK, `0x03` browser hybrid via
+  `paramant-relay/crypto-wasm`, `/send` WebCrypto URL-fragment) and that the
+  relay blind-stores non-PQHB blobs, so convergence is not a correctness concern
+  ([wire-format-boundaries.md](docs/wire-format-boundaries.md),
+  [wire-format-0x03.md](docs/wire-format-0x03.md)). Adds `cross-impl-validator`
+  (test-only crate): the RustCrypto crates crypto-wasm depends on (`ml-kem`,
+  `aes-gcm`, `hkdf`, `sha2`) are KAT-validated against the same `@noble`-anchored
+  `tests/kat` vectors as paramant-core's `oqs`/`aws-lc-rs` backend, proving
+  primitive byte-equivalence across all three crypto paths. New
+  `cross-impl-rustcrypto-kat` CI job. paramant-core cannot target wasm32 (C
+  deps), so no `paramant-core-wasm` crate; governance is docs + this KAT, not a
+  submodule. [ADR-0020](docs/adrs/0020-crypto-wasm-cross-impl-via-rustcrypto-crates.md).
 - **M5a (Bridge)**: `crates/paramant-core-node` -- a napi-rs binding published as
   `@paramant/core`, exposing paramant-core's KEM, ML-DSA-65, AES-256-GCM and the
   three envelope modes to paramant-relay as thin `#[napi]` wrappers (Buffers in/

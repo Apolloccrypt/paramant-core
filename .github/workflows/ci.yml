@@ -75,3 +75,17 @@ jobs:
         run: |
           cp target/release/libparamant_core_node.so /tmp/paramant-core.node
           PARAMANT_ADDON=/tmp/paramant-core.node node crates/paramant-core-node/test/interop.mjs
+
+  cross-impl-rustcrypto-kat:
+    name: cross-impl - RustCrypto crate KAT
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install pinned toolchain
+        run: rustup show
+      - uses: Swatinem/rust-cache@v2
+      # Validates the RustCrypto crates crypto-wasm depends on (ml-kem, aes-gcm,
+      # hkdf, sha2) against the same @noble-anchored tests/kat vectors. Pure-Rust,
+      # so no liboqs/aws-lc-rs build deps are needed (ADR-0020).
+      - name: RustCrypto crate KAT
+        run: cargo test -p cross-impl-validator
