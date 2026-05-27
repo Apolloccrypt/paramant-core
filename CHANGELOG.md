@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **ParaSign Sg1 step 1**: cross-impl ML-DSA-65 validation added to
+  `cross-impl-validator`. Proves the RustCrypto `ml-dsa 0.1.0` crate (the
+  browser/wasm signer ParaSign will use) is equivalent to the implementation
+  paramant-core trusts: verify-KAT accepts all 50 `@noble`-anchored signatures
+  (external verify, empty context) and rejects tampered messages, and a
+  seeded-keygen-KAT shows `SigningKey::from_seed(xi)` reproduces the `@noble`
+  public key for every seed -- validating Sg0 ADR-3's mnemonic-deterministic
+  key. Runs in the existing `cross-impl-rustcrypto-kat` CI job.
+  [ADR-0021](docs/adrs/0021-ml-dsa-65-cross-impl-validation.md).
 - **M6 (Browser convergence + cross-impl validation)**: documents that paramant
   runs three wire formats by design (PQHB native/SDK, `0x03` browser hybrid via
   `paramant-relay/crypto-wasm`, `/send` WebCrypto URL-fragment) and that the
