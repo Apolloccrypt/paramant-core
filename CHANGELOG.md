@@ -9,7 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - **M4 (in progress)** (Transparency & Framing): `merkle` + `padding` + `wire` +
-  `envelope::send` + `envelope::para_share`. 120 new KAT vectors (**310 total**).
+  `envelope::{send, para_share, para_drop}`. 135 new KAT vectors (**325 total**).
+- M4 phase 2c: `envelope::para_drop` module -- anonymous BIP-39 mnemonic drop,
+  byte-equivalent with paramant-relay `sdk-js` `drop`/`pickup`. Not PQHB-framed:
+  keys are `HKDF-SHA256(ikm = entropy, salt = "paramant-drop-v1")` for an
+  `"aes-key"` and a `SHA-256("lookup-id")` storage id; AES-256-GCM with no AAD;
+  packet `nonce || ct_len_be32 || ciphertext`. `drop` returns the 12-word
+  mnemonic + padded blob, `pickup` reverses it. Adds `Mnemonic::to_entropy`.
+  Mirrored in [ADR-0017](docs/adrs/0017-paradrop-mnemonic-derivation.md). 15 KAT
+  vectors with full-packet SHA-256 anchors (deterministic -- no KEM/signature);
+  128-case roundtrip + wrong-mnemonic + tamper proptest. De-risked by
+  `scripts/derisk-paradrop.mjs`.
 - M4 phase 2c: `envelope::para_share` module -- signed, device-paired send,
   byte-equivalent with paramant-relay `sdk-js` `send`/`_encrypt` (`SIG_ID =
   0x0002` ML-DSA-65): single ML-KEM-768 (not the hybrid KEM), Send-mode key
