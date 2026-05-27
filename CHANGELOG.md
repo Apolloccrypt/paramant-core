@@ -8,8 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- **M4 (in progress)** (Transparency & Framing): `merkle` + `padding` + `wire`.
-  85 new KAT vectors (**275 total**).
+- **M4 (in progress)** (Transparency & Framing): `merkle` + `padding` + `wire` +
+  `envelope::send`. 105 new KAT vectors (**295 total**).
+- M4 phase 2b: `envelope::send` module — anonymous Send-mode envelope,
+  byte-equivalent with paramant-relay `sdk-js` `sendAnonymous` (`SIG_ID =
+  0x0000`): ML-KEM-768 to the recipient, `HKDF-SHA256(ikm = shared_secret,
+  salt = ct_kem[0..32], info = "paramant-v1-aes-key")`, AES-256-GCM with the
+  PQHB header bound as AAD, and outer random padding to a caller block size.
+  Adds `Envelope::decode_prefix` (trailing-tolerant, returns consumed length).
+  Mirrored in [`docs/envelope-send.md`](docs/envelope-send.md);
+  [ADR-0015](docs/adrs/0015-send-mode-key-derivation.md) records the
+  KEM-not-fragment design. 20 KAT vectors (deterministic `seal_core`/`open_core`
+  on @noble ML-KEM-768 inputs, linked via `decaps`); 128-case roundtrip +
+  wrong-recipient + tamper proptest. De-risked by `scripts/derisk-send.mjs`
+  (WebCrypto == pure-Node == relay framing).
 - M4 phase 2a: `wire` module — the `PQHB` envelope codec, byte-equivalent with
   paramant-relay's wire format v1 (`relay/crypto/wire-format.js`, approved
   2026-04-24): 10-byte magic header (`KEM_ID`/`SIG_ID` registry, reserved
