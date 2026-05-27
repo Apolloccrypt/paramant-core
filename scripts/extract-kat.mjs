@@ -770,3 +770,100 @@ if (ml_kem768) {
 } else {
   console.warn(`skip envelope-send: ${mlkemSpec} not importable (set NOBLE_PQ_MLKEM)`);
 }
+
+// -- ParaShare envelope (signed, SIG_ID 0x0002 ML-DSA-65) --
+// Send-mode crypto (single ML-KEM-768, HKDF, AES-256-GCM, header as AAD) plus an
+// ML-DSA-65 signature over ct_kem||sender_pub||nonce||ciphertext||aad, where
+// sender_pub is the ML-DSA-65 public key. WebCrypto==pure-Node proven in
+// scripts/derisk-parashare.mjs. The relay signs with hedged ML-DSA (random); the
+// generator uses deterministic signing (extraEntropy:false) so the stored
+// signature is reproducible. paramant-core takes ct_kem/shared_secret/signature
+// as inputs (oqs has no derand, ADR-0005), pins the deterministic framing, and
+// verifies the signature with its own ML-DSA-65 (the ml-dsa-65.json link).
+if (ml_kem768 && ml_dsa65) {
+  const INFO = new TextEncoder().encode('paramant-v1-aes-key');
+  const hkdfExtract = (salt, ikm) =>
+    createHmac('sha256', salt.length ? Buffer.from(salt) : Buffer.alloc(32)).update(Buffer.from(ikm)).digest();
+  const hkdfExpand = (prk, info, len) => {
+    const n = Math.ceil(len / 32);
+    let t = Buffer.alloc(0);
+    const out = [];
+    for (let i = 1; i <= n; i++) {
+      t = createHmac('sha256', prk).update(Buffer.concat([t, Buffer.from(info), Buffer.from([i])])).digest();
+      out.push(t);
+    }
+    return new Uint8Array(Buffer.concat(out).subarray(0, len));
+  };
+  const u32be = (n) => { const b = Buffer.alloc(4); b.writeUInt32BE(n, 0); return b; };
+  const headerBytes = (kemId, sigId) => {
+    const h = Buffer.alloc(10);
+    Buffer.from([0x50, 0x51, 0x48, 0x42]).copy(h, 0);
+    h.writeUInt8(0x01, 4); h.writeUInt16BE(kemId, 5); h.writeUInt16BE(sigId, 7); h.writeUInt8(0x00, 9);
+    return h;
+  };
+  const wireEncodeSigned = (kemId, sigId, ctKem, senderPub, signature, nonce, ct) =>
+    new Uint8Array(Buffer.concat([
+      headerBytes(kemId, sigId),
+      u32be(ctKem.length), Buffer.from(ctKem),
+      u32be(senderPub.length), Buffer.from(senderPub),
+      u32be(signature.length), Buffer.from(signature),
+      Buffer.from(nonce),
+      u32be(ct.length), Buffer.from(ct),
+    ]));
+  const concatU8 = (...a) => new Uint8Array(Buffer.concat(a.map(Buffer.from)));
+  const mkPt = (n) => { const b = Buffer.alloc(n); for (let j = 0; j < n; j++) b[j] = j % 251; return new Uint8Array(b); };
+
+  const LENGTHS = [0, 1, 13, 16, 32, 100, 255, 256, 1024, 4095, 4096, 4097, 60000, 250000, 1000000];
+  const vectors = LENGTHS.map((len, i) => {
+    const id = `parashare-${String(i).padStart(2, '0')}`;
+    const { publicKey: kemPk, secretKey: kemSk } = ml_kem768.keygen(bytesFrom(`paramant/parashare/${i}/kemseed`, 64));
+    const { cipherText: ctKem, sharedSecret } = ml_kem768.encapsulate(kemPk, bytesFrom(`paramant/parashare/${i}/kemmsg`, 32));
+    const dsaSeed = bytesFrom(`paramant/parashare/${i}/sigseed`, 32);
+    const { publicKey: sigPk, secretKey: sigSk } = ml_dsa65.keygen(dsaSeed);
+    const nonce = bytesFrom(`paramant/parashare/${i}/nonce`, 12);
+    const plaintext = mkPt(len);
+
+    const aesKey = hkdfExpand(hkdfExtract(ctKem.slice(0, 32), sharedSecret), INFO, 32);
+    const aad = Buffer.concat([headerBytes(0x0002, 0x0002), u32be(0)]);
+    const cipher = createCipheriv('aes-256-gcm', Buffer.from(aesKey), Buffer.from(nonce));
+    cipher.setAAD(aad);
+    const ct = new Uint8Array(Buffer.concat([cipher.update(Buffer.from(plaintext)), cipher.final(), cipher.getAuthTag()]));
+
+    const msg = concatU8(ctKem, sigPk, nonce, ct, aad);
+    const signature = ml_dsa65.sign(msg, sigSk, { extraEntropy: false });
+    if (!ml_dsa65.verify(signature, msg, sigPk)) throw new Error(`parashare ${id}: signature self-check failed`);
+
+    const core = wireEncodeSigned(0x0002, 0x0002, ctKem, sigPk, signature, nonce, ct);
+    return {
+      test_id: id,
+      input: {
+        kem_id: 0x0002, sig_id: 0x0002,
+        kem_seed_hex: hex(bytesFrom(`paramant/parashare/${i}/kemseed`, 64)),
+        dsa_seed_hex: hex(dsaSeed),
+        kem_secret_key_hex: hex(kemSk),
+        ct_kem_hex: hex(ctKem),
+        shared_secret_hex: hex(sharedSecret),
+        sender_sig_pub_hex: hex(sigPk),
+        signature_hex: hex(signature),
+        nonce_hex: hex(nonce),
+        plaintext: { pattern: 'mod251', len },
+      },
+      expected: {
+        aes_key_hex: hex(aesKey),
+        header_hex: hex(core.subarray(0, 10)),
+        core_len: core.length,
+        core_sha256_hex: hex(createHash('sha256').update(core).digest()),
+      },
+    };
+  });
+
+  write('envelope-parashare', {
+    primitive: 'envelope-parashare',
+    source: 'paramant-relay sdk-js send/_encrypt (SIG_ID 0x0002 ML-DSA-65): single ML-KEM-768 + HKDF-SHA256(salt=ctKem[0:32], info="paramant-v1-aes-key") + AES-256-GCM(aad=PQHB header) + ML-DSA-65 sign over ctKem||sigPub||nonce||ct||aad; WebCrypto==pure-Node verified by scripts/derisk-parashare.mjs; @noble deterministic (extraEntropy:false).',
+    note: 'derive_key(ct_kem, shared_secret) == aes_key_hex; seal_core(ct_kem, shared_secret, sender_sig_pub, nonce, plaintext, signature) encodes to core_len bytes with header_hex/core_sha256_hex; ml_dsa_65::verify(sender_sig_pub, msg, signature) == true links Rust oqs to @noble; decaps(kem_secret_key, ct_kem) == shared_secret; open_core verifies + recovers plaintext.',
+    count: vectors.length,
+    vectors,
+  });
+} else {
+  console.warn('skip envelope-parashare: set NOBLE_PQ_MLKEM (and ML-DSA reachable)');
+}

@@ -21,9 +21,8 @@
 //! [`seal_core`]/[`open_core`] pair carries the KAT (fixed `ct_kem` +
 //! `shared_secret`), see [ADR-0015](../../docs/adrs/0015-send-mode-key-derivation.md).
 
-use aws_lc_rs::rand::{SecureRandom, SystemRandom};
-
 use crate::aead;
+use crate::envelope::{pad_to_block, random_nonce};
 use crate::error::{CoreError, CoreResult};
 use crate::kdf::hkdf;
 use crate::kem;
@@ -110,16 +109,7 @@ pub fn encrypt(
         &nonce,
         plaintext,
     )?;
-    let mut blob = envelope.encode()?;
-    if blob.len() > pad_block {
-        return Err(CoreError::Wire("encoded core larger than pad_block"));
-    }
-    let pad_from = blob.len();
-    blob.resize(pad_block, 0);
-    SystemRandom::new()
-        .fill(&mut blob[pad_from..])
-        .map_err(|_| CoreError::Wire("padding RNG failure"))?;
-    Ok(blob)
+    pad_to_block(envelope.encode()?, pad_block)
 }
 
 /// Decrypt a Send-mode wire blob (tolerating trailing padding) with the
@@ -129,15 +119,4 @@ pub fn decrypt(recipient_sk: &kem::SecretKey, blob: &[u8]) -> CoreResult<Vec<u8>
     let ct = kem::Ciphertext::from_bytes(&envelope.ct_kem)?;
     let shared_secret = kem::decaps(recipient_sk, &ct)?;
     open_core(&envelope, shared_secret.as_bytes())
-}
-
-/// 12 random bytes from the system CSPRNG for use as an AES-GCM nonce.
-fn random_nonce() -> [u8; NONCE_SIZE] {
-    let mut nonce = [0u8; NONCE_SIZE];
-    // SystemRandom::fill only fails on catastrophic OS RNG failure; like
-    // padding.rs we treat that as unrecoverable.
-    SystemRandom::new()
-        .fill(&mut nonce)
-        .expect("system RNG failure");
-    nonce
 }
