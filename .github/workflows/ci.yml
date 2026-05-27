@@ -52,3 +52,26 @@ jobs:
           else
             echo "no deny.toml  --  skipping"
           fi
+
+  napi-interop:
+    name: napi binding interop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install pinned toolchain
+        run: rustup show
+      - name: Install liboqs build deps
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang libclang-dev
+      - uses: Swatinem/rust-cache@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # Build the binding as a cdylib and load it directly as a .node addon.
+      # The @napi-rs/cli (for platform-named release artifacts) stays out of the
+      # repo per ADR-0006; interop only needs the raw addon.
+      - name: Build binding
+        run: cargo build -p paramant-core-node --release
+      - name: Interop test (binding vs relay-anchored KAT + round-trips)
+        run: |
+          cp target/release/libparamant_core_node.so /tmp/paramant-core.node
+          PARAMANT_ADDON=/tmp/paramant-core.node node crates/paramant-core-node/test/interop.mjs
