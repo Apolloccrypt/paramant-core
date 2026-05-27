@@ -12,3 +12,4 @@ pub use crate::merkle::{MerkleTree, SignedTreeHead};
 pub use crate::mnemonic::{self, Mnemonic};
 pub use crate::padding::{pad, unpad, PaddingScheme};
 pub use crate::sig;
+pub use crate::wire::{Envelope, Header, KemId, SigId, WIRE_MAGIC, WIRE_VERSION_V1};

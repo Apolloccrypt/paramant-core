@@ -31,3 +31,4 @@ pub mod mnemonic;
 pub mod padding;
 pub mod prelude;
 pub mod sig;
+pub mod wire;

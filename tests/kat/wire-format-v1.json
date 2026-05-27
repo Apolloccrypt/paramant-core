@@ -1,0 +1,884 @@
+{
+  "primitive": "wire-format-v1",
+  "source": "paramant-relay docs/wire-format-v1.md + relay/crypto/wire-format.js (approved 2026-04-24); signed/anonymous anchors self-checked by SHA-256",
+  "note": "Expand each {pattern_hex, repeat} field, build the PQHB envelope (big-endian, length-prefixed), and assert Envelope::encode == expected (total_len, header_hex, sha256_hex) and decode∘encode round-trips. SIG_ID 0x0000 omits the signature section.",
+  "count": 30,
+  "vectors": [
+    {
+      "test_id": "wire-anchor-signed",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 2,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "00112233445566778899aabbccddeeff",
+          "repeat": 68
+        },
+        "sender_pub": {
+          "pattern_hex": "cafe",
+          "repeat": 296
+        },
+        "signature": {
+          "pattern_hex": "babe",
+          "repeat": 1654
+        },
+        "nonce_hex": "000102030405060708090a0b",
+        "ciphertext": {
+          "pattern_hex": "deadbeef",
+          "repeat": 16
+        }
+      },
+      "expected": {
+        "total_len": 5090,
+        "header_hex": "50514842010002000200",
+        "sha256_hex": "002b4f6aad4fa992804a3e94c46d514b4f842e9f5c283f7a31d7c76722d0476a"
+      }
+    },
+    {
+      "test_id": "wire-anchor-anonymous",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "00112233445566778899aabbccddeeff",
+          "repeat": 68
+        },
+        "sender_pub": {
+          "pattern_hex": "cafe",
+          "repeat": 296
+        },
+        "signature": null,
+        "nonce_hex": "000102030405060708090a0b",
+        "ciphertext": {
+          "pattern_hex": "deadbeef",
+          "repeat": 16
+        }
+      },
+      "expected": {
+        "total_len": 1778,
+        "header_hex": "50514842010002000000",
+        "sha256_hex": "46bce75b12e90ed312420fafcbead4108d55aa25273aee3ce4f2b4f61b3d19ef"
+      }
+    },
+    {
+      "test_id": "wire-edge-empty-ciphertext-anon",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1088
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 592
+        },
+        "signature": null,
+        "nonce_hex": "86e7d6958bee89116152c515",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 0
+        }
+      },
+      "expected": {
+        "total_len": 1714,
+        "header_hex": "50514842010002000000",
+        "sha256_hex": "4dfaeb7472610a9a5307cbef6bee286d09b02ffc21b84881df324a40a4dba7c1"
+      }
+    },
+    {
+      "test_id": "wire-edge-empty-all-signed",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 2,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 0
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 0
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 0
+        },
+        "nonce_hex": "4aeca4ba8e4636c7196788c3",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 0
+        }
+      },
+      "expected": {
+        "total_len": 38,
+        "header_hex": "50514842010001000200",
+        "sha256_hex": "363c5e28484f665c47857d6264524620f368e0fdfad64070ceb060d4bb38fe9e"
+      }
+    },
+    {
+      "test_id": "wire-edge-large-ml-dsa-87",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 3,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1568
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 2592
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 4627
+        },
+        "nonce_hex": "b6f211e516de23179c3a65de",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 5000
+        }
+      },
+      "expected": {
+        "total_len": 13825,
+        "header_hex": "50514842010003000300",
+        "sha256_hex": "3faa2d386e2e3f423d92633a54eee9adfd33567829e6471659f272fb27a08b78"
+      }
+    },
+    {
+      "test_id": "wire-edge-minimal-anon",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1
+        },
+        "signature": null,
+        "nonce_hex": "e8548099be2b80e87ab5641b",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 1
+        }
+      },
+      "expected": {
+        "total_len": 37,
+        "header_hex": "50514842010001000000",
+        "sha256_hex": "5bfea42fd12fd7571b7023d469c01beb418ed93234971e6bb9eabb4ec80c2100"
+      }
+    },
+    {
+      "test_id": "wire-gen-00",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 700
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 100
+        },
+        "signature": null,
+        "nonce_hex": "78c51c27854420c513902dd0",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 0
+        }
+      },
+      "expected": {
+        "total_len": 834,
+        "header_hex": "50514842010001000000",
+        "sha256_hex": "23033fc7b8daf5cf39d4d6350c1579380031c9a57225f29435cecd14e84630b4"
+      }
+    },
+    {
+      "test_id": "wire-gen-01",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 2,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 737
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 153
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 701
+        },
+        "nonce_hex": "52e34c68642978d242145cc6",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 131
+        }
+      },
+      "expected": {
+        "total_len": 1760,
+        "header_hex": "50514842010002000200",
+        "sha256_hex": "8519f71048dd836744a1d3b2eafac78f5da3bfa2dfadba0ea28f6779f9d3fc42"
+      }
+    },
+    {
+      "test_id": "wire-gen-02",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 3,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 774
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 206
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 802
+        },
+        "nonce_hex": "9e3bfa72d96332eb949a470d",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 262
+        }
+      },
+      "expected": {
+        "total_len": 2082,
+        "header_hex": "50514842010003000300",
+        "sha256_hex": "85cce5c1aa745804c20db14bded36d1cd3741924afd585701aef32c0b527f29e"
+      }
+    },
+    {
+      "test_id": "wire-gen-03",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 256,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 811
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 259
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 903
+        },
+        "nonce_hex": "72e3cb10996f81828a655383",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 393
+        }
+      },
+      "expected": {
+        "total_len": 2404,
+        "header_hex": "50514842010001010000",
+        "sha256_hex": "8b6041b01e2541864e88ec65180954ded2c152a1a80c7751872fa2492a81c742"
+      }
+    },
+    {
+      "test_id": "wire-gen-04",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 257,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 848
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 312
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1004
+        },
+        "nonce_hex": "ac380b1a24ad1e31627802e8",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 12
+        }
+      },
+      "expected": {
+        "total_len": 2214,
+        "header_hex": "50514842010002010100",
+        "sha256_hex": "ba2be2306b4e1c9bedbccd98f6439253c02c1ffc221a9d6aa1505eca68818251"
+      }
+    },
+    {
+      "test_id": "wire-gen-05",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 885
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 365
+        },
+        "signature": null,
+        "nonce_hex": "375644ac40322b36e9c6fdf5",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 143
+        }
+      },
+      "expected": {
+        "total_len": 1427,
+        "header_hex": "50514842010003000000",
+        "sha256_hex": "d7bd1c40bce698aa7109c64399021c69ee3bdcd5fc57dac0b3249ab42f760ca8"
+      }
+    },
+    {
+      "test_id": "wire-gen-06",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 513,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 922
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 418
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1206
+        },
+        "nonce_hex": "63f8f46c188c77700eed0929",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 274
+        }
+      },
+      "expected": {
+        "total_len": 2858,
+        "header_hex": "50514842010001020100",
+        "sha256_hex": "3f12f035cc47b372395ef260c7a30ac3888d4f7ddbc1826af02be7194ab0b29c"
+      }
+    },
+    {
+      "test_id": "wire-gen-07",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 514,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 959
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 471
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1307
+        },
+        "nonce_hex": "8afaa06818fd08d156b8b901",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 405
+        }
+      },
+      "expected": {
+        "total_len": 3180,
+        "header_hex": "50514842010002020200",
+        "sha256_hex": "ea391d74fc6aeaa6131c2770f26e7d2b3dbec79643a15e1cd75e873c4a09f09c"
+      }
+    },
+    {
+      "test_id": "wire-gen-08",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 515,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 996
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 524
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1408
+        },
+        "nonce_hex": "9104ab8bec7e1e35a2c593dc",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 24
+        }
+      },
+      "expected": {
+        "total_len": 2990,
+        "header_hex": "50514842010003020300",
+        "sha256_hex": "ce16c84549427f8a74899436756b4db17be58fee55f1b412e757964caefd7aea"
+      }
+    },
+    {
+      "test_id": "wire-gen-09",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 516,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1033
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 577
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1509
+        },
+        "nonce_hex": "3f4736eb57260f50dc0d874c",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 155
+        }
+      },
+      "expected": {
+        "total_len": 3312,
+        "header_hex": "50514842010001020400",
+        "sha256_hex": "9aff755e93502d9479523c0ff44818138c8d094d1ca67aee3bf9686e8f23655a"
+      }
+    },
+    {
+      "test_id": "wire-gen-10",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1070
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 630
+        },
+        "signature": null,
+        "nonce_hex": "f0971de1b360d43ab7151685",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 286
+        }
+      },
+      "expected": {
+        "total_len": 2020,
+        "header_hex": "50514842010002000000",
+        "sha256_hex": "b32e05192121dec323983ddf2387e80b681ab8bc60b1ae2a545f281720a6fa75"
+      }
+    },
+    {
+      "test_id": "wire-gen-11",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 518,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1107
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 683
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1711
+        },
+        "nonce_hex": "e8ab2cb9e9637abfcc8e9c91",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 417
+        }
+      },
+      "expected": {
+        "total_len": 3956,
+        "header_hex": "50514842010003020600",
+        "sha256_hex": "ec89cf13744fc49f308895fbc90358acd270d299fd802b251f0f94b0778193ae"
+      }
+    },
+    {
+      "test_id": "wire-gen-12",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 519,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1144
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 736
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1812
+        },
+        "nonce_hex": "c897b054aa682980dc0d68f2",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 36
+        }
+      },
+      "expected": {
+        "total_len": 3766,
+        "header_hex": "50514842010001020700",
+        "sha256_hex": "453b3197a4b93d320ec51ee2723d1bc5d4834a1554607a9139966592e35fe4ce"
+      }
+    },
+    {
+      "test_id": "wire-gen-13",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 520,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1181
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 789
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 1913
+        },
+        "nonce_hex": "553daf3925c7fa4511a05cde",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 167
+        }
+      },
+      "expected": {
+        "total_len": 4088,
+        "header_hex": "50514842010002020800",
+        "sha256_hex": "c3ae868681c08be70d7620c1e8dbddbac22ca32447432d85e4de7ccc52c6f702"
+      }
+    },
+    {
+      "test_id": "wire-gen-14",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 521,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1218
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 842
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2014
+        },
+        "nonce_hex": "a95d6ee8862d882b4bebeb40",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 298
+        }
+      },
+      "expected": {
+        "total_len": 4410,
+        "header_hex": "50514842010003020900",
+        "sha256_hex": "3e7df737e83d22218bbcde47fc3362fcfe4ae5c495a8e4270d6471c0be5c6492"
+      }
+    },
+    {
+      "test_id": "wire-gen-15",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1255
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 895
+        },
+        "signature": null,
+        "nonce_hex": "84525526a7a56b7b618da8e0",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 429
+        }
+      },
+      "expected": {
+        "total_len": 2613,
+        "header_hex": "50514842010001000000",
+        "sha256_hex": "43cfd39bf589ffd97fa50f9ce1ee6f2587d0b9e9359d1a3afcb6f03cc2acdaed"
+      }
+    },
+    {
+      "test_id": "wire-gen-16",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 523,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1292
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 948
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2216
+        },
+        "nonce_hex": "be6a876de0faed16a8208585",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 48
+        }
+      },
+      "expected": {
+        "total_len": 4542,
+        "header_hex": "50514842010002020b00",
+        "sha256_hex": "5b850b81c8d2f8fd20433bc6261e8d4538f95f38644494b926ff1733d0c271a7"
+      }
+    },
+    {
+      "test_id": "wire-gen-17",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 1,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1329
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1001
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2317
+        },
+        "nonce_hex": "edb8a06e1eb2824b278264b2",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 179
+        }
+      },
+      "expected": {
+        "total_len": 4864,
+        "header_hex": "50514842010003000100",
+        "sha256_hex": "0f7f914832717417c3fd92d444396413b0a3a39cf6574f44154c6ff545aab5b6"
+      }
+    },
+    {
+      "test_id": "wire-gen-18",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 2,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1366
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1054
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2418
+        },
+        "nonce_hex": "a779e37854530afb058aa8b7",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 310
+        }
+      },
+      "expected": {
+        "total_len": 5186,
+        "header_hex": "50514842010001000200",
+        "sha256_hex": "90726e7f23056ca273a37dfe03ecd4f9c6867a6ad787a592e10e3244dbfdbaf0"
+      }
+    },
+    {
+      "test_id": "wire-gen-19",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 3,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1403
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1107
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2519
+        },
+        "nonce_hex": "dbcafee3440febf7605da3d8",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 441
+        }
+      },
+      "expected": {
+        "total_len": 5508,
+        "header_hex": "50514842010002000300",
+        "sha256_hex": "b9d58caacf88f038bf34d108fe8e260619a93f92475d502c7dbd24a799581f94"
+      }
+    },
+    {
+      "test_id": "wire-gen-20",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 0,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1440
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1160
+        },
+        "signature": null,
+        "nonce_hex": "ed97791aca0b713524701140",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 60
+        }
+      },
+      "expected": {
+        "total_len": 2694,
+        "header_hex": "50514842010003000000",
+        "sha256_hex": "9d31ba841924ee79963752aaf8b059292cfbd51bb6ed94169d128bf18521d1ae"
+      }
+    },
+    {
+      "test_id": "wire-gen-21",
+      "input": {
+        "kem_id": 1,
+        "sig_id": 257,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1477
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1213
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2721
+        },
+        "nonce_hex": "84b6a66d58eee12fa65aa6af",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 191
+        }
+      },
+      "expected": {
+        "total_len": 5640,
+        "header_hex": "50514842010001010100",
+        "sha256_hex": "189a26d4590fbec6df5b9d6b985cac26ac779242011d1f98e407924e7e50971d"
+      }
+    },
+    {
+      "test_id": "wire-gen-22",
+      "input": {
+        "kem_id": 2,
+        "sig_id": 512,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1514
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1266
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2822
+        },
+        "nonce_hex": "b8ba0a878f1d2b753bea38d3",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 322
+        }
+      },
+      "expected": {
+        "total_len": 5962,
+        "header_hex": "50514842010002020000",
+        "sha256_hex": "895ae8b8303e319efb2b1b06cef693363e4d773fe90712877919975fce481b7e"
+      }
+    },
+    {
+      "test_id": "wire-gen-23",
+      "input": {
+        "kem_id": 3,
+        "sig_id": 513,
+        "flags": 0,
+        "ct_kem": {
+          "pattern_hex": "a1",
+          "repeat": 1551
+        },
+        "sender_pub": {
+          "pattern_hex": "b2",
+          "repeat": 1319
+        },
+        "signature": {
+          "pattern_hex": "c3",
+          "repeat": 2923
+        },
+        "nonce_hex": "6693aca228d06a9c1d067136",
+        "ciphertext": {
+          "pattern_hex": "d4",
+          "repeat": 453
+        }
+      },
+      "expected": {
+        "total_len": 6284,
+        "header_hex": "50514842010003020100",
+        "sha256_hex": "252a04d5c7ca5547c6dd71d0858e04406b10f93cdefb2612fc008d03f458de65"
+      }
+    }
+  ]
+}

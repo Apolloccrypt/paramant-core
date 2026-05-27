@@ -547,3 +547,127 @@ if (bip39Source) {
     vectors,
   });
 }
+
+// ── Wire format v1 (PQHB envelope): encode(fields) == blob ──
+// The canonical source is paramant-relay/docs/wire-format-v1.md (approved
+// 2026-04-24) and relay/crypto/wire-format.js. The encoder is re-implemented
+// here in pure Node and *self-checked against the two published SHA-256 anchor
+// vectors* (signed 5090 B, anonymous 1778 B) before any vector is emitted, so a
+// byte-level divergence from the relay is caught at generation time — the same
+// "validate vs canonical ground truth, then emit" discipline used for HKDF,
+// Argon2id and Merkle. paramant-core's wire.rs must reproduce every blob.
+{
+  // Each variable field is {pattern_hex, repeat}: the pattern bytes repeated
+  // `repeat` times. Single-byte patterns give arbitrary lengths; multi-byte
+  // patterns reproduce the relay spec's `<pattern> × N` anchor notation.
+  const expand = (f) => {
+    if (!f) return null;
+    const p = Buffer.from(f.pattern_hex, 'hex');
+    const out = Buffer.alloc(p.length * f.repeat);
+    for (let i = 0; i < f.repeat; i++) p.copy(out, i * p.length);
+    return new Uint8Array(out);
+  };
+  // Big-endian PQHB encoder, byte-for-byte equal to relay/crypto/wire-format.js.
+  const encodeWire = (input) => {
+    const ctKem = expand(input.ct_kem);
+    const senderPub = expand(input.sender_pub);
+    const signature = expand(input.signature);
+    const ciphertext = expand(input.ciphertext);
+    const nonce = Buffer.from(input.nonce_hex, 'hex');
+    const signed = input.sig_id !== 0x0000;
+    const parts = [];
+    const u32be = (n) => {
+      const b = Buffer.alloc(4);
+      b.writeUInt32BE(n, 0);
+      return b;
+    };
+    const header = Buffer.alloc(10);
+    Buffer.from([0x50, 0x51, 0x48, 0x42]).copy(header, 0); // MAGIC "PQHB"
+    header.writeUInt8(0x01, 4); // VERSION
+    header.writeUInt16BE(input.kem_id, 5);
+    header.writeUInt16BE(input.sig_id, 7);
+    header.writeUInt8(input.flags, 9);
+    parts.push(header, u32be(ctKem.length), Buffer.from(ctKem));
+    parts.push(u32be(senderPub.length), Buffer.from(senderPub));
+    if (signed) parts.push(u32be(signature.length), Buffer.from(signature));
+    parts.push(Buffer.from(nonce), u32be(ciphertext.length), Buffer.from(ciphertext));
+    return new Uint8Array(Buffer.concat(parts));
+  };
+  const finalize = (test_id, input) => {
+    const blob = encodeWire(input);
+    return {
+      test_id,
+      input,
+      expected: { total_len: blob.length, header_hex: hex(blob.subarray(0, 10)), sha256_hex: hex(createHash('sha256').update(blob).digest()) },
+    };
+  };
+
+  // Two published anchor vectors (paramant-relay docs/wire-format-v1.md §Test
+  // vectors). Their SHA-256 is the cross-implementation ground truth.
+  const anchorSigned = finalize('wire-anchor-signed', {
+    kem_id: 0x0002, sig_id: 0x0002, flags: 0x00,
+    ct_kem: { pattern_hex: '00112233445566778899aabbccddeeff', repeat: 68 },
+    sender_pub: { pattern_hex: 'cafe', repeat: 296 },
+    signature: { pattern_hex: 'babe', repeat: 1654 },
+    nonce_hex: '000102030405060708090a0b',
+    ciphertext: { pattern_hex: 'deadbeef', repeat: 16 },
+  });
+  const anchorAnon = finalize('wire-anchor-anonymous', {
+    kem_id: 0x0002, sig_id: 0x0000, flags: 0x00,
+    ct_kem: { pattern_hex: '00112233445566778899aabbccddeeff', repeat: 68 },
+    sender_pub: { pattern_hex: 'cafe', repeat: 296 },
+    signature: null,
+    nonce_hex: '000102030405060708090a0b',
+    ciphertext: { pattern_hex: 'deadbeef', repeat: 16 },
+  });
+  const ANCHOR_SIGNED_SHA = '002b4f6aad4fa992804a3e94c46d514b4f842e9f5c283f7a31d7c76722d0476a';
+  const ANCHOR_ANON_SHA = '46bce75b12e90ed312420fafcbead4108d55aa25273aee3ce4f2b4f61b3d19ef';
+  if (anchorSigned.expected.total_len !== 5090 || anchorSigned.expected.sha256_hex !== ANCHOR_SIGNED_SHA) {
+    throw new Error('wire-format signed anchor mismatch — encoder diverged from relay');
+  }
+  if (anchorAnon.expected.total_len !== 1778 || anchorAnon.expected.sha256_hex !== ANCHOR_ANON_SHA) {
+    throw new Error('wire-format anonymous anchor mismatch — encoder diverged from relay');
+  }
+
+  const nonceFor = (id) => hex(createHash('sha256').update(`paramant/wire/nonce/${id}`).digest().subarray(0, 12));
+  const fld = (byteHex, len) => ({ pattern_hex: byteHex, repeat: len });
+  const mk = (test_id, kem_id, sig_id, ctKemLen, spLen, sigLen, ctLen) =>
+    finalize(test_id, {
+      kem_id, sig_id, flags: 0x00,
+      ct_kem: fld('a1', ctKemLen),
+      sender_pub: fld('b2', spLen),
+      signature: sig_id === 0x0000 ? null : fld('c3', sigLen),
+      nonce_hex: nonceFor(test_id),
+      ciphertext: fld('d4', ctLen),
+    });
+
+  const SIGNED = [
+    0x0001, 0x0002, 0x0003, 0x0100, 0x0101, 0x0200, 0x0201, 0x0202, 0x0203,
+    0x0204, 0x0205, 0x0206, 0x0207, 0x0208, 0x0209, 0x020a, 0x020b,
+  ];
+  const vectors = [anchorSigned, anchorAnon];
+  // Boundary / edge cases.
+  vectors.push(mk('wire-edge-empty-ciphertext-anon', 0x0002, 0x0000, 1088, 592, null, 0));
+  vectors.push(mk('wire-edge-empty-all-signed', 0x0001, 0x0002, 0, 0, 0, 0));
+  vectors.push(mk('wire-edge-large-ml-dsa-87', 0x0003, 0x0003, 1568, 2592, 4627, 5000));
+  vectors.push(mk('wire-edge-minimal-anon', 0x0001, 0x0000, 1, 1, null, 1));
+  // 24 cycling combinations across every KEM and signature family.
+  for (let i = 0; i < 24; i++) {
+    const kemId = [0x0001, 0x0002, 0x0003][i % 3];
+    const anon = i % 5 === 0;
+    const sigId = anon ? 0x0000 : SIGNED[i % SIGNED.length];
+    const ctKemLen = 700 + ((i * 37) % 900);
+    const spLen = 100 + ((i * 53) % 1500);
+    const sigLen = anon ? null : 600 + ((i * 101) % 4000);
+    const ctLen = (i * 131) % 512;
+    vectors.push(mk(`wire-gen-${String(i).padStart(2, '0')}`, kemId, sigId, ctKemLen, spLen, sigLen, ctLen));
+  }
+
+  write('wire-format-v1', {
+    primitive: 'wire-format-v1',
+    source: 'paramant-relay docs/wire-format-v1.md + relay/crypto/wire-format.js (approved 2026-04-24); signed/anonymous anchors self-checked by SHA-256',
+    note: 'Expand each {pattern_hex, repeat} field, build the PQHB envelope (big-endian, length-prefixed), and assert Envelope::encode == expected (total_len, header_hex, sha256_hex) and decode∘encode round-trips. SIG_ID 0x0000 omits the signature section.',
+    count: vectors.length,
+    vectors,
+  });
+}

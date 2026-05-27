@@ -45,6 +45,21 @@ pub enum CoreError {
     #[error("padding operation failed: {0}")]
     Padding(&'static str),
 
+    /// A wire-format envelope was malformed (bad magic, version, flags, or a
+    /// truncated / over-long field).
+    #[error("wire format error: {0}")]
+    Wire(&'static str),
+
+    /// A wire-format envelope named a KEM or signature algorithm ID that this
+    /// implementation does not recognise.
+    #[error("unknown {kind} algorithm id: {id:#06x}")]
+    UnknownAlgorithm {
+        /// Algorithm family: `"KEM"` or `"SIG"`.
+        kind: &'static str,
+        /// The unrecognised uint16 identifier.
+        id: u16,
+    },
+
     /// An input buffer had an unexpected length.
     #[error("invalid length: expected {expected}, got {got}")]
     InvalidLength {
