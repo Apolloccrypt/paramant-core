@@ -3,66 +3,104 @@
 Post-quantum cryptographic core for [Paramant](https://paramant.app). It holds
 the cryptographic primitives, wire format, and envelope logic  --  KEM, signatures,
 AEAD, KDF, mnemonic, Merkle log, padding  --  as one small, auditable Rust library.
-Every primitive is checked byte-for-byte against the production `paramant-relay`
-(build 2.5.0), so the relay can adopt this core without any client-visible change.
+Every primitive is checked byte-for-byte against the production `paramant-relay`,
+so the relay can adopt this core without any client-visible change.
 
-> **Status: M0 (bootstrap).** The crate is an intentionally empty shell. The
-> cryptographic modules land one milestone at a time (M1-M4). See
-> [`BLUEPRINT.md`](BLUEPRINT.md) for the full plan.
+> **Status: M0 through M6 complete, plus ParaSign Sg1 step 1.** The NAPI binding
+> (`@paramant/core`) is in production: paramant-relay's ML-KEM-768 keygen runs on
+> this core since 2026-05-27 (M5b). Cross-implementation byte-equivalence with the
+> browser RustCrypto stack is proven (ADR-0020, ADR-0021). See
+> [`BLUEPRINT.md`](BLUEPRINT.md) for the milestone history and forward plan, and
+> [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for how this fits paramant-relay.
 
-## Modules (target layout)
+## What is here
 
-Flat `crates/paramant-core/src/`, one file per concept, split only past 300 lines:
-
-| File | Contents | Milestone |
+| Layer | Module(s) | Milestone |
 |---|---|---|
-| `error.rs` | `CoreError`, `CoreResult` | M1 |
-| `kem.rs` | ML-KEM-768 + hybrid ECDH P-256 | M1-M2 |
-| `sig.rs` | ML-DSA-65, SLH-DSA, Falcon | M2 |
-| `aead.rs` | AES-256-GCM | M3 |
-| `kdf.rs` | Argon2id + HKDF | M3 |
-| `mnemonic.rs` | BIP-0039 (12-word) | M3 |
-| `merkle.rs` | Merkle tree + Signed Tree Head | M4 |
-| `padding.rs` | 4/64/512 KB + 5 MB blocks | M4 |
-| `envelope.rs` | Send / ParaShare / ParaDrop | M4 |
-| `wire.rs` | wire format v1 + TLV | M4 |
+| Errors | `error.rs` | M1 |
+| KEMs | `kem/` (ML-KEM-768, hybrid ML-KEM + ECDH P-256) | M1-M2 |
+| Signatures | `sig.rs` (ML-DSA-65, SLH-DSA, Falcon) | M2 |
+| AEAD | `aead.rs` (AES-256-GCM via aws-lc-rs) | M3 |
+| KDFs | `kdf.rs` (Argon2id, HKDF) | M3 |
+| Mnemonics | `mnemonic.rs` (BIP-0039) | M3 |
+| Merkle log | `merkle.rs` (RFC 6962 + Signed Tree Head) | M4 |
+| Padding | `padding.rs` (block padding) | M4 |
+| Wire format | `wire.rs` (PQHB, byte-equivalent with relay) | M4 |
+| Envelopes | `envelope/` (anonymous, signed, paradrop) | M4 |
+
+Plus two bindings:
+
+| Binding | Crate | Consumer | Milestone |
+|---|---|---|---|
+| NAPI | `paramant-core-node` (npm `@paramant/core`) | paramant-relay (server) | M5a/M5b (in production) |
+| Cross-impl validator | `cross-impl-validator` | CI gate for the browser RustCrypto stack | M6, ParaSign Sg1 |
+
+Validated by 325 known-answer-test vectors (`tests/kat/`) and 21 Architecture
+Decision Records (`docs/adrs/`).
+
+## Audience
+
+- **Crypto reviewers and audit firms:** ADRs, KAT vectors, and source are built
+  for offline audit. Start with [`docs/architecture.md`](docs/architecture.md),
+  then [`BLUEPRINT.md`](BLUEPRINT.md), then [`docs/adrs/`](docs/adrs/) and
+  [`docs/threat-model.md`](docs/threat-model.md).
+- **paramant-relay maintainers:** changes here may need relay coordination. See
+  [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the core-relay relationship.
+- **Paramant users:** see [paramant.app](https://paramant.app); this repo is below
+  your concern level.
+- **Self-hosters:** see
+  [paramant-relay](https://github.com/Apolloccrypt/paramant-relay) instead; this is
+  the crypto core that the relay uses.
+
+## Relationship to paramant-relay
+
+[Apolloccrypt/paramant-relay](https://github.com/Apolloccrypt/paramant-relay) is the
+production HTTP server (Node.js): the `/v2/` API for SDK clients, the paramant.app
+frontend, the vendored browser `crypto-wasm` binding, and the docker container
+fleet (5 sector relays plus admin).
+
+Per [ADR-0003](docs/adrs/0003-source-of-truth.md), the relay's wire format is the
+source of truth and paramant-core mirrors it byte-for-byte (ADR-0014). Three wire
+formats coexist by design; see
+[`docs/wire-format-boundaries.md`](docs/wire-format-boundaries.md).
+
+The migration is a strangler pattern: M5b shipped one ML-KEM-768 call site from the
+JavaScript `@noble/post-quantum` library to `@paramant/core`. Later milestones move
+more call sites; the end state is a relay that does HTTP, admin, and billing only,
+with all crypto via paramant-core.
 
 ## Quick start
 
 ```sh
-cargo build      # build the workspace
-cargo test       # run unit + KAT + property tests
-cargo doc --open # read the API docs
+cargo build         # build the workspace
+cargo test --all    # unit + KAT + property tests (325 KAT vectors)
+cargo doc --open    # read the API docs
 ```
 
-Requires the toolchain pinned in [`rust-toolchain.toml`](rust-toolchain.toml)
-(Rust 1.95, installed automatically by rustup).
-
-## Compile targets
-
-One core, many consumers. Bindings are added at the milestone that needs them
-(code-minimization, [ADR-0004](docs/adrs/0004-code-minimization.md)):
-
-| Target | Command | Consumer | Added |
-|---|---|---|---|
-| Native lib | `cargo build --release` | Rust projects, CLI | M0 |
-| Node native | `napi build --release` | paramant-relay | M5 |
-| Browser WASM | `wasm-pack build --target web` | paramant.app/send | M6 |
-| Python wheel | `maturin build --release` | Python SDK | M11+ |
-| C ABI | `cargo build -p paramant-core-c` | Go SDK, mobile, OT | M11+ |
+Requires Rust 1.95 (pinned in [`rust-toolchain.toml`](rust-toolchain.toml),
+installed automatically by rustup). Benchmarks live in
+[`docs/benchmarks.md`](docs/benchmarks.md).
 
 ## Documentation
 
-- [BLUEPRINT.md](BLUEPRINT.md)  --  full design and milestone plan
-- [docs/architecture.md](docs/architecture.md)  --  workspace, modules, dependencies
-- [docs/threat-model.md](docs/threat-model.md)  --  assets, adversaries, boundaries
-- [docs/doc-conventions.md](docs/doc-conventions.md)  --  rustdoc, ADR, CHANGELOG rules
-- [docs/adrs/](docs/adrs/)  --  Architecture Decision Records
-- [SECURITY.md](SECURITY.md)  --  responsible disclosure
-- [CONTRIBUTING.md](CONTRIBUTING.md)  --  how to contribute
+- [`BLUEPRINT.md`](BLUEPRINT.md)  --  milestone history and forward plan
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)  --  cross-repo overview (core + relay)
+- [`docs/architecture.md`](docs/architecture.md)  --  paramant-core internal layout
+- [`docs/threat-model.md`](docs/threat-model.md)  --  assets, adversaries, boundaries
+- [`docs/wire-format-v1.md`](docs/wire-format-v1.md)  --  PQHB byte-level spec (relay mirror)
+- [`docs/wire-format-0x03.md`](docs/wire-format-0x03.md)  --  browser hybrid byte-level spec
+- [`docs/wire-format-boundaries.md`](docs/wire-format-boundaries.md)  --  three-format coexistence
+- [`docs/envelope-send.md`](docs/envelope-send.md)  --  anonymous envelope spec
+- [`docs/envelope-parashare.md`](docs/envelope-parashare.md)  --  signed envelope spec
+- [`docs/envelope-paradrop.md`](docs/envelope-paradrop.md)  --  drop envelope spec
+- [`docs/benchmarks.md`](docs/benchmarks.md)  --  NAPI throughput numbers
+- [`docs/doc-conventions.md`](docs/doc-conventions.md)  --  rustdoc, ADR, CHANGELOG rules
+- [`docs/adrs/`](docs/adrs/)  --  21 Architecture Decision Records
+- [`SECURITY.md`](SECURITY.md)  --  responsible disclosure
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)  --  how to contribute
 
-Why Paramant is relevant lives at [paramant.app/vs](https://paramant.app/vs),
-not in this README.
+Marketing and product positioning live at [paramant.app](https://paramant.app), not
+in this README.
 
 ## License
 
