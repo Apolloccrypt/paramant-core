@@ -2,11 +2,14 @@
 target/
 **/*.rs.bk
 
-# Node tooling — used ONLY for KAT generation in /tmp or via NOBLE_PQ_MLKEM,
+# Node tooling -- used ONLY for KAT generation in /tmp or via NOBLE_PQ_MLKEM,
 # never committed. See docs/adrs/0006-no-node-tooling-in-repo.md.
+# Exception (ADR-0018): a binding crate's own manifest crates/<crate>/package.json
+# is tracked; lockfiles and node_modules never are.
 node_modules/
 **/node_modules/
 package.json
+!crates/*/package.json
 package-lock.json
 yarn.lock
 scripts/package*.json

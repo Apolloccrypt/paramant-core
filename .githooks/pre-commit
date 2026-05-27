@@ -1,18 +1,26 @@
 #!/usr/bin/env bash
-# Blocks accidental commits of node_modules, package manifests, or other tooling
-# artifacts that must never enter the paramant-core repo, and crate-local KAT
-# duplicates. See docs/adrs/0006-no-node-tooling-in-repo.md.
+# Blocks accidental commits of node_modules, lockfiles, or stray package
+# manifests that must never enter the paramant-core repo, and crate-local KAT
+# duplicates. A binding crate's own manifest (crates/<crate>/package.json) is
+# allowed per ADR-0018; everything else package.json-shaped is not.
+# See docs/adrs/0006-no-node-tooling-in-repo.md and 0018-allow-binding-manifests.md.
 set -euo pipefail
 
 staged() { git diff --cached --name-only --diff-filter=ACM; }
 
-blocked=$(staged | grep -E '(^|/)(node_modules/|package\.json$|package-lock\.json$|yarn\.lock$)' || true)
+# node_modules and lockfiles are forbidden anywhere.
+blocked=$(staged | grep -E '(^|/)(node_modules/|package-lock\.json$|yarn\.lock$)' || true)
+# package.json is forbidden everywhere except a binding crate root
+# (crates/<crate>/package.json), per ADR-0018.
+stray_pkg=$(staged | grep -E '(^|/)package\.json$' | grep -vE '^crates/[^/]+/package\.json$' || true)
+blocked=$(printf '%s\n%s\n' "$blocked" "$stray_pkg" | grep -v '^$' || true)
 if [ -n "$blocked" ]; then
   echo "ERROR: refusing to commit forbidden tooling artifacts:" >&2
   echo "$blocked" | sed 's/^/  /' >&2
   echo "" >&2
-  echo "Node tooling lives in /tmp or via NOBLE_PQ_MLKEM. See .gitignore and" >&2
-  echo "docs/adrs/0006-no-node-tooling-in-repo.md." >&2
+  echo "node_modules/lockfiles are never committed; package.json only at a" >&2
+  echo "binding crate root (crates/<crate>/package.json). KAT tooling lives in" >&2
+  echo "/tmp via env vars. See docs/adrs/0006 and 0018." >&2
   exit 1
 fi
 
