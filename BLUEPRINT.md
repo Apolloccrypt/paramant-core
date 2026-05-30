@@ -67,8 +67,8 @@ BIP-0039 mnemonics. Constant-time discipline (ADR-0012), Argon2id KAT source pol
 
 ### M4  Protocol Layer
 RFC 6962 Merkle log plus Signed Tree Head, block padding, PQHB wire format
-(byte-equivalent with the relay, ADR-0014), three envelope modes (anonymous = send,
-signed = parashare, paradrop). Direct relay-source analysis corrected earlier
+(byte-equivalent with the relay, ADR-0014), two envelope modes (anonymous = send,
+signed = parashare). Direct relay-source analysis corrected earlier
 wire-format assumptions. ADRs 0013-0017.
 
 ### M5a  NAPI Bridge

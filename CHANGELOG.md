@@ -15,7 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `@paramant/core`, the proptest and KAT tests, and the
   `tests/kat/envelope-paradrop.json` vectors (15). `send` and `para_share` are
   unaffected; the remaining KAT corpus drops from 190 to 175 vectors. The
-  ParaDrop spec doc and ADR-0017 are kept as historical records.
+  ParaDrop spec doc (docs/envelope-paradrop.md) is removed and ADR-0017 is
+  marked Superseded.
 
 ### Added
 - **ParaSign Sg1 step 1**: cross-impl ML-DSA-65 validation added to

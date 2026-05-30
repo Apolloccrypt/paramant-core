@@ -1,7 +1,14 @@
 # 0017. ParaDrop: BIP-39 entropy-derived keys, no PQHB framing
 
 Date: 2026-05-27
-Status: Accepted
+Status: Superseded (2026-05-31)
+
+> **Superseded 2026-05-31.** ParaDrop has been removed from paramant-core and
+> paramant-relay. ParaShare covers the functionality we need, and dropping the
+> mode means less code and less attack surface. The primitive, its KAT vectors,
+> spec doc, and NAPI bindings are gone (see paramant-relay#150 and the
+> para_drop removal in this repo). This ADR is kept as the record of the
+> original, now-reversed decision.
 
 ## Context
 

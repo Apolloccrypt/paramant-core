@@ -9,7 +9,7 @@ together. Both repositories link here.
 +-------------------------------------------------------------+
 |  paramant.app frontend (browser)                            |
 |  - /send: WebCrypto + URL fragment (raw AES-GCM)            |
-|  - /parashare /paradrop /ontvang: crypto-wasm 0x03 hybrid   |
+|  - /parashare /ontvang: crypto-wasm 0x03 hybrid             |
 |  - /sign /verify (planned): crypto-wasm ML-DSA              |
 +----------------------+--------------------------------------+
                        |
@@ -40,7 +40,7 @@ together. Both repositories link here.
 | Path | Implementation | Wire format | Audience |
 |---|---|---|---|
 | Server, native, SDKs | paramant-core (oqs + aws-lc-rs, C) | PQHB | non-browser |
-| Browser parashare/paradrop/ontvang | crypto-wasm (RustCrypto, wasm32) | 0x03 hybrid | browser interactive |
+| Browser parashare/ontvang | crypto-wasm (RustCrypto, wasm32) | 0x03 hybrid | browser interactive |
 | Browser /send (anonymous) | WebCrypto + URL fragment | raw AES-GCM | browser anonymous |
 
 All three are under paramant-core's audit governance via cross-impl KAT validation

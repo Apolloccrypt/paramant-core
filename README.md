@@ -26,7 +26,7 @@ so the relay can adopt this core without any client-visible change.
 | Merkle log | `merkle.rs` (RFC 6962 + Signed Tree Head) | M4 |
 | Padding | `padding.rs` (block padding) | M4 |
 | Wire format | `wire.rs` (PQHB, byte-equivalent with relay) | M4 |
-| Envelopes | `envelope/` (anonymous, signed, paradrop) | M4 |
+| Envelopes | `envelope/` (anonymous, signed) | M4 |
 
 Plus two bindings:
 
@@ -92,7 +92,6 @@ installed automatically by rustup). Benchmarks live in
 - [`docs/wire-format-boundaries.md`](docs/wire-format-boundaries.md)  --  three-format coexistence
 - [`docs/envelope-send.md`](docs/envelope-send.md)  --  anonymous envelope spec
 - [`docs/envelope-parashare.md`](docs/envelope-parashare.md)  --  signed envelope spec
-- [`docs/envelope-paradrop.md`](docs/envelope-paradrop.md)  --  drop envelope spec
 - [`docs/benchmarks.md`](docs/benchmarks.md)  --  NAPI throughput numbers
 - [`docs/doc-conventions.md`](docs/doc-conventions.md)  --  rustdoc, ADR, CHANGELOG rules
 - [`docs/adrs/`](docs/adrs/)  --  21 Architecture Decision Records

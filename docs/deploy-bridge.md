@@ -31,8 +31,7 @@ npm install /abs/path/to/paramant-core/crates/paramant-core-node
 
 `require('@paramant/core')` then exposes: `kemKeygen`, `kemEncaps`, `kemDecaps`,
 `mldsaKeygen`, `mldsaSign`, `mldsaVerify`, `aeadEncrypt`, `aeadDecrypt`,
-`sendEncrypt`, `sendDecrypt`, `parashareEncrypt`, `parashareDecrypt`,
-`paradropDrop`, `paradropPickup`. All take/return Node `Buffer`s; errors throw.
+`sendEncrypt`, `sendDecrypt`, `parashareEncrypt`, `parashareDecrypt`. All take/return Node `Buffer`s; errors throw.
 
 ## 2. Swap ONE endpoint
 
