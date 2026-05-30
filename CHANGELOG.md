@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+- **ParaDrop envelope (`envelope::para_drop`).** The anonymous BIP-39 mnemonic
+  drop primitive is removed together with the relay feature it backed:
+  `envelope/para_drop.rs`, its `pub mod`/prelude re-export, the
+  `paradrop_drop`/`paradrop_pickup` NAPI bindings (and `DropResult`) in
+  `@paramant/core`, the proptest and KAT tests, and the
+  `tests/kat/envelope-paradrop.json` vectors (15). `send` and `para_share` are
+  unaffected; the remaining KAT corpus drops from 190 to 175 vectors. The
+  ParaDrop spec doc and ADR-0017 are kept as historical records.
+
 ### Added
 - **ParaSign Sg1 step 1**: cross-impl ML-DSA-65 validation added to
   `cross-impl-validator`. Proves the RustCrypto `ml-dsa 0.1.0` crate (the

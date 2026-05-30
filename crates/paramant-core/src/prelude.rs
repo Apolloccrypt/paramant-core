@@ -5,7 +5,7 @@
 //! ```
 
 pub use crate::aead;
-pub use crate::envelope::{para_drop, para_share, send};
+pub use crate::envelope::{para_share, send};
 pub use crate::error::{CoreError, CoreResult};
 pub use crate::kdf;
 pub use crate::kem::{self, Ciphertext, PublicKey, SecretKey, SharedSecret};
