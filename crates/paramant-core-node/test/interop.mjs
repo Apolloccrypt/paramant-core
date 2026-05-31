@@ -80,10 +80,6 @@ for (const v of kat('ml-dsa-65')) {
   const opened = core.parashareDecrypt(rcpt.secretKey, pblob);
   assert(Buffer.compare(opened.plaintext, pt) === 0, 'parashare roundtrip');
   assert(Buffer.compare(opened.senderPub, signer.publicKey) === 0, 'parashare sender_pub');
-
-  const drop = core.paradropDrop(pt, 4096);
-  assert(drop.mnemonic.split(' ').length === 12, 'paradrop mnemonic');
-  assert(Buffer.compare(core.paradropPickup(drop.mnemonic, drop.blob), pt) === 0, 'paradrop roundtrip');
 }
 
 console.log(`interop OK: ${checks} checks passed (KEM/AEAD/ML-DSA vs relay KAT + all envelope round-trips)`);

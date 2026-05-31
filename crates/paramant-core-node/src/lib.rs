@@ -12,8 +12,7 @@
 use napi::bindgen_prelude::Buffer;
 use napi_derive::napi;
 
-use paramant_core::envelope::{para_drop, para_share, send};
-use paramant_core::mnemonic::Mnemonic;
+use paramant_core::envelope::{para_share, send};
 use paramant_core::sig::ml_dsa_65;
 use paramant_core::{aead, kem};
 
@@ -51,13 +50,6 @@ pub struct Encapsulation {
 pub struct ParashareOpen {
     pub plaintext: Buffer,
     pub sender_pub: Buffer,
-}
-
-/// A ParaDrop result: the 12-word mnemonic to share and the padded blob.
-#[napi(object)]
-pub struct DropResult {
-    pub mnemonic: String,
-    pub blob: Buffer,
 }
 
 // -- ML-KEM-768 --------------------------------------------------------------
@@ -196,24 +188,4 @@ pub fn parashare_decrypt(recipient_kem_sk: Buffer, blob: Buffer) -> napi::Result
         plaintext: buf(plaintext),
         sender_pub: buf(sender_pub),
     })
-}
-
-// -- Envelope: ParaDrop (BIP-39 mnemonic) ------------------------------------
-
-#[napi]
-pub fn paradrop_drop(plaintext: Buffer, pad_block: u32) -> napi::Result<DropResult> {
-    let (mnemonic, blob) =
-        para_drop::drop(plaintext.as_ref(), pad_block as usize).map_err(js_err)?;
-    Ok(DropResult {
-        mnemonic: mnemonic.phrase(),
-        blob: buf(blob),
-    })
-}
-
-#[napi]
-pub fn paradrop_pickup(mnemonic: String, blob: Buffer) -> napi::Result<Buffer> {
-    let m = Mnemonic::parse(&mnemonic).map_err(js_err)?;
-    para_drop::pickup(&m, blob.as_ref())
-        .map(buf)
-        .map_err(js_err)
 }
