@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      # Installs the toolchain pinned in rust-toolchain.toml (1.80 + clippy + rustfmt).
+      # Installs the toolchain pinned in rust-toolchain.toml (1.95 + clippy + rustfmt).
       - name: Install pinned toolchain
         run: rustup show
       # The `oqs` crate (from M1) builds liboqs from source via CMake and runs
@@ -41,7 +41,7 @@ jobs:
         run: rustup show
       - uses: taiki-e/install-action@v2
         with:
-          # Prebuilt binaries  --  independent of the project's 1.80 toolchain.
+          # Prebuilt binaries  --  independent of the project's 1.95 toolchain.
           tool: cargo-audit,cargo-deny
       - name: Advisory audit
         run: cargo audit
