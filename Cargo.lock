@@ -895,6 +895,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "paramant-cli"
+version = "0.1.0"
+dependencies = [
+ "hex",
+ "paramant-core",
+]
+
+[[package]]
 name = "paramant-core"
 version = "0.1.0"
 dependencies = [

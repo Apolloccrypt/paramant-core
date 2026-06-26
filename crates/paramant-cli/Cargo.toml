@@ -1,0 +1,17 @@
+[package]
+name         = "paramant-cli"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+license.workspace      = true
+authors.workspace      = true
+repository.workspace   = true
+description  = "Thin CLI bridge to paramant-core's ML-DSA-65 (keygen/sign/verify) for non-Rust callers."
+
+[[bin]]
+name = "paramant-cli"
+path = "src/main.rs"
+
+[dependencies]
+paramant-core = { path = "../paramant-core" }
+hex.workspace = true
