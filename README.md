@@ -92,6 +92,7 @@ installed automatically by rustup). Benchmarks live in
 - [`docs/wire-format-boundaries.md`](docs/wire-format-boundaries.md)  --  three-format coexistence
 - [`docs/envelope-send.md`](docs/envelope-send.md)  --  anonymous envelope spec
 - [`docs/envelope-parashare.md`](docs/envelope-parashare.md)  --  signed envelope spec
+- [`docs/https-next-level-relay.md`](docs/https-next-level-relay.md)  --  relay HTTPS hardening playbook
 - [`docs/benchmarks.md`](docs/benchmarks.md)  --  NAPI throughput numbers
 - [`docs/doc-conventions.md`](docs/doc-conventions.md)  --  rustdoc, ADR, CHANGELOG rules
 - [`docs/adrs/`](docs/adrs/)  --  21 Architecture Decision Records
