@@ -62,6 +62,16 @@ through three implementations:
   and ML-DSA-65 against the same vectors (ADR-0020, ADR-0021).
 - **Browser WebCrypto:** spec compliance audited via the browser vendors.
 
+## Transport security (HTTPS)
+
+Application crypto (envelopes) and transport crypto (TLS) are deliberately
+separate. Envelopes protect user data from a malicious relay; HTTPS protects
+metadata, API tokens, and admin surfaces. Phase 1 hardening (reverse proxy,
+TLS 1.3, HTTP/3, security headers) is scoped to paramant-relay; see
+[ADR-0022](adrs/0022-transport-layer-https-hardening.md) and the Phase 1
+runbook [transport-https-runbook.md](transport-https-runbook.md). Hybrid KEM
+primitives for future PQ-TLS live in paramant-core ([ADR-0010](adrs/0010-hybrid-kem-construction.md)).
+
 ## Deploy and release coordination
 
 - **paramant-core:** pre-1.0 (`0.5.0-alpha.1`). Consumed by the relay via a git

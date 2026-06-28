@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Transport HTTPS strategy (ADR-0022)**: three-phase plan for next-level HTTPS
+  (reverse-proxy TLS 1.3 + HTTP/3, PQ transport readiness via hybrid KEM, PQ-TLS
+  pilot post-audit). Phase 1 runbook for paramant-relay in
+  [transport-https-runbook.md](docs/transport-https-runbook.md).
+
 ### Removed
 - **ParaDrop envelope (`envelope::para_drop`).** The anonymous BIP-39 mnemonic
   drop primitive is removed together with the relay feature it backed:

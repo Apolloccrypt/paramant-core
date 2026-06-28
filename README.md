@@ -35,7 +35,7 @@ Plus two bindings:
 | NAPI | `paramant-core-node` (npm `@paramant/core`) | paramant-relay (server) | M5a/M5b (in production) |
 | Cross-impl validator | `cross-impl-validator` | CI gate for the browser RustCrypto stack | M6, ParaSign Sg1 |
 
-Validated by 325 known-answer-test vectors (`tests/kat/`) and 21 Architecture
+Validated by 325 known-answer-test vectors (`tests/kat/`) and 22 Architecture
 Decision Records (`docs/adrs/`).
 
 ## Audience
@@ -94,7 +94,8 @@ installed automatically by rustup). Benchmarks live in
 - [`docs/envelope-parashare.md`](docs/envelope-parashare.md)  --  signed envelope spec
 - [`docs/benchmarks.md`](docs/benchmarks.md)  --  NAPI throughput numbers
 - [`docs/doc-conventions.md`](docs/doc-conventions.md)  --  rustdoc, ADR, CHANGELOG rules
-- [`docs/adrs/`](docs/adrs/)  --  21 Architecture Decision Records
+- [`docs/adrs/`](docs/adrs/)  --  22 Architecture Decision Records
+- [`docs/transport-https-runbook.md`](docs/transport-https-runbook.md)  --  Phase 1 HTTPS hardening (relay runbook)
 - [`SECURITY.md`](SECURITY.md)  --  responsible disclosure
 - [`CONTRIBUTING.md`](CONTRIBUTING.md)  --  how to contribute
 
