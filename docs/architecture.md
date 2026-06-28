@@ -18,12 +18,13 @@ grows under it. After M7, all relay crypto is imported from `@paramant/core`
 ```
 paramant-core/
 +-- Cargo.toml                # workspace root + pinned dependency catalogue
-+-- rust-toolchain.toml       # Rust 1.80
++-- rust-toolchain.toml       # Rust 1.95
 +-- crates/
 |   +-- paramant-core/        # core lib (this is the whole product at M0)
 |   +-- paramant-core-node/   # NAPI binding  --  added at M5
-+-- tests/                    # kat/ (Known Answer Tests), fuzz/
-+-- scripts/extract-kat.js    # generates KAT vectors from paramant-relay
+|   +-- cross-impl-validator/ # browser RustCrypto KAT gate  --  added at M6
++-- tests/                    # kat/ (Known Answer Tests)
++-- scripts/extract-kat.mjs   # generates KAT vectors from paramant-relay
 +-- docs/                     # this file, threat model, conventions, ADRs
 +-- .github/workflows/ci.yml  # check, test, clippy, fmt, audit, deny
 ```
