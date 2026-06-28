@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `paradrop_drop`/`paradrop_pickup` NAPI bindings (and `DropResult`) in
   `@paramant/core`, the proptest and KAT tests, and the
   `tests/kat/envelope-paradrop.json` vectors (15). `send` and `para_share` are
-  unaffected; the remaining KAT corpus drops from 190 to 175 vectors. The
+  unaffected; the remaining KAT corpus drops from 325 to 310 vectors. The
   ParaDrop spec doc (docs/envelope-paradrop.md) is removed and ADR-0017 is
   marked Superseded.
 

@@ -14,7 +14,7 @@ placeholders).
 
 Code: paramant-core M0-M6 complete plus ParaSign Sg1 step 1 (cross-impl ML-DSA-65).
 The `paramant-core-node` NAPI binding is live in production (M5b deployed
-2026-05-27 to Hetzner Frankfurt). 21 ADRs, 325 KAT vectors, CI green.
+2026-05-27 to Hetzner Frankfurt). 21 ADRs, 310 KAT vectors, CI green.
 
 Production: paramant-relay live at 116.203.86.81, 5 sector relays plus admin,
 ML-KEM-768 keygen via `@paramant/core`, 7-day soak-acceptance window started.
