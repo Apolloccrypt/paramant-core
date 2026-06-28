@@ -1,8 +1,14 @@
-//! Hybrid KEM: ML-KEM-768  XOR  ECDH P-256.
+//! Hybrid KEM: ML-KEM-768 + ECDH P-256 (HKDF-combined, draft-ietf-tls-hybrid-design).
+//!
+//! **Status: experimental.** This construction is not on any live envelope
+//! path (no sent envelope uses it) and has no cross-implementation KAT vector
+//! yet. Treat it as a reference / staging implementation, not a vetted wire
+//! format.
 //!
 //! The shared secret is derived from both a post-quantum (ML-KEM-768) and a
 //! classical (ECDH P-256) KEM, so it stays secure as long as *either* holds.
-//! The combiner follows `draft-ietf-tls-hybrid-design`:
+//! The two secrets are combined with HKDF-Extract (not XOR'd); the combiner
+//! follows `draft-ietf-tls-hybrid-design`:
 //!
 //! ```text
 //! ss = HKDF-Extract( salt = ml_kem_ct || ecdh_ephemeral_pub,
