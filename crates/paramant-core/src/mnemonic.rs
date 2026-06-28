@@ -74,14 +74,6 @@ impl Mnemonic {
         Zeroizing::new(self.0.to_seed(passphrase))
     }
 
-    /// The raw entropy this mnemonic encodes (16 bytes for a 12-word phrase).
-    ///
-    /// This is the secret material itself (not the stretched BIP-0039 seed),
-    /// suitable as input keying material for a KDF. Wiped on drop.
-    pub fn to_entropy(&self) -> Zeroizing<Vec<u8>> {
-        Zeroizing::new(self.0.to_entropy())
-    }
-
     /// The mnemonic as a space-separated phrase.
     pub fn phrase(&self) -> String {
         self.0.to_string()
