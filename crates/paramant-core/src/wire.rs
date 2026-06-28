@@ -207,13 +207,13 @@ impl Envelope {
         out.extend_from_slice(&self.header.sig_id.as_u16().to_be_bytes());
         out.push(self.header.flags);
 
-        put_field(&mut out, &self.ct_kem);
-        put_field(&mut out, &self.sender_pub);
+        put_field(&mut out, &self.ct_kem)?;
+        put_field(&mut out, &self.sender_pub)?;
         if let Some(sig) = &self.signature {
-            put_field(&mut out, sig);
+            put_field(&mut out, sig)?;
         }
         out.extend_from_slice(&self.nonce);
-        put_field(&mut out, &self.ciphertext);
+        put_field(&mut out, &self.ciphertext)?;
         Ok(out)
     }
 
@@ -297,10 +297,48 @@ impl Envelope {
     }
 }
 
+/// The largest field a v1 envelope can length-prefix: a `u32` count cannot
+/// address more bytes than this. Normally [`u32::MAX`]; the tests lower it via
+/// [`set_field_len_cap`] so the boundary can be exercised without allocating
+/// 4 GiB.
+#[cfg(not(test))]
+const fn field_len_cap() -> usize {
+    u32::MAX as usize
+}
+
+#[cfg(test)]
+fn field_len_cap() -> usize {
+    FIELD_LEN_CAP_OVERRIDE.with(|c| c.get())
+}
+
+#[cfg(test)]
+thread_local! {
+    /// Per-thread override of the `put_field` length cap, defaulting to the real
+    /// `u32::MAX` so untouched tests keep the production bound.
+    static FIELD_LEN_CAP_OVERRIDE: std::cell::Cell<usize> = const { std::cell::Cell::new(u32::MAX as usize) };
+}
+
+/// Lower (or restore) the `put_field` length cap for the current thread so a
+/// test can hit the `usize -> u32` boundary without a 4 GiB allocation.
+#[cfg(test)]
+fn set_field_len_cap(cap: usize) {
+    FIELD_LEN_CAP_OVERRIDE.with(|c| c.set(cap));
+}
+
 /// Append a `u32` big-endian length prefix followed by the field bytes.
-fn put_field(out: &mut Vec<u8>, field: &[u8]) {
+///
+/// # Errors
+/// [`CoreError::Wire`] if `field` is longer than a `u32` length prefix can
+/// address ([`u32::MAX`] bytes). Without this guard the `usize -> u32` cast
+/// would wrap silently and emit a prefix that under-counts the field, which a
+/// decoder would mis-slice.
+fn put_field(out: &mut Vec<u8>, field: &[u8]) -> CoreResult<()> {
+    if field.len() > field_len_cap() {
+        return Err(CoreError::Wire("field length exceeds u32 prefix range"));
+    }
     out.extend_from_slice(&(field.len() as u32).to_be_bytes());
     out.extend_from_slice(field);
+    Ok(())
 }
 
 fn read_u16_be(buf: &[u8], at: usize) -> CoreResult<u16> {
@@ -329,4 +367,67 @@ fn read_field(buf: &[u8], off: &mut usize) -> CoreResult<Vec<u8>> {
     let field = read_bytes(buf, *off, len)?.to_vec();
     *off += len;
     Ok(field)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn anon_envelope(ct_kem: Vec<u8>) -> Envelope {
+        Envelope {
+            header: Header {
+                kem_id: KemId::MlKem768,
+                sig_id: SigId::None,
+                flags: 0x00,
+            },
+            ct_kem,
+            sender_pub: vec![1, 2, 3],
+            signature: None,
+            nonce: [0u8; NONCE_SIZE],
+            ciphertext: vec![9, 9, 9],
+        }
+    }
+
+    /// The `usize -> u32` length-prefix cast in `put_field` rejects an over-long
+    /// field instead of wrapping. Exercised through an injected cap so the 4 GiB
+    /// boundary needs no real allocation: one byte past the cap must error, the
+    /// cap itself must still append, and the production bound stays `u32::MAX`
+    /// for every other test (override is thread-local, restored at the end).
+    #[test]
+    fn put_field_rejects_field_beyond_u32_prefix() {
+        assert_eq!(
+            field_len_cap(),
+            u32::MAX as usize,
+            "default cap is u32::MAX"
+        );
+        set_field_len_cap(8);
+
+        let mut over = Vec::new();
+        let err = put_field(&mut over, &[0u8; 9]).unwrap_err();
+        assert!(matches!(err, CoreError::Wire(_)), "got {err:?}");
+        assert!(over.is_empty(), "nothing is appended on rejection");
+
+        // Exactly at the cap still writes the 4-byte prefix plus the field.
+        let mut at = Vec::new();
+        put_field(&mut at, &[7u8; 8]).unwrap();
+        assert_eq!(&at[0..4], &8u32.to_be_bytes());
+        assert_eq!(&at[4..], &[7u8; 8]);
+
+        set_field_len_cap(u32::MAX as usize);
+    }
+
+    /// `Envelope::encode` surfaces the `put_field` bound: an over-cap field makes
+    /// the whole encode fail loudly rather than producing a malformed envelope.
+    #[test]
+    fn encode_propagates_field_len_bound() {
+        set_field_len_cap(8);
+        let err = anon_envelope(vec![0u8; 9]).encode().unwrap_err();
+        assert!(matches!(err, CoreError::Wire(_)), "got {err:?}");
+
+        // Within the cap, encode/decode still round-trips byte-for-byte.
+        set_field_len_cap(u32::MAX as usize);
+        let env = anon_envelope(vec![5u8; 4]);
+        let bytes = env.encode().unwrap();
+        assert_eq!(Envelope::decode(&bytes).unwrap(), env);
+    }
 }

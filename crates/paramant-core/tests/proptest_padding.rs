@@ -10,7 +10,7 @@ proptest! {
     // Round-trip over the 4K/64K/512K tiers (sizes proptest can generate cheaply).
     #[test]
     fn pad_unpad_roundtrips(plaintext in prop::collection::vec(any::<u8>(), 0..=200_000)) {
-        let (scheme, padded) = pad(&plaintext);
+        let (scheme, padded) = pad(&plaintext).unwrap();
         prop_assert!(padded.len().is_multiple_of(scheme.block_size()));
         prop_assert!(padded.len() >= plaintext.len() + 4);
         prop_assert_eq!(unpad(&padded, scheme).unwrap(), plaintext);
@@ -41,7 +41,7 @@ proptest! {
 fn large_and_multiblock_roundtrip() {
     for len in [524_285usize, 5_242_876, 6_000_000, 10_000_000] {
         let plaintext: Vec<u8> = (0..len).map(|j| (j % 251) as u8).collect();
-        let (scheme, padded) = pad(&plaintext);
+        let (scheme, padded) = pad(&plaintext).unwrap();
         assert!(
             padded.len().is_multiple_of(scheme.block_size()),
             "alignment at len {len}"
