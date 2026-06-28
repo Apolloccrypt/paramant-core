@@ -76,8 +76,8 @@ impl Mnemonic {
 
     /// The raw entropy this mnemonic encodes (16 bytes for a 12-word phrase).
     ///
-    /// This is the secret material itself (not the BIP-0039 seed); it is the
-    /// HKDF input for ParaDrop key derivation. Wiped on drop.
+    /// This is the secret material itself (not the stretched BIP-0039 seed),
+    /// suitable as input keying material for a KDF. Wiped on drop.
     pub fn to_entropy(&self) -> Zeroizing<Vec<u8>> {
         Zeroizing::new(self.0.to_entropy())
     }
