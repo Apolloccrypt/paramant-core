@@ -29,9 +29,13 @@ paramant-core/
 +-- .github/workflows/ci.yml  # check, test, clippy, fmt, audit, deny
 ```
 
-Crates are added one per milestone that justifies them: `paramant-core-node` (M5),
-`paramant-core-wasm` (M6), then `-py` / `-c` / `-cli` at M11+ only when needed.
-Never all upfront.
+Crates are added one per milestone that justifies them: `paramant-core-node` (M5)
+and the test-only `cross-impl-validator` (M6); `-py` / `-c` / `-cli` come at M11+
+only when needed. Never all upfront. A `paramant-core-wasm` crate was considered at
+M6 but rejected ([ADR-0020](adrs/0020-crypto-wasm-cross-impl-via-rustcrypto-crates.md)):
+paramant-core's C dependencies cannot target wasm32, so browser crypto stays in
+`paramant-relay/crypto-wasm` (RustCrypto) and is kept byte-equivalent by the
+cross-impl KAT here.
 
 ## Modules
 
@@ -62,8 +66,11 @@ Deliberately absent: `tokio` (no async in core), `anyhow` (library code uses
 
 ## Compile targets
 
-One codebase, several ABIs: native lib (M0), Node via NAPI-RS (M5), browser WASM
-(M6), Python wheel / C ABI (M11+). The crypto and wire format are written once.
+One codebase, several ABIs: native lib (M0), Node via NAPI-RS (M5), Python wheel /
+C ABI (M11+). The crypto and wire format are written once. There is no browser-WASM
+build of paramant-core itself  --  its C dependencies cannot target wasm32  --  so the
+browser uses the RustCrypto-based `paramant-relay/crypto-wasm`, kept byte-equivalent
+via `cross-impl-validator` ([ADR-0020](adrs/0020-crypto-wasm-cross-impl-via-rustcrypto-crates.md)).
 
 ## Source of truth
 
