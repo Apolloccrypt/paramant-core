@@ -81,10 +81,13 @@ pub mod ml_dsa_65 {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != PUBLIC_KEY_LEN {
-                return Err(CoreError::Sig("invalid public key length"));
+                return Err(CoreError::InvalidLength {
+                    expected: PUBLIC_KEY_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(bytes.to_vec()))
         }
@@ -98,10 +101,13 @@ pub mod ml_dsa_65 {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`SECRET_KEY_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`SECRET_KEY_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != SECRET_KEY_LEN {
-                return Err(CoreError::Sig("invalid secret key length"));
+                return Err(CoreError::InvalidLength {
+                    expected: SECRET_KEY_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(Zeroizing::new(bytes.to_vec())))
         }
@@ -115,10 +121,13 @@ pub mod ml_dsa_65 {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`SIGNATURE_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`SIGNATURE_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != SIGNATURE_LEN {
-                return Err(CoreError::Sig("invalid signature length"));
+                return Err(CoreError::InvalidLength {
+                    expected: SIGNATURE_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(bytes.to_vec()))
         }
@@ -195,10 +204,13 @@ pub mod slh_dsa {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != PUBLIC_KEY_LEN {
-                return Err(CoreError::Sig("invalid public key length"));
+                return Err(CoreError::InvalidLength {
+                    expected: PUBLIC_KEY_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(bytes.to_vec()))
         }
@@ -211,10 +223,13 @@ pub mod slh_dsa {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`SECRET_KEY_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`SECRET_KEY_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != SECRET_KEY_LEN {
-                return Err(CoreError::Sig("invalid secret key length"));
+                return Err(CoreError::InvalidLength {
+                    expected: SECRET_KEY_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(Zeroizing::new(bytes.to_vec())))
         }
@@ -227,10 +242,13 @@ pub mod slh_dsa {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`SIGNATURE_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`SIGNATURE_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != SIGNATURE_LEN {
-                return Err(CoreError::Sig("invalid signature length"));
+                return Err(CoreError::InvalidLength {
+                    expected: SIGNATURE_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(bytes.to_vec()))
         }
@@ -293,10 +311,13 @@ pub mod falcon_512 {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`PUBLIC_KEY_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != PUBLIC_KEY_LEN {
-                return Err(CoreError::Sig("invalid public key length"));
+                return Err(CoreError::InvalidLength {
+                    expected: PUBLIC_KEY_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(bytes.to_vec()))
         }
@@ -309,10 +330,13 @@ pub mod falcon_512 {
         /// Build from bytes, validating the length.
         ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is not [`SECRET_KEY_LEN`] long.
+        /// [`CoreError::InvalidLength`] if `bytes` is not [`SECRET_KEY_LEN`] long.
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.len() != SECRET_KEY_LEN {
-                return Err(CoreError::Sig("invalid secret key length"));
+                return Err(CoreError::InvalidLength {
+                    expected: SECRET_KEY_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(Zeroizing::new(bytes.to_vec())))
         }
@@ -324,11 +348,18 @@ pub mod falcon_512 {
         }
         /// Build from bytes, validating it is non-empty and within the maximum.
         ///
+        /// Falcon-512 signatures are variable length, so this reports the
+        /// permitted maximum ([`MAX_SIGNATURE_LEN`]) as the `expected` length.
+        ///
         /// # Errors
-        /// [`CoreError::Sig`] if `bytes` is empty or longer than [`MAX_SIGNATURE_LEN`].
+        /// [`CoreError::InvalidLength`] if `bytes` is empty or longer than
+        /// [`MAX_SIGNATURE_LEN`].
         pub fn from_bytes(bytes: &[u8]) -> CoreResult<Self> {
             if bytes.is_empty() || bytes.len() > MAX_SIGNATURE_LEN {
-                return Err(CoreError::Sig("invalid signature length"));
+                return Err(CoreError::InvalidLength {
+                    expected: MAX_SIGNATURE_LEN,
+                    got: bytes.len(),
+                });
             }
             Ok(Self(bytes.to_vec()))
         }
