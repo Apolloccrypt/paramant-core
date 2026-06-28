@@ -11,7 +11,7 @@ suites + the NAPI binding interop check. Full product-level e2e (frontend -> rel
 ### Standard commands
 Build/test/lint commands are documented in `README.md` (Quick start) and
 `.github/workflows/ci.yml`. The canonical flow is `cargo build` then
-`cargo test --all` (unit + 325 KAT vectors + proptests), plus
+`cargo test --all` (unit + KAT vectors + proptests), plus
 `cargo test -p cross-impl-validator`, `cargo fmt --all -- --check`, and
 `cargo clippy --all-targets --all-features -- -D warnings`.
 
