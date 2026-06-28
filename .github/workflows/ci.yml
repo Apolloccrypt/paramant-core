@@ -63,7 +63,7 @@ jobs:
       - name: Install liboqs build deps
         run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang libclang-dev
       - uses: Swatinem/rust-cache@v2
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: 20
       # Build the binding as a cdylib and load it directly as a .node addon.
