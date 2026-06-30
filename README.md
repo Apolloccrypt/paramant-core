@@ -35,7 +35,7 @@ Plus two bindings:
 | NAPI | `paramant-core-node` (npm `@paramant/core`) | paramant-relay (server) | M5a/M5b (in production) |
 | Cross-impl validator | `cross-impl-validator` | CI gate for the browser RustCrypto stack | M6, ParaSign Sg1 |
 
-Validated by 325 known-answer-test vectors (`tests/kat/`) and 21 Architecture
+Validated by 310 known-answer-test vectors (`tests/kat/`) and 21 Architecture
 Decision Records (`docs/adrs/`).
 
 ## Audience
@@ -73,7 +73,7 @@ with all crypto via paramant-core.
 
 ```sh
 cargo build         # build the workspace
-cargo test --all    # unit + KAT + property tests (325 KAT vectors)
+cargo test --all    # unit + KAT + property tests (310 KAT vectors)
 cargo doc --open    # read the API docs
 ```
 
