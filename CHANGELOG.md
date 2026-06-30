@@ -14,9 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `paradrop_drop`/`paradrop_pickup` NAPI bindings (and `DropResult`) in
   `@paramant/core`, the proptest and KAT tests, and the
   `tests/kat/envelope-paradrop.json` vectors (15). `send` and `para_share` are
-  unaffected; the remaining KAT corpus drops from 190 to 175 vectors. The
+  unaffected; the remaining KAT corpus drops from 325 to 310 vectors. The
   ParaDrop spec doc (docs/envelope-paradrop.md) is removed and ADR-0017 is
   marked Superseded.
+- **`Mnemonic::to_entropy`.** This accessor was added solely as the HKDF input
+  for ParaDrop (ADR-0017); with ParaDrop gone it had no in-tree consumer and is
+  not exposed by the `@paramant/core` NAPI binding, so it is removed per the
+  code-minimization rule (ADR-0004). `generate`/`generate_from_entropy`/`parse`/
+  `to_seed`/`phrase`/`word_count` are unaffected.
 
 ### Added
 - **ParaSign Sg1 step 1**: cross-impl ML-DSA-65 validation added to

@@ -89,3 +89,34 @@ jobs:
       # so no liboqs/aws-lc-rs build deps are needed (ADR-0020).
       - name: RustCrypto crate KAT
         run: cargo test -p cross-impl-validator
+
+  musl-node-binding:
+    name: musl build - paramant-core-node (alpine, mirrors the relay image)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # The relay ships @paramant/core by compiling paramant-core-node inside
+      # rust:*-alpine (musl). The other jobs build on ubuntu (glibc), so a
+      # musl/alpine-only breakage -- e.g. the `oqs` bindgen/liboqs mismatch that a
+      # rust base-image bump can introduce (E0609: no field on OQS_SIG) -- passes
+      # CI green but breaks every relay image rebuild. This job reproduces that
+      # exact build so the breakage is caught here, not in production.
+      #
+      # Pinned to the same rust:1.95-alpine digest the relay Dockerfile ships.
+      # When bumping the relay's base image, bump it here too: if this job goes
+      # red, the new base cannot build the binding and must not be deployed.
+      # `--locked` forces the committed Cargo.lock (oqs 0.10.1 + vendored
+      # liboqs 0.12.0) so a silent transitive bump can't drift the build either.
+      # Checkout runs on the host (the alpine image has no Node for actions), then
+      # we mount the tree into the container for the build.
+      - name: Build the napi binding on alpine/musl
+        run: |
+          docker run --rm -v "$PWD":/src -w /src \
+            rust:1.95-alpine@sha256:606fd313a0f49743ee2a7bd49a0914bab7deedb12791f3a846a34a4711db7ed2 \
+            sh -euc '
+              apk add --no-cache musl-dev gcc g++ make cmake ninja clang clang-dev llvm-dev perl nasm git bash
+              export LIBCLANG_PATH=/usr/lib
+              export RUSTFLAGS="-C target-feature=-crt-static"
+              cargo build --locked --release -p paramant-core-node
+              test -f target/release/libparamant_core_node.so
+            '
