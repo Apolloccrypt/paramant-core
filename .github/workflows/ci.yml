@@ -39,7 +39,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Install pinned toolchain
         run: rustup show
-      - uses: taiki-e/install-action@v2
+      - uses: taiki-e/install-action@v2.85.6
         with:
           # Prebuilt binaries  --  independent of the project's 1.95 toolchain.
           tool: cargo-audit,cargo-deny
