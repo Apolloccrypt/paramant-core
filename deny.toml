@@ -33,3 +33,6 @@ allow-wildcard-paths = true
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+# oqs-sys is patched to an upstream liboqs-rust commit (see [patch.crates-io]
+# in Cargo.toml) until a release with bindgen >= 0.72 ships; remove with it.
+allow-git = ["https://github.com/open-quantum-safe/liboqs-rust"]

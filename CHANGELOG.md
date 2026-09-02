@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **`oqs` 0.10.1 -> 0.11.0 (liboqs 0.12.0 -> 0.13.0), `oqs-sys` patched to
+  upstream commit `4ca07ba` (bindgen 0.71 -> 0.72).** The relay's
+  `rust:1.98-alpine` base (Alpine 3.24, libclang 22) made the crypto binding
+  fail to compile: bindgen 0.71 emits the forward-declared `OQS_SIG` as an
+  opaque struct under libclang 22 (`E0609: no field alg_version on &OQS_SIG`),
+  reproduced with a two-line header. bindgen 0.72 resolves it; upstream bumped
+  the requirement in liboqs-rust#289 without a crates.io release, so
+  `[patch.crates-io]` pins that commit (published 0.11.0 tree + the one-line
+  bump, same liboqs 0.13.0 submodule). The `musl-node-binding` CI job moves to
+  the same `rust:1.98-alpine` digest. Algorithm identifiers (`ML-DSA-65`,
+  `ML-KEM-768`, `SPHINCS+-SHA2-128f-simple`, `Falcon-512`) are unchanged
+  between liboqs 0.12.0 and 0.13.0; the ML-DSA-65 and ML-KEM-768 KAT suites
+  and the relay crypto suite pass unchanged against the new binding.
+
 ### Removed
 - **ParaDrop envelope (`envelope::para_drop`).** The anonymous BIP-39 mnemonic
   drop primitive is removed together with the relay feature it backed:
