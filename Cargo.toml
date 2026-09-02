@@ -17,7 +17,7 @@ repository   = "https://github.com/Apolloccrypt/paramant-core"
 # Post-quantum crypto via liboqs. M1 enables only ML-KEM (FIPS 203);
 # signature families (FIPS 204/205/206) are switched on at M2. No OpenSSL
 # backend  --  liboqs builds its own symmetric primitives.
-oqs        = { version = "0.10", default-features = false, features = ["ml_kem", "ml_dsa", "sphincs", "falcon", "std"] }
+oqs        = { version = "0.11", default-features = false, features = ["ml_kem", "ml_dsa", "sphincs", "falcon", "std"] }
 
 # Classical crypto (FIPS-validated AWS-LC)
 aws-lc-rs  = "1.13"
@@ -51,3 +51,14 @@ napi-build  = "2.1"
 # Testing only
 proptest   = "1.5"
 criterion  = "0.5"
+
+# oqs-sys 0.11.0 on crates.io builds its bindings with bindgen 0.71, which
+# turns the forward-declared `OQS_SIG` into an opaque struct under libclang 22
+# (rust:1.98-alpine / Alpine 3.24): "no field alg_version on type &OQS_SIG".
+# bindgen 0.72 resolves the forward declaration correctly. Upstream bumped the
+# requirement in liboqs-rust#289 but has not published a new oqs-sys, so pin
+# that exact commit: it is the published 0.11.0 tree plus the one-line
+# bindgen bump, with the same liboqs 0.13.0 submodule. Drop this patch once
+# an oqs-sys > 0.11.0 ships with bindgen >= 0.72.
+[patch.crates-io]
+oqs-sys = { git = "https://github.com/open-quantum-safe/liboqs-rust.git", rev = "4ca07bae34773cdb1ec04c7d0866345cb551914b" }
